@@ -1,20 +1,5 @@
-**Boitshwarelo Motlogelwa**  
-Founder – Ethical Edge GRC Consulting Pty Ltd  
-
 ---
 
-## 💰 Funding
+## 🏗️ System Architecture
 
-This project is seeking funding to support development, AI integration, and global adoption.
-
----
-
-## 🤝 Contributions
-
-We welcome developers, risk professionals, and contributors worldwide.
-
----
-
-## 📫 Contact
-
-Email: boitshwarelomotlogelwa41@gmail.com
+![System Architecture](your-image-file-name.png)
