@@ -2,4 +2,4 @@
 
 ## 🏗️ System Architecture
 
-![System Architecture](your-image-file-name.png)
+![System Architecture](images/system-architecture.png)
