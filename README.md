@@ -45,3 +45,15 @@ The Ethical Edge GRC platform is designed using modern and scalable technologies
 - **AI & Analytics:** Machine Learning models for risk insights and automation  
 - **Authentication:** JWT / OAuth 2.0
 
+## 🚀 Roadmap & Future Improvements
+
+The Ethical Edge GRC platform is designed for continuous improvement. Future enhancements include:
+
+- AI-powered risk prediction and anomaly detection  
+- Advanced dashboards with data visualization  
+- Integration with external compliance frameworks (ISO, GDPR, etc.)  
+- Role-based access control (RBAC) for enhanced security  
+- Mobile application for on-the-go monitoring  
+- Automated audit trails and compliance reporting  
+- Third-party system integrations (ERP, CRM systems)  
+
