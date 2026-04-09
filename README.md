@@ -33,3 +33,15 @@ This platform is designed to support organizations in achieving regulatory compl
 
 Built with a focus on governance, risk, and compliance excellence.
 
+## 🛠️ Tech Stack
+
+The Ethical Edge GRC platform is designed using modern and scalable technologies:
+
+- **Frontend:** React.js / HTML / CSS / JavaScript  
+- **Backend:** Node.js / Python (Flask or FastAPI)  
+- **Database:** PostgreSQL / MongoDB  
+- **APIs:** RESTful APIs  
+- **Cloud Infrastructure:** Google Cloud / AWS  
+- **AI & Analytics:** Machine Learning models for risk insights and automation  
+- **Authentication:** JWT / OAuth 2.0
+
