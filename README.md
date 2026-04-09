@@ -1,3 +1,7 @@
+![GitHub repo size](https://img.shields.io/github/repo-size/Motlogelwa41-byte/ethical-edge-open-grc)
+![GitHub last commit](https://img.shields.io/github/last-commit/Motlogelwa41-byte/ethical-edge-open-grc)
+![License](https://img.shields.io/github/license/Motlogelwa41-byte/ethical-edge-open-grc)
+
 # Ethical Edge GRC
 
 ## 📖 Overview
