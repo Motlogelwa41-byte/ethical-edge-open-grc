@@ -15,6 +15,4 @@ The system architecture illustrates how users interact with the platform through
 - Policy & Document Management
 - Audit & Reporting Tools
 - Real-time Monitoring & Alerts
-## 🏗️ Architecture Description
-
 
