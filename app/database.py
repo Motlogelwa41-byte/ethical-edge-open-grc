@@ -1,21 +1,24 @@
-import os
-from sqlalchemy import create_engine
+from sqlalchemy import create_all, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+import os
 
-# For local development, we use a standard PostgreSQL URL format:
-# postgresql://[user]:[password]@[host]:[port]/[database_name]
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:password@localhost:5432/ethical_edge_db")
+# 1. Define where the database lives
+# For now, it creates a local 'ethical_edge.db' file so you can test easily
+SQLALCHEMY_DATABASE_URL = "sqlite:///./ethical_edge.db"
 
-# The Engine is the starting point for any SQLAlchemy application
-engine = create_engine(DATABASE_URL)
+# 2. Create the Engine (The Connection)
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+)
 
-# This is the session factory that our API will use for each request
+# 3. Create a Session (The 'Borrowing' system)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+# 4. The Base (The 'Blueprint' foundation)
 Base = declarative_base()
 
-# Dependency to get the database session
+# 5. The get_db function (Used by main.py)
 def get_db():
     db = SessionLocal()
     try:
