@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ethical Edge GRC | Integrity Bridge</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        .trust-high { border-left: 5px solid #198754; }
+        .trust-med { border-left: 5px solid #ffc107; }
+        .trust-low { border-left: 5px solid #dc3545; }
+        .score-pill { font-size: 0.9rem; font-weight: bold; }
+    </style>
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-dark bg-dark mb-4">
+        <div class="container-fluid">
+            <span class="navbar-brand">Ethical Edge GRC: Donor Transparency Engine</span>
+            <span class="badge bg-primary">Framework: King V + Botswana DPA</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card text-center p-3 shadow-sm">
+                    <h6>Vetted Entities</h6>
+                    <h2 class="text-primary">12</h2>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center p-3 shadow-sm">
+                    <h6>Average Trust Score</h6>
+                    <h2 class="text-success">88%</h2>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center p-3 shadow-sm">
+                    <h6>Compliance Alerts</h6>
+                    <h2 class="text-danger">2</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow">
+            <div class="card-header bg-white"><strong>Active NGO Trust Registry</strong></div>
+            <div class="card-body">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Entity Name</th>
+                            <th>Trust Score</th>
+                            <th>Compliance Tier</th>
+                            <th>Audit Trail</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="trust-high">
+                            <td>Botswana Educational Fund</td>
+                            <td><span class="badge rounded-pill bg-success score-pill">95/100</span></td>
+                            <td>Institutional Grade</td>
+                            <td><button class="btn btn-sm btn-outline-secondary">View Logs</button></td>
+                        </tr>
+                        <tr class="trust-med">
+                            <td>SADC Youth Initiative</td>
+                            <td><span class="badge rounded-pill bg-warning text-dark score-pill">65/100</span></td>
+                            <td>Development Grade</td>
+                            <td><button class="btn btn-sm btn-outline-secondary">View Logs</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
