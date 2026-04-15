@@ -46,35 +46,36 @@
             </div>
         </div>
 
-        <div class="card shadow">
-            <div class="card-header bg-white"><strong>Active NGO Trust Registry</strong></div>
-            <div class="card-body">
-                <table class="table align-middle">
-                    <thead>
-                        <tr>
-                            <th>Entity Name</th>
-                            <th>Trust Score</th>
-                            <th>Compliance Tier</th>
-                            <th>Audit Trail</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="trust-high">
-                            <td>Botswana Educational Fund</td>
-                            <td><span class="badge rounded-pill bg-success score-pill">95/100</span></td>
-                            <td>Institutional Grade</td>
-                            <td><button class="btn btn-sm btn-outline-secondary">View Logs</button></td>
-                        </tr>
-                        <tr class="trust-med">
-                            <td>SADC Youth Initiative</td>
-                            <td><span class="badge rounded-pill bg-warning text-dark score-pill">65/100</span></td>
-                            <td>Development Grade</td>
-                            <td><button class="btn btn-sm btn-outline-secondary">View Logs</button></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+      <div class="card shadow">
+    <div class="card-header d-flex justify-content-between">
+        <strong>Active Integrity Registry</strong>
+        <span class="text-muted small">Updated: Real-Time</span>
     </div>
-</body>
-</html>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Organization</th>
+                    <th>Trust Score</th>
+                    <th>Risk Level</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ngo in ngos %}
+                <tr class="{{ 'heat-low' if ngo.trust_score > 70 else 'heat-high' }}">
+                    <td><strong>{{ ngo.name }}</strong></td>
+                    <td>
+                        <div class="progress">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ ngo.trust_score }}%"></div>
+                        </div>
+                        <small>{{ ngo.trust_score }}% Compliance</small>
+                    </td>
+                    <td>{{ ngo.compliance_status }}</td>
+                    <td><button class="btn btn-sm btn-dark">View Audit Trail</button></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>  
