@@ -1,6 +1,51 @@
 {
-  "project": "Ethical Edge Open GRC Toolkit",
-  "description": "An open-source governance, risk, and compliance platform for SMEs, NGOs, and public institutions.",
-  "funding_needed": "$75,000",
-  "usage": "Platform development, AI features, documentation, and community support"
+  "project_name": "Ethical Edge Open GRC - Gates Foundation AI Pilot",
+  "grant_request_amount": 150000,
+  "currency": "USD",
+  "budget_allocation": {
+    "ai_development_integration": {
+      "amount": 55000,
+      "description": "Development of RAG (Retrieval-Augmented Generation) agents to parse NGO financial reports and audit logs against King V and local SADC regulatory frameworks.",
+      "milestones": [
+        "Transition from static JSON checklists to dynamic AI-driven compliance verification.",
+        "Integration of LLM APIs for automated gap analysis in charitable financial reporting."
+      ]
+    },
+    "pilot_testing_validation": {
+      "amount": 45000,
+      "description": "On-the-ground validation with 5-10 selected NGOs in Botswana and the SADC region to test GRC logic in real-world cross-border giving scenarios.",
+      "milestones": [
+        "Identify and onboard regional NGO partners.",
+        "User Acceptance Testing (UAT) for the 'Donor Confidence' dashboard."
+      ]
+    },
+    "data_infrastructure_standards": {
+      "amount": 25000,
+      "description": "Establishing open-standard data pipelines to ensure LMIC nonprofit compliance data is interoperable with global donor AI discovery tools.",
+      "milestones": [
+        "Finalization of the Open GRC schema (PostgreSQL).",
+        "API documentation for cross-platform integration."
+      ]
+    },
+    "responsible_ai_governance": {
+      "amount": 15000,
+      "description": "Bias auditing and privacy-preserving measures to ensure compliance with the Botswana Data Protection Act (BDPA) and GDPR.",
+      "milestones": [
+        "AI Ethics audit and mitigation of regional data biases.",
+        "Implementation of zero-knowledge proof concepts for sensitive NGO data."
+      ]
+    },
+    "operational_indirect_costs": {
+      "amount": 10000,
+      "description": "Administrative oversight, legal review of cross-border compliance logic, and project management.",
+      "milestones": [
+        "Final project impact report for Gates Foundation."
+      ]
+    }
+  },
+  "impact_metrics": [
+    "Reduction in time-to-compliance for cross-border donations.",
+    "Increase in donor 'Trust Score' for participating SADC NGOs.",
+    "Portability of GRC data across international giving platforms."
+  ]
 }
