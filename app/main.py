@@ -14,7 +14,7 @@ app.config['UPLOAD_FOLDER'] = 'uploads'
 def process_ngo_report(file_path):
     # 1. Load the King V Checklist logic
     try:
-        with open('data/king_v_checklist.json', 'r') as f:
+        with open('../data/king_v_checklist.json', 'r') as f:
             guidelines = f.read()
     except FileNotFoundError:
         guidelines = "King V Principles: Transparency, Accountability, Ethical Leadership."
