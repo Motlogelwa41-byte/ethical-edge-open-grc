@@ -1,40 +1,48 @@
 from fastapi import FastAPI, Depends, Request
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
-from . import models, database
+from . import models, database, governance
 
-# Initialize the Ethical Edge Engine
-app = FastAPI(title="Ethical Edge GRC Platform")
-
-# This tells the code to look in the 'templates' folder for your dashboard
+app = FastAPI(title="Ethical Edge GRC: Integrity Bridge")
 templates = Jinja2Templates(directory="templates")
 
-# Create the database tables automatically
+# Initialize Database
 models.Base.metadata.create_all(bind=database.engine)
 
 @app.get("/")
 def read_root():
-    return {
-        "message": "Ethical Edge GRC API is Online",
-        "frameworks": ["King V", "ISO 31000", "Botswana DPA"],
-        "status": "Ready for Ingest"
-    }
+    return {"status": "Engine Online", "framework": "King V + BDPA"}
 
 @app.get("/dashboard")
-def get_dashboard(request: Request):
-    """
-    Renders the professional King V Governance Dashboard.
-    """
-    return templates.TemplateResponse("dashboard.html", {"request": request})
+def get_dashboard(request: Request, db: Session = Depends(database.get_db)):
+    # Fetch NGOs from the database
+    ngos = db.query(models.NGOProfile).all()
+    
+    # If database is empty, we provide sample data for the demo
+    if not ngos:
+        ngos = [
+            {"name": "Botswana Educational Fund", "trust_score": 95, "compliance_status": "Institutional Grade"},
+            {"name": "SADC Youth Initiative", "trust_score": 65, "compliance_status": "Development Grade"}
+        ]
+        
+    return templates.TemplateResponse("dashboard.html", {
+        "request": request,
+        "ngos": ngos
+    })
 
-@app.post("/ingest/")
-def ingest_document(document_name: str, db: Session = Depends(database.get_db)):
-    # Logs the action in your audit trail
-    new_log = models.AuditLog(
-        action_taken=f"Document Ingested: {document_name}",
-        user_id="System AI"
+@app.post("/vet-ngo/")
+def vet_ngo(name: str, has_audit: bool, has_dpo: bool, years: int, db: Session = Depends(database.get_db)):
+    # Calculate score using our Intelligence Layer
+    score = governance.engine.calculate_trust_score(has_audit, has_dpo, years)
+    tier = governance.engine.get_compliance_tier(score)
+    
+    # Save to Integrity Registry
+    new_ngo = models.NGOProfile(
+        name=name,
+        trust_score=score,
+        compliance_status=tier
     )
-    db.add(new_log)
+    db.add(new_ngo)
     db.commit()
     
-    return {"status": "Success", "message": f"Document '{document_name}' received."}
+    return {"name": name, "trust_score": score, "tier": tier}
