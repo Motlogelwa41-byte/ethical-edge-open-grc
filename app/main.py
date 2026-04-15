@@ -1,3 +1,4 @@
+from .vetting_logic import vetter
 from fastapi import FastAPI, Depends, Request
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
