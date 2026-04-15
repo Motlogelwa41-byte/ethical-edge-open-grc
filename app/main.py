@@ -32,18 +32,32 @@ def get_dashboard(request: Request, db: Session = Depends(database.get_db)):
     })
 
 @app.post("/vet-ngo/")
-def vet_ngo(name: str, has_audit: bool, has_dpo: bool, years: int, db: Session = Depends(database.get_db)):
-    # Calculate score using our Intelligence Layer
-    score = governance.engine.calculate_trust_score(has_audit, has_dpo, years)
-    tier = governance.engine.get_compliance_tier(score)
+def vet_ngo(
+    name: str, 
+    has_audit: bool, 
+    public_report: bool, 
+    db: Session = Depends(database.get_db)
+):
+    # 1. Run the data through the Intelligence Engine
+    results = vetter.assess_organization({
+        "has_audit_committee": has_audit,
+        "public_annual_report": public_report
+    })
     
-    # Save to Integrity Registry
+    # 2. Map the results to your Database Model
     new_ngo = models.NGOProfile(
         name=name,
-        trust_score=score,
-        compliance_status=tier
+        trust_score=results["score"],
+        compliance_status=results["status"]
     )
+    
+    # 3. Commit to the permanent Audit Log
     db.add(new_ngo)
     db.commit()
+    db.refresh(new_ngo)
     
-    return {"name": name, "trust_score": score, "tier": tier}
+    return {
+        "message": "Vetting Complete",
+        "entity": name,
+        "integrity_score": results["score"],
+        "findings": results["findings"]
