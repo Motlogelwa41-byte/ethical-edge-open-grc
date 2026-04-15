@@ -1,19 +1,31 @@
-class KingVEngine:
-    """
-    Specific logic for the King V outcomes-based governance.
-    """
-    PRINCIPLES = {
-        "P1": "Ethical Culture",
-        "P2": "Good Performance",
-        "P3": "Effective Control",
-        "P4": "Legitimacy"
-    }
+class EthicalEdgeEngine:
+    def __init__(self):
+        self.version = "2.0 - Sprint Edition"
 
-    def assess_alignment(self, risk_score):
-        # King V focuses on governance outcomes
-        if risk_score > 15:
-            return "IMPACTED: High risk to 'Effective Control' (P3)."
-        return "ALIGNED: Outcome supports 'Good Performance' (P2)."
+    def calculate_trust_score(self, has_audit_committee: bool, has_dpo: bool, years_active: int):
+        """
+        Comprehensive scoring based on King V and Botswana DPA.
+        """
+        score = 50.0  # Base score
+        
+        # King V: Effective Control (P3)
+        if has_audit_committee:
+            score += 25.0
+            
+        # Botswana DPA: Protection of Personal Info
+        if has_dpo:
+            score += 15.0
+            
+        # Stability Factor
+        if years_active > 5:
+            score += 10.0
+            
+        return min(score, 100.0)
 
-# Logic to be used in main.py
-king_v = KingVEngine()
+    def get_compliance_tier(self, score):
+        if score >= 85: return "High - Institutional Grade"
+        if score >= 60: return "Medium - Development Grade"
+        return "Low - Review Required"
+
+# Initialize for the platform
+engine = EthicalEdgeEngine()
