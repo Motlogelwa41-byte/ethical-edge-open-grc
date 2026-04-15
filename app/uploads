@@ -1,0 +1,6 @@
+# 1. Make sure you are in the root (ethical-edge-open-grc)
+# 2. Set the Flask App environment variable
+export FLASK_APP=app/main.py
+
+# 3. Run it
+python -m flask run --port 8000
