@@ -1,63 +1,75 @@
-from .vetting_logic import vetter
-from fastapi import FastAPI, Depends, Request
-from fastapi.templating import Jinja2Templates
-from sqlalchemy.orm import Session
-from . import models, database, governance
+import os
+from flask import Flask, request, jsonify, render_template
+from dotenv import load_dotenv
+from langchain_openai import ChatOpenAI
+from langchain.schema import HumanMessage
+import PyPDF2
 
-app = FastAPI(title="Ethical Edge GRC: Integrity Bridge")
-templates = Jinja2Templates(directory="templates")
+# Load environment variables (API Keys)
+load_dotenv()
 
-# Initialize Database
-models.Base.metadata.create_all(bind=database.engine)
+app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = 'uploads'
 
-@app.get("/")
-def read_root():
-    return {"status": "Engine Online", "framework": "King V + BDPA"}
+def process_ngo_report(file_path):
+    # 1. Load the King V Checklist logic
+    try:
+        with open('data/king_v_checklist.json', 'r') as f:
+            guidelines = f.read()
+    except FileNotFoundError:
+        guidelines = "King V Principles: Transparency, Accountability, Ethical Leadership."
 
-@app.get("/dashboard")
-def get_dashboard(request: Request, db: Session = Depends(database.get_db)):
-    # Fetch NGOs from the database
-    ngos = db.query(models.NGOProfile).all()
+    # 2. Extract Text from the uploaded PDF
+    reader = PyPDF2.PdfReader(file_path)
+    report_text = ""
+    for page in reader.pages:
+        report_text += page.extract_text()
+
+    # 3. Initialize AI Agent (GPT-4)
+    chat = ChatOpenAI(model="gpt-4-turbo", temperature=0)
     
-    # If database is empty, we provide sample data for the demo
-    if not ngos:
-        ngos = [
-            {"name": "Botswana Educational Fund", "trust_score": 95, "compliance_status": "Institutional Grade"},
-            {"name": "SADC Youth Initiative", "trust_score": 65, "compliance_status": "Development Grade"}
-        ]
-        
-    return templates.TemplateResponse("dashboard.html", {
-        "request": request,
-        "ngos": ngos
+    # 4. Construct the prompt for the Gates Foundation 'Trust Bridge'
+    query = f"""
+    You are an expert GRC Auditor for the Gates Foundation. 
+    Analyze this NGO Financial Report against these King V Governance Principles:
+    
+    Principles: {guidelines}
+    
+    Report Content: {report_text[:4000]} 
+    
+    Response Format (JSON):
+    1. Compliance_Score (0-100)
+    2. Missing_Disclosures (List)
+    3. Recommendations (List)
+    """
+    
+    response = chat.invoke([HumanMessage(content=query)])
+    return response.content
+
+@app.route('/')
+def dashboard():
+    return render_template('dashboard.html')
+
+@app.route('/api/v1/analyze-report', methods=['POST'])
+def analyze_report():
+    if 'file' not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
+    
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "No file selected"}), 400
+
+    # Save file to uploads folder
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+    file.save(file_path)
+
+    # Run AI Analysis
+    result = process_ngo_report(file_path)
+    
+    return jsonify({
+        "status": "success",
+        "analysis": result
     })
 
-@app.post("/vet-ngo/")
-def vet_ngo(
-    name: str, 
-    has_audit: bool, 
-    public_report: bool, 
-    db: Session = Depends(database.get_db)
-):
-    # 1. Run the data through the Intelligence Engine
-    results = vetter.assess_organization({
-        "has_audit_committee": has_audit,
-        "public_annual_report": public_report
-    })
-    
-    # 2. Map the results to your Database Model
-    new_ngo = models.NGOProfile(
-        name=name,
-        trust_score=results["score"],
-        compliance_status=results["status"]
-    )
-    
-    # 3. Commit to the permanent Audit Log
-    db.add(new_ngo)
-    db.commit()
-    db.refresh(new_ngo)
-    
-    return {
-        "message": "Vetting Complete",
-        "entity": name,
-        "integrity_score": results["score"],
-        "findings": results["findings"]
+if __name__ == '__main__':
+    app.run(debug=True)
