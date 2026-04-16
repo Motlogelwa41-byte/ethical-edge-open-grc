@@ -21,6 +21,18 @@ def evaluate_bdpa_compliance(answers):
         score += 10
     else:
         score += 1 # High Risk: Processing without consent is a major violation
+        if __name__ == "__main__":
+    # Test Data
+    sample_answers = {
+        "data_outside_botswana": "No",
+        "consent_process": "Yes",
+        "has_dpo": "Yes",
+        "security_measures": "Yes",
+        "purpose_limit": "Yes"
+    }
+    score = evaluate_bdpa_compliance(sample_answers)
+    print(f"--- TEST RUN COMPLETE ---")
+    print(f"Compliance Score: {score}/10")
 
     # Question 3: Data Protection Officer (Section 20)
     # "Have you appointed or designated a Data Protection Officer (DPO)?"
