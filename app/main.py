@@ -9,7 +9,6 @@ import PyPDF2
 load_dotenv()
 
 app = Flask(__name__)
-import os
 
 # 1. Define the path: Start at main.py, go UP one level (..), then into 'uploads'
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
