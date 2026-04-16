@@ -9,8 +9,18 @@ import PyPDF2
 load_dotenv()
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'uploads'
+import os
 
+# 1. Define the path: Start at main.py, go UP one level (..), then into 'uploads'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+UPLOAD_PATH = os.path.normpath(os.path.join(BASE_DIR, "..", "uploads"))
+
+# 2. Configure Flask to use this absolute path
+app.config['UPLOAD_FOLDER'] = UPLOAD_PATH
+
+# 3. Safety check: Create the folder automatically if it's missing
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.makedirs(app.config['UPLOAD_FOLDER'])
 def process_ngo_report(file_path):
     # 1. Load the King V Checklist logic
     try:
