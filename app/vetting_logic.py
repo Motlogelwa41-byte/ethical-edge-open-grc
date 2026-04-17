@@ -58,6 +58,26 @@ def evaluate_bdpa_compliance(answers, vendor_name="Unknown Vendor", db=None):
         }
         print(f"⚠️ ALERT: Low Compliance detected. Risk flagged for {vendor_name}.")
         # Note: In the next step, we will pass this auto_risk_data to the database
+    # ... (the 5 questions are above here) ...
+
+    # Calculate average score out of 10
+    final_score = score / total_questions
+    
+    # --- PASTE START ---
+    if final_score < 7:
+        impact = 5 if final_score < 4 else 3
+        auto_risk_data = {
+            "title": f"BDPA Compliance Gap: {vendor_name}",
+            "likelihood": 4, 
+            "impact": impact,
+            "description": f"Compliance score of {final_score}/10. Review needed."
+        }
+        if db:
+            save_automated_risk(db, auto_risk_data)
+            print(f"✅ Risk recorded in database for {vendor_name}")
+    # --- PASTE END ---
+
+    return round(final_score, 1)
     
     return final_score
 
