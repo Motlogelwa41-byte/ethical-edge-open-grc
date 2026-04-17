@@ -1,4 +1,7 @@
 #from .risk import RiskEngine  # Import the engine we just built
+from .risk import RiskEngine
+from .database import save_automated_risk
+from . import models
 
 def evaluate_bdpa_compliance(answers, vendor_name="Unknown Vendor"):
     """
