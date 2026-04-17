@@ -34,6 +34,22 @@ def process_ngo_report(file_path):
     for page in reader.pages:
         report_text += page.extract_text()
 
+    @app.get("/risk-register/")
+async def get_risk_register(db: Session = Depends(database.get_db)):
+    """
+    Retrieves all identified risks from the database.
+    This serves as the 'Radar Screen' for the organization.
+    """
+    risks = db.query(models.Risk).order_all()
+    
+    if not risks:
+        return {"message": "No risks identified yet. Your radar is clear!"}
+    
+    return {
+        "total_risks": len(risks),
+        "risks": risks
+    }
+
     # 3. Initialize AI Agent (GPT-4)
     chat = ChatOpenAI(model="gpt-4-turbo", temperature=0)
     
