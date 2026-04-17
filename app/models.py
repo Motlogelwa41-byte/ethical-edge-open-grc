@@ -1,21 +1,16 @@
-from sqlalchemy import Column, String, Integer, Text, DateTime, Float
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.ext.declarative import declarative_base
-import uuid
-import datetime
+from .database import Base
+from sqlalchemy import Column, Integer, String, DateTime
+from datetime import datetime
 
-Base = declarative_base()
+class Risk(Base):
+    __tablename__ = "risks"
 
-class NGOProfile(Base):
-    __tablename__ = "ngo_profiles"
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)
-    trust_score = Column(Float)
-    compliance_status = Column(String)
-    last_vetted = Column(DateTime, default=datetime.datetime.utcnow)
-
-class AuditLog(Base):
-    __tablename__ = "audit_logs"
-    log_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    action_taken = Column(Text, nullable=False)
-    timestamp = Column(DateTime, default=datetime.datetime.utcnow)
+    title = Column(String)
+    description = Column(String)
+    likelihood = Column(Integer)  # 1-5
+    impact = Column(Integer)      # 1-5
+    score = Column(Integer)       # Likelihood * Impact
+    treatment = Column(String)    # Terminate, Transfer, Treat, Tolerate
+    risk_level = Column(String)   # Low, Medium, High, Critical
+    created_at = Column(DateTime, default=datetime.utcnow)
