@@ -113,3 +113,20 @@ async def assess_new_risk(title: str, likelihood: int, impact: int, description:
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+@app.get("/risk-register/")
+async def get_risk_register(db: Session = Depends(database.get_db)):
+    """
+    Retrieves all identified risks from the database.
+    This serves as the 'Radar Screen' for the organization.
+    """
+    # Query all risks, ordering them so the most recent appear first
+    risks = db.query(models.Risk).order_by(models.Risk.created_at.desc()).all()
+    
+    if not risks:
+        return {"message": "No risks identified yet. Your radar is clear!"}
+    
+    return {
+        "total_risks_monitored": len(risks),
+        "risks": risks
+    }
