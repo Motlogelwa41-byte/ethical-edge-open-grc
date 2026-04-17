@@ -79,6 +79,21 @@ def analyze_report():
         "status": "success",
         "analysis": result
     })
+    from .risk import RiskEngine
+
+@app.post("/assess-risk/")
+async def assess_new_risk(title: str, likelihood: int, impact: int, description: str):
+    score = RiskEngine.calculate_score(likelihood, impact)
+    treatment = RiskEngine.suggest_treatment(score)
+    level = RiskEngine.get_risk_level(score)
+    
+    # Logic to save to database would go here
+    return {
+        "title": title,
+        "score": score,
+        "level": level,
+        "recommended_treatment": treatment
+    }
 
 if __name__ == '__main__':
     app.run(debug=True)
