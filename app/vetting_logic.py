@@ -3,7 +3,7 @@ from .risk import RiskEngine
 from .database import save_automated_risk
 from . import models
 
-def evaluate_bdpa_compliance(answers, vendor_name="Unknown Vendor"):
+def evaluate_bdpa_compliance(answers, vendor_name="Unknown Vendor", db=None):
     """
     Evaluates 5 critical BDPA questions and returns a total risk score.
     Now automatically flags risks in the Risk Register.
