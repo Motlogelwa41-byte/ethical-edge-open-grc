@@ -128,5 +128,7 @@ def analyze_report():
     
     return jsonify({"analysis": response.content})
 
-if __name__ == '__main__':
-    app.run(debug=True)
+
+   if __name__ == '__main__':
+    # Setting host to '0.0.0.0' allows it to be seen by your browser properly
+    app.run(host='0.0.0.0', port=5000, debug=True)
