@@ -99,3 +99,13 @@
     </script>
 </body>
 </html>
+async function loadChecklist() {
+    const response = await fetch('/api/checklist/king-v');
+    const data = await response.json();
+    
+    const container = document.getElementById('checklist-container');
+    // Logic to render the questions into the container goes here
+    console.log(data);
+}
+
+document.addEventListener('DOMContentLoaded', loadChecklist);
