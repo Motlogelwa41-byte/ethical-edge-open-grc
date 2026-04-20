@@ -104,6 +104,25 @@ async function loadChecklist() {
     const data = await response.json();
     
     const container = document.getElementById('checklist-container');
+async function loadChecklist() {
+    const response = await fetch('/api/checklist/king-v');
+    const data = await response.json();
+    
+    const container = document.getElementById('checklist-container');
+    container.innerHTML = ''; // Clear previous content
+
+    data.principles.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'checklist-item';
+        div.innerHTML = `
+            <label>
+                <input type="checkbox" name="principle-${item.id}">
+                <strong>${item.id}:</strong> ${item.description}
+            </label>
+        `;
+        container.appendChild(div);
+    });
+}
     // Logic to render the questions into the container goes here
     console.log(data);
 }
