@@ -129,3 +129,20 @@ async function loadChecklist() {
 }
 
 document.addEventListener('DOMContentLoaded', loadChecklist);
+async function saveAssessment() {
+    const checkboxes = document.querySelectorAll('#checklist-container input[type="checkbox"]');
+    const results = Array.from(checkboxes).map(cb => ({
+        id: cb.name,
+        completed: cb.checked
+    }));
+
+    const response = await fetch('/api/checklist/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ assessment: results })
+    });
+
+    if (response.ok) {
+        alert('Assessment saved successfully!');
+    }
+}
