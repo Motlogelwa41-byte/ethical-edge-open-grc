@@ -14,6 +14,8 @@ from .vetting_logic import evaluate_bdpa_compliance, get_compliance_status
 # Load environment variables
 load_dotenv()
 
+models.Base.metadata.create_all(bind=database.engine)
+
 app = Flask(__name__)
 
 # --- CONFIGURATION ---
