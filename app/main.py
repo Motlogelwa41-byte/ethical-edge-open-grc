@@ -158,3 +158,38 @@ async def save_king_v_assessment(data: dict):
     # For now, we will print to console. Later, we'll save to the database.
     print(f"Received Assessment: {data}")
     return {"message": "Success", "received": data}
+
+from sqlalchemy import create_engine, Column, Integer, String, Boolean, JSON
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+import os
+
+# Database Connection
+DATABASE_URL = os.getenv("DATABASE_URL")
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
+
+# Define the Table
+class AssessmentResult(Base):
+    __tablename__ = "assessment_results"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(String) # For future user tracking
+    data = Column(JSON)
+
+# Create the table
+Base.metadata.create_all(bind=engine)
+
+@app.post("/api/checklist/save")
+async def save_king_v_assessment(payload: dict):
+    db = SessionLocal()
+    try:
+        new_result = AssessmentResult(data=payload["assessment"])
+        db.add(new_result)
+        db.commit()
+        return {"status": "saved_to_db"}
+    except Exception as e:
+        db.rollback()
+        return {"error": str(e)}
+    finally:
+        db.close()
