@@ -1,21 +1,14 @@
 @echo off
 echo 🚀 Starting Ethical Edge GRC Platform...
+SET PYTHONPATH=.
 
-:: Step 1: Check if Python is installed
-python --version >nul 2>&1
-if %errorlevel% neq 0 (
-    echo ❌ Python not found. Please install Python to continue.
-    pause
-    exit /b
-)
-
-:: Step 2: Install/Update dependencies
+:: Step 1: Use 'py' launcher instead of 'python'
 echo 📦 Checking for missing libraries...
-pip install -r requirements.txt
+py -m pip install -r requirements.txt
 
-:: Step 3: Run the Application
+:: Step 2: Run the Application using the 'py' module path
 echo 🌐 Server starting at http://127.0.0.1:5000
-echo 🛡️  Pillars Active: Governance, Risk
-python -m app.main
+echo 🛡️ Pillars Active: Governance, Risk
+py app/main.py
 
 pause
