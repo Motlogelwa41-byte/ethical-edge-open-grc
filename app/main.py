@@ -152,3 +152,9 @@ async def get_king_v_checklist():
    if __name__ == '__main__':
     # Setting host to '0.0.0.0' allows it to be seen by your browser properly
     app.run(host='0.0.0.0', port=5000, debug=True)
+
+@app.post("/api/checklist/save")
+async def save_king_v_assessment(data: dict):
+    # For now, we will print to console. Later, we'll save to the database.
+    print(f"Received Assessment: {data}")
+    return {"message": "Success", "received": data}
