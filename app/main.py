@@ -130,6 +130,24 @@ def analyze_report():
     
     return jsonify({"analysis": response.content})
 
+import json
+from fastapi import FastAPI, HTTPException
+from pathlib import Path
+
+app = FastAPI()
+
+# Path to your JSON data
+CHECKLIST_PATH = Path("data/king_v_checklist.json")
+
+@app.get("/api/checklist/king-v")
+async def get_king_v_checklist():
+    if not CHECKLIST_PATH.exists():
+        raise HTTPException(status_code=404, detail="Checklist file not found")
+    
+    with open(CHECKLIST_PATH, "r") as f:
+        data = json.load(f)
+    return data
+
 
    if __name__ == '__main__':
     # Setting host to '0.0.0.0' allows it to be seen by your browser properly
