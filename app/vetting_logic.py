@@ -99,6 +99,24 @@ if __name__ == "__main__":
         "purpose_limit": "Yes"
     }
     score = evaluate_bdpa_compliance(sample_answers, "Test Corp")
+    def evaluate_vendor_risk(score, red_line_fail):
+    # The King V "Red Line" Rule
+    if red_line_fail:
+        impact = 5
+        likelihood = 4
+        total_risk = impact * likelihood # 20 (Critical)
+    else:
+        total_risk = score
+
+    # The Decision Engine
+    if total_risk >= 20:
+        return "TERMINATE", "Vendor fails critical ethical standards."
+    
+    elif 13 <= total_risk < 20:
+        return "MITIGATION REQUIRED", "Upload a Remediation Plan to proceed."
+    
+    else:
+        return "APPROVED", "Vendor meets Ethical Edge standards."
     print(f"--- TEST RUN COMPLETE ---")
     print(f"Compliance Score: {score}/10")
     print(f"Status: {get_compliance_status(score)}") vetting_logic.py
