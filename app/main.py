@@ -1,3 +1,4 @@
+from engine_logic import calculate_risk_score, check_alignment
 import os
 from flask import Flask, request, jsonify, render_template
 from sqlalchemy.orm import Session
