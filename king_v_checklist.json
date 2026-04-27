@@ -1,0 +1,48 @@
+{
+  "framework": "King V (2026)",
+  "region": "Botswana / SADC",
+  "principles": [
+    {
+      "id": 1,
+      "domain": "Ethical & Effective Leadership",
+      "question": "Does the board demonstrate integrity, competence, responsibility, and transparency in its decision-making process?",
+      "focus": "Ethical Culture",
+      "bse_link": "General Fiduciary Duty"
+    },
+    {
+      "id": 2,
+      "domain": "Ethics & Corporate Citizenship",
+      "question": "Has the board integrated the 'Ubuntu-Botho' philosophy into the organizational ethics and social impact strategy?",
+      "focus": "Legitimacy",
+      "new_in_v": "Subsumes former King IV Principle 3"
+    },
+    {
+      "id": 4,
+      "domain": "Strategy & Reporting",
+      "question": "Does the annual report utilize 'Double Materiality'—disclosing both financial impact and social/environmental impact?",
+      "focus": "Performance & Value Creation",
+      "new_in_v": "Mandatory standardized template"
+    },
+    {
+      "id": 5,
+      "domain": "Governing Body Composition",
+      "question": "Is there a hard cap or rigorous independence assessment for directors serving beyond 9 years?",
+      "focus": "Independence",
+      "bse_link": "Section 5.11 (Independent Chairman/LID)"
+    },
+    {
+      "id": 9,
+      "domain": "Compliance Governance",
+      "question": "Is there a specific framework ensuring alignment with the Botswana Data Protection Act (BDPA) and BAOA standards?",
+      "focus": "Conformance",
+      "bse_link": "BSE Compliance Checklist"
+    },
+    {
+      "id": 10,
+      "domain": "Technology & AI Governance",
+      "question": "Does the board exercise human oversight and accountability for decisions made by AI and automated systems?",
+      "focus": "Risk & Tech",
+      "new_in_v": "Explicit AI Accountability Principle"
+    }
+  ]
+}
