@@ -1,1 +1,27 @@
+import os
 
+def get_ai_auditor_prompt():
+    """
+    Reads the expert persona from the text file to prime the AI.
+    """
+    prompt_path = os.path.join(os.getcwd(), "ai_auditor_prompt.txt")
+    
+    try:
+        with open(prompt_path, "r", encoding="utf-8") as file:
+            return file.read()
+    except FileNotFoundError:
+        return "System Prompt file not found. Defaulting to standard GRC Auditor."
+
+def analyze_document_with_ai(document_text):
+    """
+    Simulates sending the prompt + document to the AI.
+    """
+    system_instructions = get_ai_auditor_prompt()
+    
+    # This is where the magic happens tonight:
+    # We combine the Expert Persona with the actual document content.
+    full_query = f"{system_instructions}\n\nDOCUMENT TO AUDIT:\n{document_text}"
+    
+    print("🚀 AI Auditor is now processing with King V / Botswana lens...")
+    # Logic to call OpenAI/Gemini/Anthropic API goes here tonight.
+    return full_query
