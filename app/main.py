@@ -1,3 +1,24 @@
+from flask import Flask, request, jsonify
+from engine_logic import CognitiveGRCEngine
+
+app = Flask(__name__)
+
+@app.route('/api/risk/evaluate', methods=['POST'])
+def evaluate_risk():
+    data = request.json
+    
+    # 1. Initialize engine (In future, fetch appetite from user profile)
+    engine = CognitiveGRCEngine(risk_appetite=data.get('appetite', 15))
+    
+    # 2. Run the math
+    result = engine.assess_risk(
+        impact=data['impact'],
+        likelihood=data['likelihood'],
+        control_effectiveness=data['control_effectiveness']
+    )
+    
+    # 3. Return as JSON for the React/JS frontend to display
+    return jsonify(result)
 from engine_logic import calculate_risk_score, check_alignment
 import os
 from flask import Flask, request, jsonify, render_template
