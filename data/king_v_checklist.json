@@ -1,1 +1,20 @@
-
+{
+  "framework": "King V (2026)",
+  "region": "Botswana / SADC",
+  "total_principles": 13,
+  "principles": [
+    { "id": 1, "domain": "Leadership", "question": "Does the board lead ethically and effectively?", "weight": 2.0 },
+    { "id": 2, "domain": "Ethics", "question": "Is the 'Botho' philosophy integrated into corporate citizenship?", "weight": 1.5 },
+    { "id": 3, "domain": "Strategy & Value", "question": "Is value creation measured across all six capitals?", "weight": 2.0 },
+    { "id": 4, "domain": "Reporting", "question": "Does the report use the King V Mandatory Disclosure Template?", "weight": 1.5 },
+    { "id": 5, "domain": "Governing Body", "question": "Is the board majority independent with a 9-year tenure cap?", "weight": 2.0 },
+    { "id": 6, "domain": "Committees", "question": "Are the Audit and Risk committees properly independent?", "weight": 1.0 },
+    { "id": 7, "domain": "Delegation", "question": "Is there a formal, annual review of management authority?", "weight": 1.0 },
+    { "id": 8, "domain": "Risk", "question": "Is risk oversight integrated into strategic opportunities?", "weight": 1.5 },
+    { "id": 9, "domain": "Compliance", "question": "Is there a framework for the Botswana Data Protection Act?", "weight": 2.0 },
+    { "id": 10, "domain": "AI & Technology", "question": "Is there human accountability for AI-driven decisions?", "weight": 2.5 },
+    { "id": 11, "domain": "Remuneration", "weight": 1.0, "question": "Is pay linked to social and environmental outcomes?" },
+    { "id": 12, "domain": "Assurance", "weight": 1.5, "question": "Is the 'Combined Assurance' model effective?" },
+    { "id": 13, "domain": "Stakeholders", "weight": 1.0, "question": "Is the stakeholder approach truly inclusive?" }
+  ]
+}
