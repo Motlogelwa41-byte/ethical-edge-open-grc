@@ -1,20 +1,19 @@
 {
   "framework": "King V (2026)",
   "region": "Botswana / SADC",
-  "total_principles": 13,
   "principles": [
-    { "id": 1, "domain": "Leadership", "question": "Does the board lead ethically and effectively as the focal point of governance?", "weight": 2.0 },
-    { "id": 2, "domain": "Ethics", "question": "Does the board govern the ethical culture, including 'Botho' principles and anti-corruption?", "weight": 1.5 },
-    { "id": 3, "domain": "Strategy & Value", "question": "Is strategy integrated with performance and sustainable value creation across all capitals?", "weight": 2.0 },
-    { "id": 4, "domain": "Reporting", "question": "Does the annual disclosure follow the Mandatory Template and include 'Double Materiality'?", "weight": 1.5, "bse_requirement": "BSE Listing Rules Section 7" },
-    { "id": 5, "domain": "Governing Body", "question": "Is the board majority independent, and does it strictly apply the 9-year tenure evaluation?", "weight": 2.0, "bse_link": "BSE Section 5.11" },
-    { "id": 6, "domain": "Committees", "question": "Are the Audit, Risk, and Social/Ethics committees composed of a majority of independent members?", "weight": 1.0 },
-    { "id": 7, "domain": "Delegation", "question": "Is there a formal, written delegation of authority to management that is reviewed annually?", "weight": 1.0 },
-    { "id": 8, "domain": "Risk", "question": "Does the board exercise oversight of risk in a way that supports strategic objectives?", "weight": 1.5 },
-    { "id": 9, "domain": "Compliance", "question": "Is there a framework for alignment with the Botswana Data Protection Act (BDPA)?", "weight": 2.0, "legal_ref": "BDPA 2018" },
-    { "id": 10, "domain": "Technology & AI", "question": "Is there human oversight and ethical accountability for AI-driven decision systems?", "weight": 2.5, "new_in_v": "Critical for AI Auditing" },
-    { "id": 11, "domain": "Remuneration", "question": "Is executive pay fair, transparent, and linked to sustainable ESG outcomes?", "weight": 1.0 },
-    { "id": 12, "domain": "Assurance", "question": "Does the 'Combined Assurance' model provide an effective oversight of the internal control environment?", "weight": 1.5 },
-    { "id": 13, "domain": "Stakeholders", "question": "Does the board adopt a stakeholder-inclusive approach that balances competing interests?", "weight": 1.0 }
+    { "id": 1, "domain": "Leadership", "question": "Does the board individually and collectively exemplify integrity, competence, and accountability?", "weight": 2.0 },
+    { "id": 2, "domain": "Ethics & Citizenship", "question": "Has the organization integrated 'Botho' and ethical culture into its core citizenship strategy?", "weight": 1.5 },
+    { "id": 3, "domain": "Strategy & Performance", "question": "Is the strategy based on 'Integrated Thinking'—balancing financial, social, and environmental capitals?", "weight": 2.0 },
+    { "id": 4, "domain": "Reporting", "question": "Does the reporting satisfy the 'Double Materiality' requirement (Financial + Impact Materiality)?", "weight": 1.5 },
+    { "id": 5, "domain": "Governing Body", "question": "Is the board majority independent, with a rigorous review for any member serving over 9 years?", "weight": 2.0, "bse_ref": "BSE Listing Rules 5.11" },
+    { "id": 6, "domain": "Committees", "question": "Are the Risk and Social/Ethics committees composed of a majority of non-executive members?", "weight": 1.0 },
+    { "id": 7, "domain": "Delegation", "question": "Is there a clear, written delegation of authority that prevents unfettered power in any one individual?", "weight": 1.0 },
+    { "id": 8, "domain": "Risk Governance", "question": "Does the board treat risk as an opportunity for value creation rather than just a compliance burden?", "weight": 1.5 },
+    { "id": 9, "domain": "Compliance", "question": "Is there a framework for ensuring compliance with the Botswana Data Protection Act (BDPA)?", "weight": 2.0 },
+    { "id": 10, "domain": "AI & Technology", "question": "Is there clear human accountability for decisions made by AI systems and automated algorithms?", "weight": 2.5, "new_in_v": "Critical for 2026" },
+    { "id": 11, "domain": "Remuneration", "question": "Is executive pay linked to environmental and social outcomes, not just financial profit?", "weight": 1.0 },
+    { "id": 12, "domain": "Assurance", "question": "Does the 'Combined Assurance' model provide a holistic view of the organization's control environment?", "weight": 1.5 },
+    { "id": 13, "domain": "Stakeholders", "question": "Does the board adopt a 'Stakeholder-Inclusive' approach, balancing the interests of all key groups?", "weight": 1.0 }
   ]
 }
