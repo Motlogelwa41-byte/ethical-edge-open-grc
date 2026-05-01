@@ -1,3 +1,9 @@
+class Framework(Base):
+    __tablename__ = "frameworks"
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100), nullable=False)  # e.g., "King V"
+    section = Column(String(100))               # e.g., "Principle 1"
+    description = Column(Text)                  # The actual requirement
 from .database import Base
 from sqlalchemy import Column, Integer, String, DateTime
 from datetime import datetime
