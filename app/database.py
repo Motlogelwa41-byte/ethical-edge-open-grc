@@ -1,3 +1,13 @@
+from sqlalchemy import create_all
+from .database import engine
+from .models import Base
+
+# This creates the physical tables in your database
+def init_db():
+    Base.metadata.create_all(bind=engine)
+
+if __name__ == "__main__":
+    init_db()
 cat <<EOF > app/database.py
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
