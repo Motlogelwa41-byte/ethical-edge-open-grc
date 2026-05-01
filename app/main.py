@@ -3,7 +3,7 @@ from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from dotenv import load_dotenv
 
-# Import local modules using relative imports since we are inside 'app'
+# Import local modules using relative imports
 from . import models, database
 
 load_dotenv()
