@@ -1,3 +1,27 @@
+from fastapi import FastAPI, Depends
+from sqlalchemy.orm import Session
+from . import models, database
+
+app = FastAPI()
+
+def get_db():
+    db = database.SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+@app.post("/organizations/")
+def create_org(name: str, reg_number: str, db: Session = Depends(get_db)):
+    new_org = models.Organization(name=name, reg_number=reg_number)
+    db.add(new_org)
+    db.commit()
+    db.refresh(new_org)
+    return new_org
+
+@app.get("/frameworks/")
+def list_frameworks(db: Session = Depends(get_db)):
+    return db.query(models.Framework).all()
 import os
 import json
 from flask import Flask, request, jsonify, render_template
