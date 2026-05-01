@@ -18,4 +18,3 @@ def read_root():
 @app.get("/frameworks/")
 def list_frameworks(db: Session = Depends(get_db)):
     return db.query(models.Framework).all()
-   
