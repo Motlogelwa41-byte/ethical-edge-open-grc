@@ -5,6 +5,7 @@ from app.database.connection import engine
 from app.routers import organizations, risks, auth
 
 print(">>> MAIN.PY IS LOADED <<<")
+print("AUTH MODULE LOADED")
 
 # Create tables
 Base.metadata.create_all(bind=engine)
