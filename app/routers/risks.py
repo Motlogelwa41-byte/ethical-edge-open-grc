@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.database.connection import SessionLocal
-from app import models
+from app.services import risk_service
 
 router = APIRouter(prefix="/risks", tags=["Risks"])
 
@@ -17,7 +17,7 @@ def get_db():
 
 @router.get("/")
 def get_risks(db: Session = Depends(get_db)):
-    return db.query(models.Risk).all()
+    return risk_service.get_risks(db)
 
 
 @router.post("/")
@@ -29,16 +29,11 @@ def add_risk(
     organization_id: int,
     db: Session = Depends(get_db)
 ):
-    risk = models.Risk(
-        title=title,
-        description=description,
-        likelihood=likelihood,
-        impact=impact,
-        organization_id=organization_id
+    return risk_service.create_risk(
+        db,
+        title,
+        description,
+        likelihood,
+        impact,
+        organization_id
     )
-
-    db.add(risk)
-    db.commit()
-    db.refresh(risk)
-
-    return risk
