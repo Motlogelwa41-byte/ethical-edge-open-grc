@@ -8,7 +8,6 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Ethical Edge Open GRC")
 
-# Database session
 def get_db():
     db = SessionLocal()
     try:
