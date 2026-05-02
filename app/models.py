@@ -1,22 +1,15 @@
-class Framework(Base):
-    __tablename__ = "frameworks"
-    id = Column(Integer, primary_key=True)
-    name = Column(String(100), nullable=False)  # e.g., "King V"
-    section = Column(String(100))               # e.g., "Principle 1"
-    description = Column(Text)                  # The actual requirement
-from .database import Base
 from sqlalchemy import Column, Integer, String, DateTime
 from datetime import datetime
+from .database import Base
 
 class Risk(Base):
     __tablename__ = "risks"
 
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String)
-    description = Column(String)
-    likelihood = Column(Integer)  # 1-5
-    impact = Column(Integer)      # 1-5
-    score = Column(Integer)       # Likelihood * Impact
-    treatment = Column(String)    # Terminate, Transfer, Treat, Tolerate
-    risk_level = Column(String)   # Low, Medium, High, Critical
+    title = Column(String, nullable=False)
+    description = Column(String, nullable=True)
+    likelihood = Column(Integer, nullable=False)
+    impact = Column(Integer, nullable=False)
+    score = Column(Integer, nullable=False)
+    level = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
