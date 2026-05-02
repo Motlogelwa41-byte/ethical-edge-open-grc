@@ -1,4 +1,3 @@
-from app.auth.dependencies import get_current_user
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
@@ -6,8 +5,7 @@ from app.database.connection import SessionLocal
 from app.services import risk_service
 from app.schemas.risk import RiskCreate, RiskOut
 
-router = APIRouter(prefix="/risks", tags=["Risks"])
-
+from app.auth.dependencies import get_current_user
 
 def get_db():
     db = SessionLocal()
