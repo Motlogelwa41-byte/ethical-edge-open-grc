@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.database.connection import SessionLocal
-from app import models
+from app.services import organization_service
 
 router = APIRouter(prefix="/organizations", tags=["Organizations"])
 
@@ -17,13 +17,9 @@ def get_db():
 
 @router.get("/")
 def get_organizations(db: Session = Depends(get_db)):
-    return db.query(models.Organization).all()
+    return organization_service.get_organizations(db)
 
 
 @router.post("/")
 def add_organization(name: str, industry: str, db: Session = Depends(get_db)):
-    org = models.Organization(name=name, industry=industry)
-    db.add(org)
-    db.commit()
-    db.refresh(org)
-    return org
+    return organization_service.create_organization(db, name, industry)
