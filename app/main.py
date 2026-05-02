@@ -14,6 +14,7 @@ app = FastAPI(title="Ethical Edge Open GRC")
 # Register routers
 app.include_router(organizations.router)
 app.include_router(risks.router)
+app.include_router(auth.router)
 
 
 @app.get("/")
