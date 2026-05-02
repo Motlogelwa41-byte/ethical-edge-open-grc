@@ -14,16 +14,18 @@ def get_db():
     finally:
         db.close()
 
-
 @router.get("/", response_model=list[RiskOut])
-def get_risks(db: Session = Depends(get_db)):
+def get_risks(
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user)
+):
     return risk_service.get_risks(db)
-
-
+    
 @router.post("/", response_model=RiskOut)
 def add_risk(
     risk: RiskCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user)
 ):
     return risk_service.create_risk(
         db,
