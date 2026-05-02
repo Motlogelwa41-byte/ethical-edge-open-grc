@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from app.database.base import Base
 from app.database.connection import engine
 
-from app.routers import organizations, risks
+from app.routers import organizations, risks, auth
 
 print(">>> MAIN.PY IS LOADED <<<")
 
