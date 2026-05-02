@@ -31,14 +31,16 @@ def add_risk(
     impact: int,
     db: Session = Depends(get_db)
 ):
-    score = likelihood * impact
+    detectability = 3  # default for now (we will improve later)
 
-    if score <= 5:
-        level = "Low"
-    elif score <= 12:
-        level = "Medium"
-    else:
-        level = "High"
+score = likelihood * impact * detectability
+
+if score <= 20:
+    level = "Low"
+elif score <= 50:
+    level = "Medium"
+else:
+    level = "High"
 
     risk = models.Risk(
         title=title,
