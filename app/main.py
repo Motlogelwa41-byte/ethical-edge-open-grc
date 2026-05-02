@@ -1,3 +1,5 @@
+import app.routers.auth
+print(">>> AUTH MODULE IMPORTED SUCCESSFULLY <<<")
 from fastapi import FastAPI
 from app.database.base import Base
 from app.database.connection import engine
