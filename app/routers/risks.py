@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.database.connection import SessionLocal
 from app.services import risk_service
+from app.schemas.risk import RiskCreate, RiskOut
 
 router = APIRouter(prefix="/risks", tags=["Risks"])
 
@@ -15,25 +16,21 @@ def get_db():
         db.close()
 
 
-@router.get("/")
+@router.get("/", response_model=list[RiskOut])
 def get_risks(db: Session = Depends(get_db)):
     return risk_service.get_risks(db)
 
 
-@router.post("/")
+@router.post("/", response_model=RiskOut)
 def add_risk(
-    title: str,
-    description: str,
-    likelihood: int,
-    impact: int,
-    organization_id: int,
+    risk: RiskCreate,
     db: Session = Depends(get_db)
 ):
     return risk_service.create_risk(
         db,
-        title,
-        description,
-        likelihood,
-        impact,
-        organization_id
+        risk.title,
+        risk.description,
+        risk.likelihood,
+        risk.impact,
+        risk.organization_id
     )
