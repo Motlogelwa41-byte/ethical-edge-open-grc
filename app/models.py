@@ -13,7 +13,7 @@ class Framework(Base):
     __tablename__ = "frameworks"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(100))        # King V, ISO 27001, NIST
-    section = Column(String(100))     # Principle 1, A.5.1, etc.
+    section = Column(String(100))     # Principle 1, A.5.1
     description = Column(Text)
 
 class Risk(Base):
