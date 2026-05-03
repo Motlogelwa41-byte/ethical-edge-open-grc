@@ -20,7 +20,10 @@ app.include_router(organizations.router)
 app.include_router(risks.router)
 app.include_router(auth.router)
 
-
 @app.get("/")
 def home():
     return {"message": "Ethical Edge Open GRC Running"}
+    
+@app.get("/proof")
+def proof():
+    return {"message": "THIS IS THE REAL MAIN.PY"}
