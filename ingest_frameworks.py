@@ -1,28 +1,22 @@
 from app.database import SessionLocal
 from app.models import Framework
 
-2. Run the Command
-def load_standards():
+def load_data():
     db = SessionLocal()
-    
-    standards = [
-        # King V (Governance)
-        {"name": "King V", "section": "Principle 1", "description": "The governing body should set the tone and lead ethically and effectively."},
-        
-        # ISO 27001:2022 (Information Security)
-        {"name": "ISO 27001", "section": "A.5.1", "description": "Policies for information security shall be defined and approved by management."},
-        
-        # NIST CSF 2.0 (Cybersecurity)
-        {"name": "NIST CSF 2.0", "section": "GV.OC-01", "description": "The organization’s mission is understood and informs cybersecurity risk management."}
-    ]
+    # Check if data exists
+    if db.query(Framework).first():
+        print("Frameworks already exist in database.")
+        return
 
-    for item in standards:
-        framework = Framework(**item)
-        db.add(framework)
-    
+    data = [
+        Framework(name="King V", section="Principle 1", description="Ethical leadership and corporate citizenship."),
+        Framework(name="ISO 27001", section="A.5.1", description="Policies for information security."),
+        Framework(name="NIST CSF 2.0", section="GV.OC-01", description="Organizational mission and risk management.")
+    ]
+    db.add_all(data)
     db.commit()
     db.close()
-    print("Standards ingested successfully.")
+    print("Phase 1 Complete: GRC Frameworks Ingested.")
 
 if __name__ == "__main__":
-    load_standards()
+    load_data()
