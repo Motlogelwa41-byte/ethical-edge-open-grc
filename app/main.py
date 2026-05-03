@@ -2,12 +2,12 @@ from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 from . import models, database
 
-# This creates the database tables automatically
+# Create the tables in the database
 models.Base.metadata.create_all(bind=database.engine)
 
 app = FastAPI(title="Ethical Edge Open GRC")
 
-# Database connection helper
+# Dependency to get the database session
 def get_db():
     db = database.SessionLocal()
     try:
@@ -16,10 +16,9 @@ def get_db():
         db.close()
 
 @app.get("/")
-def home():
-    return {"message": "Welcome to Ethical Edge GRC API", "status": "Online"}
+def read_root():
+    return {"message": "Ethical Edge API is LIVE", "version": "1.0"}
 
-@app.get("/frameworks/")
-def get_frameworks(db: Session = Depends(get_db)):
-    # This pulls King V, ISO, etc. from your database
+@app.get("/frameworks")
+def list_frameworks(db: Session = Depends(get_db)):
     return db.query(models.Framework).all()
