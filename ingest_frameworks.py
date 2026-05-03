@@ -1,6 +1,7 @@
-from database import SessionLocal
-from models import Framework
+from app.database import SessionLocal
+from app.models import Framework
 
+2. Run the Command
 def load_standards():
     db = SessionLocal()
     
