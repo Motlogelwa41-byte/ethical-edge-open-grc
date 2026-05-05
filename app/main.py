@@ -33,8 +33,15 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import engine_logic
 
+class RiskEvaluation(BaseModel):
+    title: str
+    impact: int
+    likelihood: int
+    control_effectiveness: float
+
 @app.post("/risks/evaluate")
-def evaluate_risk(
+def evaluate_risk(data: RiskEvaluation, db: Session = Depends(get_db)):
+    # Then access data via data.title, data.impact, etc.
     title: str = Body(...), 
     impact: int = Body(..., ge=1, le=5), 
     likelihood: int = Body(..., ge=1, le=5), 
