@@ -36,17 +36,21 @@ import engine_logic
 @app.post("/risks/evaluate")
 def evaluate_risk(
     title: str = Body(...), 
-    description: str = Body(...), 
+    impact: int = Body(..., ge=1, le=5), 
+    likelihood: int = Body(..., ge=1, le=5), 
+    control_effectiveness: float = Body(..., ge=0, le=1),
     db: Session = Depends(get_db)
 ):
-    # 1. Run the "Cognitive" assessment from your engine_logic.py
-    # This simulates the automated audit logic you've been building
-    assessment = engine_logic.evaluate_compliance_gap(description)
+    # 1. Initialize your Engine class
+    engine = engine_logic.CognitiveGRCEngine()
     
-    # 2. Save the risk to your database
+    # 2. Run the actual math logic from your file
+    assessment = engine.assess_risk(impact, likelihood, control_effectiveness)
+    
+    # 3. Save the risk to your database
     new_risk = models.Risk(
         title=title,
-        description=description
+        description=f"Status: {assessment['status']} | Residual Risk: {assessment['residual_risk']}"
     )
     db.add(new_risk)
     db.commit()
@@ -55,6 +59,5 @@ def evaluate_risk(
     return {
         "risk_id": new_risk.id,
         "analysis": assessment,
-        "message": "Risk analyzed and indexed against GRC standards"
+        "message": "Cognitive assessment complete."
     }
-
