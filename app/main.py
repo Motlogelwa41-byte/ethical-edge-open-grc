@@ -27,17 +27,17 @@ def get_risks(db: Session = Depends(get_db)):
 
 @app.post("/risks")
 def add_risk(
-    title: str,
+    category: str,
     description: str,
-    likelihood: int,
-    impact: int,
+    likelihood_score: int,
+    impact_score: int,
     db: Session = Depends(get_db)
 ):
     risk = models.Risk(
-        title=title,
+        category=category,
         description=description,
-        likelihood=likelihood,
-        impact=impact
+        likelihood_score=likelihood_score,
+        impact_score=impact_score
     )
 
     db.add(risk)
