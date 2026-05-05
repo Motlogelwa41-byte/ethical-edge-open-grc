@@ -1,25 +1,33 @@
-from sqlalchemy import Column, Integer, String, Text, ForeignKey
-from sqlalchemy.orm import relationship
-from .database import Base
+from sqlalchemy import Column, String, Integer, Text, DateTime, Float
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.ext.declarative import declarative_base
+import uuid
+import datetime
 
-class Organization(Base):
-    __tablename__ = "organizations"
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(255), nullable=False)
-    reg_number = Column(String(100), unique=True)
-    risks = relationship("Risk", back_populates="owner")
+Base = declarative_base()
 
-class Framework(Base):
-    __tablename__ = "frameworks"
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(100))        # e.g., King V
-    section = Column(String(100))     # e.g., Principle 1
-    description = Column(Text)
+class NGOProfile(Base):
+    __tablename__ = "ngo_profiles"
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name = Column(String, nullable=False)
+    registration_number = Column(String, unique=True)
+    trust_score = Column(Float, default=0.0) # Used by dashboard.html
+    compliance_status = Column(String, default="Pending") # Used by dashboard.html
+    last_updated = Column(DateTime, default=datetime.datetime.utcnow)
 
 class Risk(Base):
     __tablename__ = "risks"
-    id = Column(Integer, primary_key=True, index=True)
-    title = Column(String(255))
-    description = Column(Text)
-    org_id = Column(Integer, ForeignKey("organizations.id"))
-    owner = relationship("Organization", back_populates="risks")
+    risk_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    category = Column(String, nullable=False)
+    description = Column(Text, nullable=False)
+    impact_score = Column(Integer)
+    likelihood_score = Column(Integer)
+    status = Column(String, default="Identified")
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+class ComplianceFramework(Base):
+    __tablename__ = "compliance_frameworks"
+    framework_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    framework_name = Column(String, nullable=False)
+    requirement_text = Column(Text, nullable=False)
+    status = Column(String, default="Under Review")
