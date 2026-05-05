@@ -1,8 +1,7 @@
-flask
-flask-sqlalchemy
+fastapi
+uvicorn
 sqlalchemy
+jinja2
+python-multipart
 python-dotenv
-langchain
-langchain-openai
-openai
-PyPDF2
+psycopg2-binary
