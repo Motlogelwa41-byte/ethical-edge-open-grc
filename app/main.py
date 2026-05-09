@@ -1,10 +1,24 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Body
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
+import sys
+import os
+
+# Ensure engine_logic is discoverable
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import engine_logic
 from . import models, database
 
 models.Base.metadata.create_all(bind=database.engine)
 
 app = FastAPI(title="Ethical Edge Open GRC")
+
+# Data structure for incoming risk assessments
+class RiskRequest(BaseModel):
+    title: str
+    impact: int = Field(..., ge=1, le=5)
+    likelihood: int = Field(..., ge=1, le=5)
+    control_effectiveness: float = Field(..., ge=0, le=1)
 
 def get_db():
     db = database.SessionLocal()
@@ -17,53 +31,17 @@ def get_db():
 def read_root():
     return {"message": "Ethical Edge API is LIVE", "version": "1.0"}
 
-@app.get("/frameworks")
-def list_frameworks(db: Session = Depends(get_db)):
-    return db.query(models.Framework).all()
-
-@app.post("/risks")
-def add_and_evaluate_risk(
-    title: str = Body(...),
-    impact: int = Body(..., ge=1, le=5),
-    likelihood: int = Body(..., ge=1, le=5),
-    control_effectiveness: float = Body(..., ge=0, le=1),
-    db: Session = Depends(get_db)
-):
-    # 1. Trigger the Cognitive Engine
-    engine = engine_logic.CognitiveGRCEngine()
-    assessment = engine.assess_risk(impact, likelihood, control_effectiveness)
-    
-    # 2. Store the risk with its automated status
-    new_risk = models.Risk(
-        title=title,
-        description=f"Status: {assessment['status']} | Advice: {assessment['recommended_action']}"
-    )
-    db.add(new_risk)
-    db.commit()
-    db.refresh(new_risk)
-    
-    return {
-        "risk_id": new_risk.id,
-        "cognitive_analysis": assessment
-    }
 @app.post("/risks/evaluate")
-def evaluate_risk(data: RiskEvaluation, db: Session = Depends(get_db)):
-    # Then access data via data.title, data.impact, etc.
-    title: str = Body(...), 
-    impact: int = Body(..., ge=1, le=5), 
-    likelihood: int = Body(..., ge=1, le=5), 
-    control_effectiveness: float = Body(..., ge=0, le=1),
-    db: Session = Depends(get_db)
-):
-    # 1. Initialize your Engine class
+def evaluate_risk(data: RiskRequest, db: Session = Depends(get_db)):
+    # 1. Initialize Engine
     engine = engine_logic.CognitiveGRCEngine()
     
-    # 2. Run the actual math logic from your file
-    assessment = engine.assess_risk(impact, likelihood, control_effectiveness)
+    # 2. Execute Risk Math
+    assessment = engine.assess_risk(data.impact, data.likelihood, data.control_effectiveness)
     
-    # 3. Save the risk to your database
+    # 3. Persist to Database
     new_risk = models.Risk(
-        title=title,
+        title=data.title,
         description=f"Status: {assessment['status']} | Residual Risk: {assessment['residual_risk']}"
     )
     db.add(new_risk)
@@ -75,3 +53,7 @@ def evaluate_risk(data: RiskEvaluation, db: Session = Depends(get_db)):
         "analysis": assessment,
         "message": "Cognitive assessment complete."
     }
+
+@app.get("/frameworks")
+def list_frameworks(db: Session = Depends(get_db)):
+    return db.query(models.Framework).all()
