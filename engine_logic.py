@@ -1,54 +1,70 @@
 import json
 import os
+import re
 
 class CognitiveGRCEngine:
     def __init__(self, risk_appetite=12):
-        """
-        risk_appetite: The threshold for 'Unacceptable' risk. 
-        Calibrated for Ethical Edge at 12 (High-Medium boundary).
-        """
         self.risk_appetite = risk_appetite
-        # Points to data/king_v_checklist.json relative to this file
         self.checklist_path = os.path.join(os.path.dirname(__file__), 'data', 'king_v_checklist.json')
 
-    def _get_governance_advice(self):
-        """Internal helper to pull King V principles."""
+    def _find_matching_principle(self, text):
+        """
+        Cognitive Keyword Matcher:
+        Scans the King V JSON to find the most relevant principle 
+        based on the user's risk description.
+        """
         try:
-            if os.path.exists(self.checklist_path):
-                with open(self.checklist_path, 'r') as f:
-                    data = json.load(f)
-                    return data[0] if data else "No principles found."
-            return "King V checklist file missing from data folder."
-        except Exception as e:
-            return f"Error loading governance data: {str(e)}"
+            if not os.path.exists(self.checklist_path):
+                return {"principle": "General Governance", "details": "Checklist file not found."}
 
-    def assess_risk(self, impact, likelihood, control_effectiveness):
-        # 1. Calculate Inherent Risk (Raw threat)
+            with open(self.checklist_path, 'r') as f:
+                principles = json.load(f)
+
+            # Simple keyword matching logic
+            text = text.lower()
+            best_match = principles[0] # Default to the first one
+            highest_count = 0
+
+            for p in principles:
+                # We look at the principle title and description for matches
+                combined_content = (p.get('name', '') + " " + p.get('description', '')).lower()
+                
+                # Count how many times words from the risk appear in the principle
+                keywords = re.findall(r'\w+', text)
+                matches = sum(1 for word in keywords if word in combined_content and len(word) > 3)
+
+                if matches > highest_count:
+                    highest_count = matches
+                    best_match = p
+
+            return best_match
+        except Exception as e:
+            return {"error": f"Search failed: {str(e)}"}
+
+    def assess_risk(self, title, description, impact, likelihood, control_effectiveness):
+        # 1. Standard Risk Math
         inherent_risk = impact * likelihood
-        
-        # 2. Apply Control Effectiveness (0.0 to 1.0)
-        # 1.0 means controls are 100% effective.
         residual_risk = inherent_risk * (1 - control_effectiveness)
         
-        # 3. Determine Status based on Ethical Edge Calibration
+        # 2. Status Calibration
         if residual_risk > self.risk_appetite:
             status = "🚨 CRITICAL: Board-Level Escalation"
-            action = "Immediate mitigation or transfer required."
+            action = "Immediate mitigation required."
         elif residual_risk > (self.risk_appetite * 0.6):
             status = "⚠️ WARNING: Management Attention"
-            action = "Active monitoring and control improvement."
+            action = "Active monitoring needed."
         else:
             status = "✅ ACCEPTABLE: Monitor Locally"
-            action = "Risk is within appetite."
+            action = "Risk within appetite."
 
-        # 4. Integrate Cognitive Governance Mapping
-        advice = self._get_governance_advice()
+        # 3. THE COGNITIVE LEAP: Find the King V mapping
+        # We combine title and description for a better search
+        governance_mapping = self._find_matching_principle(f"{title} {description}")
 
         return {
             "inherent_risk": inherent_risk,
             "residual_risk": round(residual_risk, 2),
             "status": status,
             "recommended_action": action,
-            "governance_mapping": advice
+            "governance_mapping": governance_mapping
         }
-        
