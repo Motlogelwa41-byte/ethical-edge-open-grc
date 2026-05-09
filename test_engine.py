@@ -2,36 +2,36 @@ import sys
 import os
 from pathlib import Path
 
-# 1. Add the 'app' folder to the search path
+# Force Python to look inside the 'app' folder
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'app')))
 
 try:
-    # 2. This now looks for risk.py inside the app/ folder
+    # This imports CognitiveGRCEngine from your app/risk.py file
     from risk import CognitiveGRCEngine
-    print("✅ Success: Linked to app/risk.py")
+    print("✅ System: Successfully linked to app/risk.py")
 except ImportError as e:
-    print(f"❌ Error: {e}")
-    print("Check if 'class CognitiveGRCEngine' is defined inside app/risk.py")
+    print(f"❌ System Error: {e}")
+    print("Action: Ensure 'class CognitiveGRCEngine' exists inside app/risk.py")
     sys.exit(1)
 
 def run_test():
-    print("\n--- 🧠 CLIMATE BRAIN: UNICEF IMPACT TEST ---")
+    print("\n--- 🧠 CLIMATE BRAIN: IMPACT VERIFICATION ---")
     
     # Initialize in UNICEF context
     engine = CognitiveGRCEngine(context="UNICEF")
     
     # Test CLIM-001 (Hazard ID from your JSON)
-    # Expected Score: 38.0
+    # Expected Score: 38.0 (20 + 90% multiplier)
     score = engine.calculate_risk_index("CLIM-001", 5, 4)
     
-    print(f"Hazard: CLIM-001")
-    print(f"Context: {engine.context}")
-    print(f"Final Priority Score: {score}")
+    print(f"Hazard ID: CLIM-001")
+    print(f"Context Setting: {engine.context}")
+    print(f"Calculated Risk Priority: {score}")
 
     if score > 20:
-        print("\n✅ VERIFIED: The Climate Brain is active.")
+        print("\n✅ SUCCESS: The Climate Brain is active and prioritizing hazards correctly!")
     else:
-        print("\n⚠️  NOTICE: Engine loaded, but no multiplier detected.")
+        print("\n⚠️  NOTICE: Engine loaded, but check the impact_score in data/unicef_hazards.json")
 
 if __name__ == "__main__":
     run_test()
