@@ -64,3 +64,30 @@ def evaluate_risk(data: RiskRequest, db: Session = Depends(get_db)):
 @app.get("/frameworks")
 def list_frameworks(db: Session = Depends(get_db)):
     return db.query(models.Framework).all()
+
+@app.get("/risks/summary")
+def get_risk_summary(db: Session = Depends(get_db)):
+    # 1. Fetch all risks from the database
+    all_risks = db.query(models.Risk).all()
+    total = len(all_risks)
+    
+    if total == 0:
+        return {"message": "No risks recorded yet. Start by evaluating a risk!"}
+
+    # 2. Categorize the risks based on your engine's status labels
+    critical = [r for r in all_risks if "🚨 CRITICAL" in r.description]
+    warning = [r for r in all_risks if "⚠️ WARNING" in r.description]
+    acceptable = [r for r in all_risks if "✅ ACCEPTABLE" in r.description]
+
+    # 3. Calculate the Governance Health Index
+    # (High percentage = Fewer critical risks)
+    health_score = round(((total - len(critical)) / total) * 100, 2)
+
+    return {
+        "organization_health_index": f"{health_score}%",
+        "total_risks_monitored": total,
+        "critical_count": len(critical),
+        "warning_count": len(warning),
+        "acceptable_count": len(acceptable),
+        "detailed_view": all_risks
+    }
