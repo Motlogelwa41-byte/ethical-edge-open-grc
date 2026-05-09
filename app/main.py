@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, Body
+from fastapi import FastAPI, Depends, Body, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 import sys
@@ -13,9 +13,10 @@ models.Base.metadata.create_all(bind=database.engine)
 
 app = FastAPI(title="Ethical Edge Open GRC")
 
-# Data structure for incoming risk assessments
+# FIX 1: Added 'description' to the model so the API knows to accept it
 class RiskRequest(BaseModel):
     title: str
+    description: str  # <--- THIS WAS MISSING
     impact: int = Field(..., ge=1, le=5)
     likelihood: int = Field(..., ge=1, le=5)
     control_effectiveness: float = Field(..., ge=0, le=1)
@@ -33,26 +34,32 @@ def read_root():
 
 @app.post("/risks/evaluate")
 def evaluate_risk(data: RiskRequest, db: Session = Depends(get_db)):
-    engine = engine_logic.CognitiveGRCEngine()
-    
-    # Passing the title and description to the engine now!
-    assessment = engine.assess_risk(
-        title=data.title,
-        description=data.description, # Make sure your RiskRequest model has 'description'
-        impact=data.impact,
-        likelihood=data.likelihood,
-        control_effectiveness=data.control_effectiveness
-    )
-    
-    # Save to DB
-    new_risk = models.Risk(
-        title=data.title,
-        description=f"Status: {assessment['status']} | Principle: {assessment['governance_mapping'].get('name')}"
-    )
-    db.add(new_risk)
-    db.commit()
-    
-    return assessment
+    try:
+        engine = engine_logic.CognitiveGRCEngine()
+        
+        # FIX 2: Now 'data.description' will actually work!
+        assessment = engine.assess_risk(
+            title=data.title,
+            description=data.description,
+            impact=data.impact,
+            likelihood=data.likelihood,
+            control_effectiveness=data.control_effectiveness
+        )
+        
+        # Save to DB - added a .get() safety check for the mapping name
+        mapping_name = assessment.get('governance_mapping', {}).get('name', 'General Governance')
+        
+        new_risk = models.Risk(
+            title=data.title,
+            description=f"Status: {assessment['status']} | Principle: {mapping_name}"
+        )
+        db.add(new_risk)
+        db.commit()
+        
+        return assessment
+    except Exception as e:
+        # This helps us see the REAL error in the browser if it fails again
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/frameworks")
 def list_frameworks(db: Session = Depends(get_db)):
