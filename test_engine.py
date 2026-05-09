@@ -1,26 +1,38 @@
-from src.risk_engine import CognitiveGRCEngine
+import sys
+import os
+from pathlib import Path
+
+# This ensures Python can see the 'src' folder
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'src')))
+
+try:
+    from risk_engine import CognitiveGRCEngine
+except ImportError:
+    print("Error: Could not find risk_engine.py inside the src folder.")
+    sys.exit(1)
 
 def run_test():
-    print("--- Starting Cognitive GRC Test ---")
+    print("--- 🧠 CLIMATE BRAIN: INTEGRITY TEST ---")
     
-    # Scenario A: Standard Engine
-    standard_engine = CognitiveGRCEngine(context="Standard")
-    # Using a dummy ID; since it's not UNICEF context, no multiplier applies
-    std_score = standard_engine.calculate_risk_index("CLIM-001", base_impact=5, base_likelihood=4)
-    print(f"Standard Score for CLIM-001: {std_score}")
+    # 1. Test the Standard Context
+    std_engine = CognitiveGRCEngine(context="Standard")
+    # Base calculation: 5 (Impact) * 4 (Likelihood) = 20
+    std_score = std_engine.calculate_risk_index("CLIM-001", 5, 4)
+    print(f"Standard Risk Score: {std_score}")
 
-    print("\n--- Switching to UNICEF Context ---")
-    
-    # Scenario B: UNICEF Engine (The Climate Brain)
+    # 2. Test the UNICEF Context
+    print("\n--- 🛡️ SWITCHING TO UNICEF CONTEXT ---")
     unicef_engine = CognitiveGRCEngine(context="UNICEF")
-    # CLIM-001 is in our JSON with a unicef_impact_score of 9
-    climate_score = unicef_engine.calculate_risk_index("CLIM-001", base_impact=5, base_likelihood=4)
-    print(f"UNICEF Climate Brain Score for CLIM-001: {climate_score}")
+    
+    # This should be higher because CLIM-001 is a UNICEF hazard
+    unicef_score = unicef_engine.calculate_risk_index("CLIM-001", 5, 4)
+    print(f"UNICEF Adjusted Score: {unicef_score}")
 
-    if climate_score > std_score:
-        print("\nSUCCESS: The Climate Brain correctly weighted the hazard!")
+    # 3. Final Verdict
+    if unicef_score > std_score:
+        print("\n✅ SUCCESS: The Climate Brain is active and weighting risks correctly!")
     else:
-        print("\nCHECK: The score did not change. Verify your JSON ID matches 'CLIM-001'.")
+        print("\n❌ FAIL: The score didn't change. Check if CLIM-001 exists in data/unicef_hazards.json")
 
 if __name__ == "__main__":
     run_test()
