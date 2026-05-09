@@ -21,24 +21,31 @@ def read_root():
 def list_frameworks(db: Session = Depends(get_db)):
     return db.query(models.Framework).all()
 
-@app.get("/risks")
-def get_risks(db: Session = Depends(get_db)):
-    return db.query(models.Risk).all()
-
-from fastapi import Body
-import sys
-import os
-
-# This ensures Python can see engine_logic.py in the root folder
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-import engine_logic
-
-class RiskEvaluation(BaseModel):
-    title: str
-    impact: int
-    likelihood: int
-    control_effectiveness: float
-
+@app.post("/risks")
+def add_and_evaluate_risk(
+    title: str = Body(...),
+    impact: int = Body(..., ge=1, le=5),
+    likelihood: int = Body(..., ge=1, le=5),
+    control_effectiveness: float = Body(..., ge=0, le=1),
+    db: Session = Depends(get_db)
+):
+    # 1. Trigger the Cognitive Engine
+    engine = engine_logic.CognitiveGRCEngine()
+    assessment = engine.assess_risk(impact, likelihood, control_effectiveness)
+    
+    # 2. Store the risk with its automated status
+    new_risk = models.Risk(
+        title=title,
+        description=f"Status: {assessment['status']} | Advice: {assessment['recommended_action']}"
+    )
+    db.add(new_risk)
+    db.commit()
+    db.refresh(new_risk)
+    
+    return {
+        "risk_id": new_risk.id,
+        "cognitive_analysis": assessment
+    }
 @app.post("/risks/evaluate")
 def evaluate_risk(data: RiskEvaluation, db: Session = Depends(get_db)):
     # Then access data via data.title, data.impact, etc.
