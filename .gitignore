@@ -1,1 +1,2 @@
 *.db
+echo "sql_app.db" >> .gitignore
