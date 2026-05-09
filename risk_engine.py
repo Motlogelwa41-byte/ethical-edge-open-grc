@@ -1,3 +1,5 @@
+# This finds the directory where risk_engine.py is located
+BASE_DIR = Path(__file__).resolve().parent.parent
 from pathlib import Path
 import json
 
