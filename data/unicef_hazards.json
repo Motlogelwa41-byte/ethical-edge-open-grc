@@ -1,0 +1,22 @@
+{
+  "unicef_context": {
+    "hazards": [
+      {
+        "id": "CLIM-001",
+        "category": "Environmental",
+        "hazard_type": "Extreme Heat/Drought",
+        "unicef_impact_score": 9,
+        "vulnerability_focus": "Water access for schools/clinics",
+        "regulatory_alignment": ["Botswana DPA", "SADC Climate Protocol"]
+      },
+      {
+        "id": "SOC-002",
+        "category": "Social",
+        "hazard_type": "Displacement Risk",
+        "unicef_impact_score": 10,
+        "vulnerability_focus": "Child protection and education continuity",
+        "regulatory_alignment": ["UN Convention on the Rights of the Child"]
+      }
+    ]
+  }
+}
