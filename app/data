@@ -1,0 +1,23 @@
+[
+  {
+    "hazard": "Extreme Heatwave",
+    "impact_area": "School Attendance & Child Health",
+    "vulnerability_score_increase": 4,
+    "indicators": ["Pediatric heat exhaustion", "Dehydration surge in clinics", "School closures"],
+    "action_plan": "Implement cooling stations in schools; distribute hydration kits; shift school hours to early morning."
+  },
+  {
+    "hazard": "El Niño Induced Drought",
+    "impact_area": "Nutrition & Water Security",
+    "vulnerability_score_increase": 5,
+    "indicators": ["Wasting/Stunting prevalence surge", "Water scarcity in rural health posts", "Food insecurity"],
+    "action_plan": "Prioritize water trucking to rural clinics; increase therapeutic food distribution; monitor pediatric malnutrition."
+  },
+  {
+    "hazard": "Flash Flooding",
+    "impact_area": "Disease Outbreaks & Infrastructure",
+    "vulnerability_score_increase": 3,
+    "indicators": ["Cholera/Diarrhea surge in children", "Damaged health post access", "Displacement"],
+    "action_plan": "Deploy mobile medical units; distribute water purification tablets; map vulnerable schools for evacuation."
+  }
+]
