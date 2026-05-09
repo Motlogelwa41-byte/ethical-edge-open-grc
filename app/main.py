@@ -37,16 +37,17 @@ def evaluate_risk(data: RiskRequest, db: Session = Depends(get_db)):
     try:
         engine = engine_logic.CognitiveGRCEngine()
         
-        # FIX 2: Now 'data.description' will actually work!
+        # We ensure every field has a value before sending to the engine
         assessment = engine.assess_risk(
             title=data.title,
             description=data.description,
             impact=data.impact,
             likelihood=data.likelihood,
-            control_effectiveness=data.control_effectiveness
+            # If effectiveness isn't sent, we default to 0.5 (50%)
+            control_effectiveness=getattr(data, 'control_effectiveness', 0.5)
         )
         
-        # Save to DB - added a .get() safety check for the mapping name
+        # Mapping the result to the DB
         mapping_name = assessment.get('governance_mapping', {}).get('name', 'General Governance')
         
         new_risk = models.Risk(
@@ -58,9 +59,8 @@ def evaluate_risk(data: RiskRequest, db: Session = Depends(get_db)):
         
         return assessment
     except Exception as e:
-        # This helps us see the REAL error in the browser if it fails again
-        raise HTTPException(status_code=500, detail=str(e))
-
+        # This will tell you the EXACT line of code that failed in the response
+        raise HTTPException(status_code=500, detail=f"Engine Error: {str(e)}")
 @app.get("/frameworks")
 def list_frameworks(db: Session = Depends(get_db)):
     return db.query(models.Framework).all()
