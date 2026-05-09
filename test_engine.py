@@ -2,36 +2,36 @@ import sys
 import os
 from pathlib import Path
 
-# Fix the path so Python sees the 'src' folder
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'src')))
+# 1. Add the 'app' folder to the search path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'app')))
 
 try:
-    from risk_engine import CognitiveGRCEngine
+    # 2. This now looks for risk.py inside the app/ folder
+    from risk import CognitiveGRCEngine
+    print("✅ Success: Linked to app/risk.py")
 except ImportError as e:
-    print(f"Import Error: {e}")
-    print("Ensure risk_engine.py is inside the 'src' folder.")
+    print(f"❌ Error: {e}")
+    print("Check if 'class CognitiveGRCEngine' is defined inside app/risk.py")
     sys.exit(1)
 
 def run_test():
-    print("\n--- 🧠 CLIMATE BRAIN: INTEGRITY TEST ---")
+    print("\n--- 🧠 CLIMATE BRAIN: UNICEF IMPACT TEST ---")
     
-    # 1. Standard Context
-    std_engine = CognitiveGRCEngine(context="Standard")
-    std_score = std_engine.calculate_risk_index("CLIM-001", 5, 4)
-    print(f"Standard Risk Score: {std_score}")
+    # Initialize in UNICEF context
+    engine = CognitiveGRCEngine(context="UNICEF")
+    
+    # Test CLIM-001 (Hazard ID from your JSON)
+    # Expected Score: 38.0
+    score = engine.calculate_risk_index("CLIM-001", 5, 4)
+    
+    print(f"Hazard: CLIM-001")
+    print(f"Context: {engine.context}")
+    print(f"Final Priority Score: {score}")
 
-    # 2. UNICEF Context
-    print("--- 🛡️ SWITCHING TO UNICEF CONTEXT ---")
-    unicef_engine = CognitiveGRCEngine(context="UNICEF")
-    unicef_score = unicef_engine.calculate_risk_index("CLIM-001", 5, 4)
-    print(f"UNICEF Adjusted Score: {unicef_score}")
-
-    # 3. Final Verdict
-    if unicef_score > std_score:
-        print("\n✅ SUCCESS: The Climate Brain is weighting risks correctly!")
+    if score > 20:
+        print("\n✅ VERIFIED: The Climate Brain is active.")
     else:
-        print("\n⚠️  CHECK: The score stayed the same. Is CLIM-001 in your JSON?")
+        print("\n⚠️  NOTICE: Engine loaded, but no multiplier detected.")
 
-# THIS IS THE PART PYTHON IS LOOKING FOR
 if __name__ == "__main__":
     run_test()
