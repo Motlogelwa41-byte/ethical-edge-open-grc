@@ -6,7 +6,23 @@ class CognitiveGRCEngine:
     def __init__(self, risk_appetite=12):
         self.risk_appetite = risk_appetite
         self.checklist_path = os.path.join(os.path.dirname(__file__), 'data', 'king_v_checklist.json')
+        
+def assess_unicef_vulnerability(self, hazard_type, school_or_clinic_id):
+        # 1. Load the UNICEF Hazards data
+        unicef_path = os.path.join(os.path.dirname(__file__), 'data', 'unicef_hazards.json')
+        with open(unicef_path, 'r') as f:
+            hazards = json.load(f)
 
+        # 2. Match the hazard
+        match = next((h for h in hazards if h['hazard'] in hazard_type), hazards[0])
+
+        # 3. Output a "UNICEF Vulnerability Score"
+        return {
+            "vulnerability_index": match['vulnerability_score_increase'],
+            "priority_action": match['action_plan'],
+            "indicators_to_monitor": match['indicators'],
+            "status": "Child-Centric Emergency Preparedness Required"
+        }
     def _find_matching_principle(self, text):
         """
         Cognitive Keyword Matcher:
