@@ -33,26 +33,26 @@ def read_root():
 
 @app.post("/risks/evaluate")
 def evaluate_risk(data: RiskRequest, db: Session = Depends(get_db)):
-    # 1. Initialize Engine
     engine = engine_logic.CognitiveGRCEngine()
     
-    # 2. Execute Risk Math
-    assessment = engine.assess_risk(data.impact, data.likelihood, data.control_effectiveness)
+    # Passing the title and description to the engine now!
+    assessment = engine.assess_risk(
+        title=data.title,
+        description=data.description, # Make sure your RiskRequest model has 'description'
+        impact=data.impact,
+        likelihood=data.likelihood,
+        control_effectiveness=data.control_effectiveness
+    )
     
-    # 3. Persist to Database
+    # Save to DB
     new_risk = models.Risk(
         title=data.title,
-        description=f"Status: {assessment['status']} | Residual Risk: {assessment['residual_risk']}"
+        description=f"Status: {assessment['status']} | Principle: {assessment['governance_mapping'].get('name')}"
     )
     db.add(new_risk)
     db.commit()
-    db.refresh(new_risk)
     
-    return {
-        "risk_id": new_risk.id,
-        "analysis": assessment,
-        "message": "Cognitive assessment complete."
-    }
+    return assessment
 
 @app.get("/frameworks")
 def list_frameworks(db: Session = Depends(get_db)):
