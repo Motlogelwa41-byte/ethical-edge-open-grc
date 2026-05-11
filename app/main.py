@@ -1,3 +1,4 @@
+from modules.unicef_climate.climate_logic import get_climate_risk
 from fastapi import FastAPI, Depends, Body, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
