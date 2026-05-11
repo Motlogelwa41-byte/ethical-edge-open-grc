@@ -1,5 +1,10 @@
+from fastapi import FastAPI
+# 1. Import both rooms
 from modules.society_research.trust_metrics import get_connectivity_trust
 from modules.unicef_climate.climate_logic import get_climate_risk
+
+app = FastAPI(title="Ethical Edge Cognitive Engine")
+
 from fastapi import FastAPI, Depends, Body, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
@@ -31,9 +36,13 @@ def get_db():
         db.close()
 
 @app.get("/")
-def read_root():
-    return {"message": "Ethical Edge API is LIVE", "version": "1.0"}
-
+def home():
+    return {
+        "engine": "Ethical Edge Open GRC",
+        "status": "Ready",
+        "rooms": ["UNICEF_Climate", "Society_Research"]
+    }
+        
 @app.post("/risks/evaluate")
 def evaluate_risk(data: RiskRequest, db: Session = Depends(get_db)):
     try:
@@ -94,22 +103,18 @@ def get_risk_summary(db: Session = Depends(get_db)):
         "detailed_view": all_risks
     }
     
-    @app.get("/unicef/{district}")
-def check_unicef_risk(district: str):
-    # This calls the logic you just created in the UNICEF room
-    risk_data = get_climate_risk(district)
-    return {
-        "status": "Success",
-        "module": "UNICEF Climate Hazard Scorer",
-        "result": risk_data
-    }
+   # ROOM 1: UNICEF
+@app.get("/unicef/{district}")
+def unicef_hazard_check(district: str):
+    data = get_climate_risk(district)
+    return {"module": "UNICEF Climate Venture", "data": data}
 
+# ROOM 2: INTERNET SOCIETY (The one currently missing)
 @app.get("/society/{region}")
-def internet_society_check(region: str):
+def society_trust_check(region: str):
     data = get_connectivity_trust(region)
     return {
-        "project": "Internet Society Research",
+        "module": "Internet Society Research",
         "region": region,
-        "trust_metrics": data,
-        "goal": "Inclusive Internet Access"
+        "trust_metrics": data
     }
