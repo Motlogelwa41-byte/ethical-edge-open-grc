@@ -92,3 +92,13 @@ def get_risk_summary(db: Session = Depends(get_db)):
         "acceptable_count": len(acceptable),
         "detailed_view": all_risks
     }
+    
+    @app.get("/unicef/{district}")
+def check_unicef_risk(district: str):
+    # This calls the logic you just created in the UNICEF room
+    risk_data = get_climate_risk(district)
+    return {
+        "status": "Success",
+        "module": "UNICEF Climate Hazard Scorer",
+        "result": risk_data
+    }
