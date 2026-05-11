@@ -1,3 +1,4 @@
+from modules.society_research.trust_metrics import get_connectivity_trust
 from modules.unicef_climate.climate_logic import get_climate_risk
 from fastapi import FastAPI, Depends, Body, HTTPException
 from pydantic import BaseModel, Field
@@ -101,4 +102,14 @@ def check_unicef_risk(district: str):
         "status": "Success",
         "module": "UNICEF Climate Hazard Scorer",
         "result": risk_data
+    }
+
+@app.get("/society/{region}")
+def internet_society_check(region: str):
+    data = get_connectivity_trust(region)
+    return {
+        "project": "Internet Society Research",
+        "region": region,
+        "trust_metrics": data,
+        "goal": "Inclusive Internet Access"
     }
