@@ -66,6 +66,7 @@ async def society_trust_check(region: str):
             "status": "Verified via Ethical Edge Open GRC"
         }
     except Exception as e:
+        # This part is perfect!
         raise HTTPException(status_code=500, detail=f"Society Module Error: {str(e)}")
         
 # CORE ENGINE: Risk Evaluation
