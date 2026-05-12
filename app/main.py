@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 import sys
 import os
 
-# 1. Import your specialized Grant Rooms
+# 1. Import specialized Grant Rooms
 from modules.society_research.trust_metrics import get_connectivity_trust
 from modules.unicef_climate.climate_logic import get_climate_risk
 
@@ -15,7 +15,6 @@ from . import models, database
 
 models.Base.metadata.create_all(bind=database.engine)
 
-# ONLY ONE APP DEFINITION
 app = FastAPI(title="Ethical Edge Open GRC")
 
 class RiskRequest(BaseModel):
@@ -46,17 +45,28 @@ def home():
 @app.get("/unicef/{district}")
 def unicef_hazard_check(district: str):
     data = get_climate_risk(district)
-    return {"module": "UNICEF Climate Venture", "data": data}
+    return {
+        "module": "UNICEF Climate Venture", 
+        "district": district,
+        "data": data
+    }
 
 # ROOM 2: INTERNET SOCIETY ($500k Grant)
 @app.get("/society/{region}")
-def society_trust_check(region: str):
-    data = get_connectivity_trust(region)
-    return {
-        "module": "Internet Society Research",
-        "region": region,
-        "trust_metrics": data
-    }
+async def society_trust_check(region: str):
+    try:
+        data = get_connectivity_trust(region)
+        if not data:
+            raise HTTPException(status_code=404, detail=f"Trust metrics for '{region}' not found.")
+            
+        return {
+            "module": "Internet Society Research",
+            "region": region,
+            "trust_metrics": data,
+            "status": "Verified via Ethical Edge Open GRC"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Society Module Error: {str(e)}")
 
 # CORE ENGINE: Risk Evaluation
 @app.post("/risks/evaluate")
@@ -68,7 +78,7 @@ def evaluate_risk(data: RiskRequest, db: Session = Depends(get_db)):
             description=data.description,
             impact=data.impact,
             likelihood=data.likelihood,
-            control_effectiveness=getattr(data, 'control_effectiveness', 0.5)
+            control_effectiveness=data.control_effectiveness
         )
         
         mapping_name = assessment.get('governance_mapping', {}).get('name', 'General Governance')
