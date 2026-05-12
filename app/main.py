@@ -67,11 +67,12 @@ async def society_trust_check(region: str):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Society Module Error: {str(e)}")
-
+        
 # CORE ENGINE: Risk Evaluation
 @app.post("/risks/evaluate")
 def evaluate_risk(data: RiskRequest, db: Session = Depends(get_db)):
     try:
+        # 1. Run the Cognitive GRC Logic
         engine = engine_logic.CognitiveGRCEngine()
         assessment = engine.assess_risk(
             title=data.title,
@@ -81,15 +82,25 @@ def evaluate_risk(data: RiskRequest, db: Session = Depends(get_db)):
             control_effectiveness=data.control_effectiveness
         )
         
+        # 2. Extract the Governance Mapping (e.g., ISO or King IV)
         mapping_name = assessment.get('governance_mapping', {}).get('name', 'General Governance')
+        
+        # 3. Create the DB record matching your updated models.py
         new_risk = models.Risk(
             title=data.title,
-            description=f"Status: {assessment['status']} | Principle: {mapping_name}"
+            description=f"Status: {assessment['status']} | Principle: {mapping_name}",
+            impact_score=data.impact,
+            likelihood_score=data.likelihood,
+            status=assessment['status']
         )
+        
+        # 4. Save and return
         db.add(new_risk)
         db.commit()
         return assessment
+        
     except Exception as e:
+        # Only error handling goes here
         raise HTTPException(status_code=500, detail=f"Engine Error: {str(e)}")
 
 @app.get("/frameworks")
