@@ -49,3 +49,36 @@
     "Portability of GRC data across international giving platforms."
   ]
 }
+
+{
+  "project_name": "Ethical Edge Cognitive GRC Engine",
+  "total_grant_request_usd": 100000.00,
+  "currency": "USD",
+  "budget_breakdown": [
+    {
+      "category": "Open-Source Software Engineering",
+      "amount": 45000.00,
+      "description": "Development of the core FastAPI backend and Python-based Cognitive GRC Engine logic."
+    },
+    {
+      "category": "Climate-Health Data Integration",
+      "amount": 25000.00,
+      "description": "API integration for real-time SADC climate data and child-centric health vulnerability metrics."
+    },
+    {
+      "category": "Field Validation & UX Testing",
+      "amount": 20000.00,
+      "description": "Piloting the engine with local school districts and clinics in Botswana to validate risk scores."
+    },
+    {
+      "category": "Compliance, Ethics & Licensing",
+      "amount": 10000.00,
+      "description": "Ensuring OSI (Apache 2.0) open-source compliance and maintaining AI ethics standards."
+    }
+  ],
+  "milestones": [
+    {"month": 3, "deliverable": "MVP Engine with Climate Data Ingestion", "payment_percentage": 30},
+    {"month": 8, "deliverable": "Field Test Results & Refined Risk Scoring", "payment_percentage": 40},
+    {"month": 12, "deliverable": "Public Open-Source Release & Final Report", "payment_percentage": 30}
+  ]
+}
