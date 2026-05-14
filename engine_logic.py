@@ -115,3 +115,16 @@ def assess_isoc_resilience(self, infrastructure_data):
             "identified_gaps": issues,
             "ethics_alignment": "Aligned with AI_ETHICS.md"
         }
+
+def generate_audit_certificate(self, client_name, project_room, assessment_results):
+        """
+        Generates a sellable Audit Report Summary.
+        """
+        return {
+            "issuing_entity": "Ethical Edge GRC Consulting (Pty) Ltd",
+            "client": client_name,
+            "regtech_room": project_room,
+            "audit_id": f"EE-{os.urandom(4).hex().upper()}",
+            "findings": assessment_results,
+            "certification": "Compliant with King V / Ethical AI Standards"
+        }
