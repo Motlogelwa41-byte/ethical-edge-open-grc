@@ -121,3 +121,22 @@ if __name__ == "__main__":
     print(f"Compliance Score: {score}/10")
     print(f"Status: {get_compliance_status(score)}") vetting_logic.py
 
+def calculate_unicef_child_index(climate_score: float, school_density: int, clinic_status: str):
+    """
+    Calculates the Child Vulnerability Index for the UNICEF Venture Fund.
+    """
+    # 0.0 to 1.0 scale
+    impact_weight = 0.7 
+    resilience_weight = 0.3
+    
+    # If clinics are overwhelmed, risk increases
+    resilience_penalty = 0.2 if clinic_status == "low_capacity" else 0.0
+    
+    # Calculation
+    child_index = (climate_score * impact_weight) + (school_density * resilience_weight) + resilience_penalty
+    
+    return {
+        "unicef_priority": "CRITICAL" if child_index > 0.8 else "STANDARD",
+        "score": round(min(child_index, 1.0), 2) # Cap at 1.0
+    }
+
