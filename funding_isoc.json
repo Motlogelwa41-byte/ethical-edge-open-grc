@@ -1,0 +1,52 @@
+{
+  "project_name": "Ethical Edge Cognitive GRC Engine",
+  "organization": "Ethical Edge GRC Consulting (Pty) Ltd",
+  "grant_target": "Internet Society (ISOC) Research Grant",
+  "total_request_usd": 500000.00,
+  "currency": "USD",
+  "project_duration_months": 24,
+  "budget_breakdown": [
+    {
+      "category": "Regional Infrastructure Research",
+      "amount": 150000.00,
+      "description": "Mapping internet resilience and data sovereignty across 16 SADC member states."
+    },
+    {
+      "category": "Advanced AI Engine Scaling",
+      "amount": 150000.00,
+      "description": "Upgrading the Cognitive Engine to handle high-volume regulatory and ISP data streams."
+    },
+    {
+      "category": "Sovereignty & Ethics Frameworks",
+      "amount": 100000.00,
+      "description": "Developing localized AI ethics and data privacy models for the African digital context."
+    },
+    {
+      "category": "Regional Capacity Building",
+      "amount": 75000.00,
+      "description": "Training and workshops for SADC regulators and technical staff on GRC automation."
+    },
+    {
+      "category": "Dissemination & Open Standards",
+      "amount": 25000.00,
+      "description": "Advocating for secure, open internet standards and publishing research findings."
+    }
+  ],
+  "milestones": [
+    {
+      "quarter": 1,
+      "deliverable": "SADC Regional Resilience Assessment Report",
+      "allocation": 125000.00
+    },
+    {
+      "quarter": 4,
+      "deliverable": "Launch of Scaled Engine with Sovereignty Frameworks",
+      "allocation": 250000.00
+    },
+    {
+      "quarter": 8,
+      "deliverable": "Final Regional Training and Open Source Release",
+      "allocation": 125000.00
+    }
+  ]
+}
