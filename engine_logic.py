@@ -128,3 +128,29 @@ def generate_audit_certificate(self, client_name, project_room, assessment_resul
             "findings": assessment_results,
             "certification": "Compliant with King V / Ethical AI Standards"
         }
+
+def assess_unicef_vulnerability(self, hazard_type, school_or_clinic_id=None):
+        """
+        PHASE 1: UNICEF CLIMATE WING
+        Maps climate hazards to child-centric vulnerability scores.
+        """
+        try:
+            # Load the hazards data we just verified in the /data/ folder
+            if not os.path.exists(self.unicef_path):
+                return {"error": "UNICEF Hazards data not found."}[cite: 2]
+
+            with open(self.unicef_path, 'r') as f:
+                hazards = json.load(f)[cite: 2]
+
+            # Logic: Match the hazard (Heatwave, Flood, etc.) to the vulnerability score
+            match = next((h for h in hazards if h['hazard'].lower() in hazard_type.lower()), hazards[0])[cite: 2]
+
+            return {
+                "vulnerability_index": match['vulnerability_score_increase'],[cite: 2]
+                "priority_action": match['action_plan'],[cite: 2]
+                "indicators_to_monitor": match['indicators'],[cite: 2]
+                "location_id": school_or_clinic_id,[cite: 2]
+                "status": "Child-Centric Emergency Preparedness Required"[cite: 2]
+            }
+        except Exception as e:
+            return {"error": f"Climate assessment failed: {str(e)}"}[cite: 2]
