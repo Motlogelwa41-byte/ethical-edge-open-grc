@@ -1,0 +1,29 @@
+{
+  "project_name": "Ethical Edge Cognitive GRC Engine",
+  "organization": "Ethical Edge GRC Consulting (Pty) Ltd",
+  "grant_target": "UNICEF Venture Fund",
+  "total_request_usd": 100000.00,
+  "currency": "USD",
+  "budget_breakdown": [
+    {
+      "category": "Open-Source Software Engineering",
+      "amount": 45000.00,
+      "description": "Core engine development for child-centric climate risk logic."
+    },
+    {
+      "category": "Climate-Health Data Integration",
+      "amount": 25000.00,
+      "description": "SADC climate and pediatric health API connectors."
+    },
+    {
+      "category": "Field Validation & Pilot",
+      "amount": 20000.00,
+      "description": "Validation in Botswana school districts."
+    },
+    {
+      "category": "Ethics & Licensing",
+      "amount": 10000.00,
+      "description": "Ensuring Apache 2.0 open-source compliance."
+    }
+  ]
+}
