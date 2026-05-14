@@ -88,3 +88,30 @@ class CognitiveGRCEngine:
             "recommended_action": action,
             "governance_mapping": governance_mapping
         }
+
+def assess_isoc_resilience(self, infrastructure_data):
+        """
+        PHASE 2: INTERNET SOCIETY (ISOC) WING
+        Audits network integrity and data sovereignty.
+        """
+        resilience_score = 100
+        issues = []
+
+        # Check for secure routing (e.g., MANRS compliance)
+        if not infrastructure_data.get('secure_routing_enabled', False):
+            resilience_score -= 30
+            issues.append("Secure routing (MANRS) not detected.")
+
+        # Check for Data Sovereignty (Local storage for SADC data)
+        if infrastructure_data.get('data_location') != 'SADC':
+            resilience_score -= 25
+            issues.append("Data sovereignty risk: Data stored outside SADC region.")
+
+        status = "RESIILIENT" if resilience_score > 70 else "VULNERABLE"
+        
+        return {
+            "resilience_score": resilience_score,
+            "status": status,
+            "identified_gaps": issues,
+            "ethics_alignment": "Aligned with AI_ETHICS.md"
+        }
