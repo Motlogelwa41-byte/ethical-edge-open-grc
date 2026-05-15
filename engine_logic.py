@@ -6,32 +6,54 @@ class CognitiveGRCEngine:
     def __init__(self, risk_appetite=12):
         self.risk_appetite = risk_appetite
         self.checklist_path = os.path.join(os.path.dirname(__file__), 'data', 'king_v_checklist.json')
-        self.unicef_path = os.path.join(os.path.dirname(__file__), 'data', 'unicef_hazards.json')
+        # Corrected data path to match your root-level directory layout
+        self.unicef_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'unicef_hazards.json')
 
-    def assess_unicef_vulnerability(self, hazard_type, school_or_clinic_id=None):
+    def assess_unicef_vulnerability(self, hazard_type: str) -> dict:
         """
         PHASE 1: UNICEF CLIMATE WING
-        Maps climate hazards to child-centric vulnerability scores.
+        Maps institutional data to climate/social hazards from unicef_context
+        and applies the $100,000 Grand Challenge budget matrix.
         """
+        budget_allocation = {
+            "total_funding_usd": 100000,
+            "allocation_breakdown": {
+                "regtech_risk_modeling_software": 35000,
+                "community_climate_resilience_dashboards": 30000,
+                "data_collection_and_iot_sensor_integration": 20000,
+                "regulatory_compliance_and_governance_auditing": 15000
+            }
+        }
+        
         try:
             if not os.path.exists(self.unicef_path):
-                return {"error": "UNICEF Hazards data not found."}
-
+                return {"status": "Error", "message": "UNICEF data repository missing."}
+                
             with open(self.unicef_path, 'r') as f:
-                hazards = json.load(f)
-
-            # Match the hazard from our new JSON
-            match = next((h for h in hazards if h['hazard'].lower() in hazard_type.lower()), hazards[0])
-
+                data = json.load(f)
+                
+            # Safely navigate your exact JSON context nesting
+            hazards_list = data.get("unicef_context", {}).get("hazards", [])
+            
+            normalized_search = hazard_type.strip().lower()
+            match = next((h for h in hazards_list if normalized_search in h.get('hazard_type', '').lower()), None)
+            
+            if not match:
+                return {
+                    "status": "Pending Active Risk Analysis",
+                    "requested_hazard": hazard_type,
+                    "message": f"Hazard type '{hazard_type}' data pending active risk analysis.",
+                    "financial_framework": budget_allocation
+                }
+                
             return {
-                "vulnerability_index": match['vulnerability_score_increase'],
-                "priority_action": match['action_plan'],
-                "indicators_to_monitor": match['indicators'],
-                "location_id": school_or_clinic_id,
-                "status": "Child-Centric Emergency Preparedness Required"
+                "status": "Active Analysis Complete",
+                "requested_hazard": hazard_type,
+                "hazard_metrics": match,
+                "financial_framework": budget_allocation
             }
         except Exception as e:
-            return {"error": f"Climate assessment failed: {str(e)}"}
+            return {"error": f"UNICEF Room processing failed: {str(e)}"}
 
     def _find_matching_principle(self, text):
         """
@@ -89,7 +111,7 @@ class CognitiveGRCEngine:
             "governance_mapping": governance_mapping
         }
 
-def assess_isoc_resilience(self, infrastructure_data):
+    def assess_isoc_resilience(self, infrastructure_data):
         """
         PHASE 2: INTERNET SOCIETY (ISOC) WING
         Audits network integrity and data sovereignty.
@@ -97,17 +119,15 @@ def assess_isoc_resilience(self, infrastructure_data):
         resilience_score = 100
         issues = []
 
-        # Check for secure routing (e.g., MANRS compliance)
         if not infrastructure_data.get('secure_routing_enabled', False):
             resilience_score -= 30
             issues.append("Secure routing (MANRS) not detected.")
 
-        # Check for Data Sovereignty (Local storage for SADC data)
         if infrastructure_data.get('data_location') != 'SADC':
             resilience_score -= 25
             issues.append("Data sovereignty risk: Data stored outside SADC region.")
 
-        status = "RESIILIENT" if resilience_score > 70 else "VULNERABLE"
+        status = "RESILIENT" if resilience_score > 70 else "VULNERABLE"
         
         return {
             "resilience_score": resilience_score,
@@ -116,7 +136,7 @@ def assess_isoc_resilience(self, infrastructure_data):
             "ethics_alignment": "Aligned with AI_ETHICS.md"
         }
 
-def generate_audit_certificate(self, client_name, project_room, assessment_results):
+    def generate_audit_certificate(self, client_name, project_room, assessment_results):
         """
         Generates a sellable Audit Report Summary.
         """
@@ -128,29 +148,3 @@ def generate_audit_certificate(self, client_name, project_room, assessment_resul
             "findings": assessment_results,
             "certification": "Compliant with King V / Ethical AI Standards"
         }
-
-def assess_unicef_vulnerability(self, hazard_type, school_or_clinic_id=None):
-        """
-        PHASE 1: UNICEF CLIMATE WING
-        Maps climate hazards to child-centric vulnerability scores.
-        """
-        try:
-            # Load the hazards data we just verified in the /data/ folder
-            if not os.path.exists(self.unicef_path):
-                return {"error": "UNICEF Hazards data not found."}[cite: 2]
-
-            with open(self.unicef_path, 'r') as f:
-                hazards = json.load(f)[cite: 2]
-
-            # Logic: Match the hazard (Heatwave, Flood, etc.) to the vulnerability score
-            match = next((h for h in hazards if h['hazard'].lower() in hazard_type.lower()), hazards[0])[cite: 2]
-
-            return {
-                "vulnerability_index": match['vulnerability_score_increase'],[cite: 2]
-                "priority_action": match['action_plan'],[cite: 2]
-                "indicators_to_monitor": match['indicators'],[cite: 2]
-                "location_id": school_or_clinic_id,[cite: 2]
-                "status": "Child-Centric Emergency Preparedness Required"[cite: 2]
-            }
-        except Exception as e:
-            return {"error": f"Climate assessment failed: {str(e)}"}[cite: 2]
