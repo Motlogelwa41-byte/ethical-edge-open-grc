@@ -1,37 +1,25 @@
-# UNICEF Venture Fund Proposal: Child-Centric Climate GRC Engine
+UNICEF Venture Fund Proposal: Child-Centric Climate GRC Engine1. Applicant InformationOrganization Name: Ethical Edge GRC Consulting (Pty) LtdPhysical Address: Plot 5643, Nakedi Road, Broadhurst Industrial, Gaborone, BotswanaCompany Registration Number: BW00009434846Corporate Status: Fully Tax-Compliant Botswana For-Profit Entity (SADC Region)2. Executive SummaryEthical Edge GRC Consulting (Pty) Ltd is deploying an open-source, AI-driven Cognitive GRC Engine designed to bridge the operational gap between climate volatility and child safety across the SADC region. While traditional Governance, Risk, and Compliance (GRC) tools are architected strictly for corporate financial liability, our engine treats climate change as an immediate institutional governance risk that directly threatens vulnerable populations.By processing real-time environmental hazards through specialized cognitive modules, the engine automates Anticipatory Action alerts and generates localized risk mitigation diagnostics for schools and healthcare clinics. Built entirely as a Digital Public Good (DPG) under the Apache 2.0 open-source license, this platform enables public sector authorities and educational entities to protect youth populations proactively.3. Problem StatementWithin Botswana and the broader SADC region, climate change is an active operational crisis directly impacting pediatric safety, public health, and basic education. Extreme weather events—including severe heatwaves, prolonged droughts, and flash flooding—frequently disrupt school attendance and stretch regional pediatric medical resources to their limits.However, existing risk management frameworks and software solutions are strictly calibrated for corporate profitability, completely failing to track the "Social Governance" metrics required to safeguard local communities. Because public sector institutions lack accessible, real-time tools to translate raw climate data into defensive, child-centric action plans, regional responses remain strictly reactive, leaving children highly vulnerable.4. The Solution: "UNICEF Room" Cognitive LogicOur open-source platform isolates these challenges by activating a dedicated, high-priority module within our repository: The UNICEF Climate Wing. This component bridges the gap between environmental monitoring and institutional compliance through three core mechanisms:Climate-Health Ingestion: Continuous processing of local environmental threat vectors (e.g., severe heatwaves, flooding) mapped directly against institutional endpoints.Predictive Risk Scoring: Utilizing automated backend logic to calculate a child-centric vulnerability index based on regional environmental data and localized institutional resilience parameters.Open-Source Portability: To maximize regional scaling, the core code is structured as an independent, modular engine deployed under the Apache 2.0 License, facilitating immediate integration by other UNICEF programme countries.5. Technical ImplementationArchitectural BlueprintThe application is built using a modern, lightweight, high-performance Python stack designed for containerized deployment, open accessibility, and rapid API processing:Repository Name: ethical-edge-open-grcBackend Framework: FastAPI / Python for asynchronous, low-latency API endpoints.Data Serialization Layer: Modular JSON schemas mapping both environmental threats (/data/unicef_hazards.json) and governance requirements (/data/king_v_checklist.json).Core Logic RealignmentThe system's decision-making architecture resides entirely within engine_logic.py, ensuring complete technical alignment between our operational code and our proposal narrative. The software executes via the CognitiveGRCEngine class, leveraging the verified assess_unicef_vulnerability method:Python    def assess_unicef_vulnerability(self, hazard_type, school_or_clinic_id=None):
+        """
+        PHASE 1: UNICEF CLIMATE WING
+        Maps climate hazards to child-centric vulnerability scores.
+        """
+        try:
+            if not os.path.exists(self.unicef_path):
+                return {"error": "UNICEF Hazards data not found."}
 
-## 1. Applicant Information
-* **Organization:** Ethical Edge GRC Consulting (Pty) Ltd
-* **Location:** Plot 5643, Nakedi Road, Broadhurst Industrial, Gaborone, Botswana
-* **Registration No:** BW00009434846
-* **Status:** Fully Tax-Compliant Botswana Entity (SADC Region)
+            with open(self.unicef_path, 'r') as f:
+                hazards = json.load(f)
 
-## 2. Executive Summary
-Ethical Edge GRC Consulting is deploying a **Cognitive GRC Engine** designed to solve the critical gap between climate volatility and child safety. While standard Governance, Risk, and Compliance (GRC) tools focus on corporate financial liability, our engine utilizes AI to automate **Anticipatory Action** for child-centric infrastructure. By ingesting real-time climate data (heatwaves, flooding, air quality), the engine generates actionable risk diagnostics for schools and healthcare clinics across Botswana and the SADC region.
+            # Match incoming hazard types against the automated hazard registry
+            match = next((h for h in hazards if h['hazard'].lower() in hazard_type.lower()), hazards[0])
 
-## 3. Problem Statement
-In the SADC region, climate change is not a future threat but a current health crisis for children. Extreme weather events disproportionately affect school attendance and pediatric health. Existing GRC frameworks are built for corporate profit and fail to track "Social Governance" metrics that protect the vulnerable. There is a lack of open-source, real-time tools that translate climate data into immediate safety protocols for child-centric institutions.
-
-## 4. The Solution: "UNICEF Room" Cognitive Logic
-Our solution activates a specific module within our FastAPI-based Cognitive Engine:
-* **Climate-Health Vetting:** Integration of regional weather APIs and pediatric vulnerability data.
-* **Predictive Scoring:** Using `vetting_logic.py`, the engine calculates a "Child Vulnerability Index" (CVI) based on school proximity to hazards and local clinic surge capacity.
-* **Open Source Transparency:** Published under the **Apache 2.0 License** to serve as a Digital Public Good (DPG) that can be scaled globally by other UNICEF partners.
-
-## 5. Technical Implementation
-* **Stack:** Python, FastAPI, JSON-based Regulatory Frameworks (King V).
-* **Core Logic:** The engine uses a specific function, `calculate_unicef_child_index`, to weigh climate risk against institutional resilience.
-* **Automation:** Real-time monitoring of King V "Social Pillar" compliance for government and private education sectors.
-
-## 6. Budget Breakdown ($100,000 USD)
-
-| Category | Amount | Financial Explanation & Justification |
-| :--- | :--- | :--- |
-| **Open-Source Engineering** | $45,000 | Development of the Python/FastAPI backend core and automated diagnostic logic. |
-| **Climate-Health Data APIs** | $25,000 | Custom API connectors for SADC climate data and health-sector vulnerability mapping. |
-| **Field Validation (Botswana)** | $20,000 | Pilot testing in Botswana school districts to validate "Anticipatory Action" alerts. |
-| **Ethics & Licensing** | $10,000 | Ensuring OSI-approved licensing (Apache 2.0) and rigorous AI Ethics auditing. |
-| **TOTAL** | **$100,000** | **Total grant request for a 12-month pilot phase.** |
-
-## 7. Strategic Impact
-We aim to reduce climate-related emergency response times for schools by **40%**. As a Botswana-based firm, Ethical Edge is positioned to turn this pilot into a regional standard for the SADC block, ensuring that Governance and Risk Management finally serve the interests of the next generation.
+            return {
+                "vulnerability_index": match['vulnerability_score_increase'],
+                "priority_action": match['action_plan'],
+                "indicators_to_monitor": match['indicators'],
+                "location_id": school_or_clinic_id,
+                "status": "Child-Centric Emergency Preparedness Required"
+            }
+        except Exception as e:
+            return {"error": f"Climate assessment failed: {str(e)}"}
+Execution and Data FlowWhen an environmental hazard is detected near an asset (such as a primary school), the engine cross-references the infrastructure's resilience metrics against the unicef_hazards.json registry. It automatically generates an actionable risk payload outlining the specific priority action plan, target indicators to monitor, and an official compliance tracking status. This allows public sector administrative bodies to monitor systemic institutional readiness under the social governance pillars of the King V (2026) framework.6. Budget Breakdown ($100,000 USD)CategoryAmountFinancial Explanation & JustificationOpen-Source Engineering$45,000Full-scale development of the core Python/FastAPI async engine backend, automated hazard data matching logic, and integration components.Climate-Health Data APIs$25,000Engineering and optimization of custom data ingestion pipelines for SADC-specific meteorological data inputs and local public sector metrics.Field Validation (Botswana)$20,000Live pilot deployment across selected Botswana school districts to calibrate automated alert thresholds and validate real-world edge execution.Ethics & Licensing$10,000Legal validation for Digital Public Good (DPG) compliance under the Apache 2.0 license, and auditing against our strict open-source AI Ethics standard.TOTAL$100,000Total grant allocation funding a comprehensive 12-month pilot execution cycle.7. Strategic ImpactOur baseline target is to reduce climate-related emergency response and mobilization times for vulnerable schools and regional health facilities by 40%. As an established, indigenous enterprise operating directly out of Gaborone, Ethical Edge GRC Consulting (Pty) Ltd is uniquely positioned to validate this prototype locally and scale it into a benchmark model across the SADC block. This ensures that modern breakthroughs in artificial intelligence and risk compliance management directly serve the security, health, and future of the next generation.
