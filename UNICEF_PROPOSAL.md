@@ -16,7 +16,7 @@ By processing real-time environmental hazards through specialized cognitive modu
 ---
 
 ## 3. Problem Statement
-Within Botswana and the broader SADC region, climate change is an active operational crisis directly impacting pediatric safety, public health, and basic education. Extreme weather events—including severe heatwaves, prolonged droughts, and flash flooding—frequently disrupt school attendance and stretch regional pediatric medical resources to their limits. 
+Within Botswana and the broader SADC region, climate change is an active operational crisis directly impacting pediatric safety, public health, and basic education. Extreme weather events—including severe heatwaves, prolonged droughts, and flash flooding—frequently disrupt school attendance and stretch regional pediatric medical resources to their limits.
 
 However, existing risk management frameworks and software solutions are strictly calibrated for corporate profitability, completely failing to track the "Social Governance" metrics required to safeguard local communities. Because public sector institutions lack accessible, real-time tools to translate raw climate data into defensive, child-centric action plans, regional responses remain strictly reactive, leaving children highly vulnerable.
 
