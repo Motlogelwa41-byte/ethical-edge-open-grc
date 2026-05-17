@@ -66,3 +66,49 @@ def assess_unicef_vulnerability(self, hazard_type, school_or_clinic_id=None):
         }
     except Exception as e:
         return {"error": f"Climate assessment failed: {str(e)}"}
+
+<h2>6. Budget Breakdown ($100,000 USD)</h2>
+
+<table style="width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 25px; font-family: 'Google Sans', Arial, sans-serif;">
+  <thead>
+    <tr style="background-color: #f1f3f4; border-bottom: 2px solid #cbd5e1;">
+      <th style="padding: 12px; text-align: left; font-weight: bold; color: #1e3a8a;">Category</th>
+      <th style="padding: 12px; text-align: left; font-weight: bold; color: #1e3a8a;">Amount</th>
+      <th style="padding: 12px; text-align: left; font-weight: bold; color: #1e3a8a;">Financial Explanation & Justification</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="border-bottom: 1px solid #e2e8f0;">
+      <td style="padding: 12px; font-weight: bold; color: #334155;">Open-Source Engineering</td>
+      <td style="padding: 12px; color: #334155;">$45,000</td>
+      <td style="padding: 12px; color: #334155; line-height: 1.25;">Full-scale development of the core Python/FastAPI async engine backend, automated hazard data matching logic, and integration components.</td>
+    </tr>
+    <tr style="border-bottom: 1px solid #e2e8f0; background-color: #f8fafc;">
+      <td style="padding: 12px; font-weight: bold; color: #334155;">Climate-Health Data APIs</td>
+      <td style="padding: 12px; color: #334155;">$25,000</td>
+      <td style="padding: 12px; color: #334155; line-height: 1.25;">Engineering and optimization of custom data ingestion pipelines for SADC-specific meteorological data inputs and local public sector metrics.</td>
+    </tr>
+    <tr style="border-bottom: 1px solid #e2e8f0;">
+      <td style="padding: 12px; font-weight: bold; color: #334155;">Field Validation (Botswana)</td>
+      <td style="padding: 12px; color: #334155;">$20,000</td>
+      <td style="padding: 12px; color: #334155; line-height: 1.25;">Live pilot deployment across selected Botswana school districts to calibrate automated alert thresholds and validate real-world edge execution.</td>
+    </tr>
+    <tr style="border-bottom: 2px solid #cbd5e1; background-color: #f8fafc;">
+      <td style="padding: 12px; font-weight: bold; color: #334155;">Ethics & Licensing</td>
+      <td style="padding: 12px; color: #334155;">$10,000</td>
+      <td style="padding: 12px; color: #334155; line-height: 1.25;">Legal validation for Digital Public Good (DPG) compliance under the Apache 2.0 license, and auditing against our strict open-source AI Ethics standard.</td>
+    </tr>
+    <tr style="background-color: #e2e8f0; font-weight: bold;">
+      <td style="padding: 12px; color: #0f172a;">TOTAL</td>
+      <td style="padding: 12px; color: #0f172a;">$100,000</td>
+      <td style="padding: 12px; color: #0f172a; line-height: 1.25;">Total grant allocation funding a comprehensive 12-month pilot execution cycle.</td>
+    </tr>
+  </tbody>
+</table>
+
+<br>
+
+<h2>7. Strategic Impact</h2>
+<p style="font-family: 'Google Sans', Arial, sans-serif; line-height: 1.25; color: #334155; margin-top: 10px;">
+  Our baseline target is to reduce climate-related emergency response and mobilization times for vulnerable schools and regional health facilities by 40%. As an established, indigenous enterprise operating directly out of Gaborone, Ethical Edge GRC Consulting (Pty) Ltd is uniquely positioned to validate this prototype locally and scale it into a benchmark model across the SADC block. This ensures that modern breakthroughs in artificial intelligence and risk compliance management directly serve the security, health, and future of the next generation.
+</p>
