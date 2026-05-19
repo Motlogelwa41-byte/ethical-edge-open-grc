@@ -1,13 +1,11 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime
-from sqlalchemy.orm import declarative_base
 from datetime import datetime
-
-Base = declarative_base()
+from app.database import Base  # Directly wired to our global connection engine
 
 class EnterpriseUser(Base):
     """
     SQLAlchemy database model defining SaaS authorization, multi-tenant company isolation,
-    and granular feature flag permissions.
+    and granular feature flag permissions mapped directly to PostgreSQL.
     """
     __tablename__ = "core_enterprise_users"
 
@@ -17,8 +15,8 @@ class EnterpriseUser(Base):
     hashed_password = Column(String(255), nullable=False)
     
     # Commercial Isolation Engine
-    company_tenant_id = Column(String(100), index=True, nullable=False) # e.g., 'EE_CLIENT_BOTSWANA_BANK'
-    subscription_tier = Column(String(50), default="STANDARD_FREE") # FREE, PROFESSIONAL, ENTERPRISE
+    company_tenant_id = Column(String(100), index=True, nullable=False)
+    subscription_tier = Column(String(50), default="STANDARD_FREE")
     is_active = Column(Boolean, default=True)
     is_admin = Column(Boolean, default=False)
     
