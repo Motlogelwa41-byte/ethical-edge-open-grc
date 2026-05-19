@@ -12,6 +12,7 @@ from app.room_safeguard.epidemic_surveillance import router as safeguard_router
 
 # Initialize the Master FastAPI Application Engine
 app = FastAPI(
+    app.include_router(auth_router)
     title="Ethical Edge Open GRC Engine",
     description="Unified Cognitive GRC Backend Orchestrator handling standard RegTech and global compliance challenge rooms.",
     version="3.0.0"
