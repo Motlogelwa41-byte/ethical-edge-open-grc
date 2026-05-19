@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  # Database Service: Provisions the PostgreSQL container
+  db:
+    image: postgres:15-alpine
+    container_name: grc_postgres_db
+    environment:
+      POSTGRES_USER: ethical_admin
+      POSTGRES_PASSWORD: secure_grc_password_2026
+      POSTGRES_DB: ethical_edge_grc
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Automatically executes your schema script during database initialization
+      - ./database/init_schema.sql:/docker-entrypoint-initdb.d/init_schema.sql
+    networks:
+      - grc_network
+
+  # Application Service: Boots your master multi-room FastAPI application
+  web:
+    build: .
+    container_name: grc_fastapi_engine
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://ethical_admin:secure_grc_password_2026@db:5432/ethical_edge_grc
+      - ENV_STATE=development
+    depends_on:
+      - db
+    networks:
+      - grc_network
+
+volumes:
+  pgdata:
+
+networks:
+  grc_network:
+    driver: bridge
