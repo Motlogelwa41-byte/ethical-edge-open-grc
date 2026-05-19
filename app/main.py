@@ -7,6 +7,7 @@ from app.room_google.ai_cybersecurity import router as google_challenge_router
 from app.room_gates.donor_vetting import router as gates_foundation_router
 from app.room_unicef.open_source_risk import router as unicef_challenge_router
 from app.room_isoc.connectivity_trust import router as isoc_challenge_router
+from app.auth.routes import router as auth_router
 from app.room_safeguard.epidemic_surveillance import router as safeguard_router
 
 # Initialize the Master FastAPI Application Engine
