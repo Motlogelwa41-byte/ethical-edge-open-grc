@@ -79,3 +79,9 @@ async def serve_visual_dashboard(request: Request):
         "can_access_safeguard": True
     }
     return templates.TemplateResponse("dashboard.html", context_payload)
+
+# Import the new administrative provisioning file
+from app.auth import admin_provisioning
+
+# Append this include statement alongside your other room registrations
+app.include_router(admin_provisioning.router)
