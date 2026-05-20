@@ -35,3 +35,22 @@ CREATE TABLE IF NOT EXISTS climate_risk_assessments (
 -- OPTIMIZE INDEXES FOR REGIONAL CLIMATE RESEARCH ALGORITHMS
 CREATE INDEX IF NOT EXISTS idx_climate_district ON climate_risk_assessments(district);
 CREATE INDEX IF NOT EXISTS idx_climate_hazard ON climate_risk_assessments(hazard_type);
+
+-- 7. CREATE VENDOR INTEGRITY AUDIT TRACKING TABLE
+CREATE TABLE IF NOT EXISTS vendor_integrity_audits (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    entity_name VARCHAR(255) NOT NULL,
+    registration_number VARCHAR(100),
+    country_of_origin VARCHAR(100) DEFAULT 'Botswana',
+    pep_status_verified BOOLEAN DEFAULT FALSE,
+    sanction_list_collision BOOLEAN DEFAULT FALSE,
+    calculated_integrity_score REAL NOT NULL,
+    vetting_decision VARCHAR(50) NOT NULL,
+    audit_metadata JSONB,
+    audited_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_vendor_name ON vendor_integrity_audits(entity_name);
+CREATE INDEX IF NOT EXISTS idx_vendor_decision ON vendor_integrity_audits(vetting_decision);
+
+
