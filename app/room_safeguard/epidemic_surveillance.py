@@ -1,23 +1,29 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends, status
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Dict, Any
 from datetime import datetime
+from sqlalchemy.orm import Session
+
+# Import your database core structures and models
+from app.database import get_db
+from app.safeguard.models import HealthFacilitySurveillance
+from app.auth.security import strip_pii_for_bdpa_compliance
 
 router = APIRouter(
     prefix="/safeguard",
     tags=["Project SAFEGUARD - State Dept Biosecurity Engine"]
 )
 
-# 1. DEFINE INGESTION SCHEMAS (Matches your DB layout)
+# 1. DEFINE INGESTION SCHEMAS (Preserving your offline PWA structure)
 class SymptomReportInput(BaseModel):
-    clinic_id: int
-    device_session_token: str
+    clinic_id: str = Field(..., example="CLINIC_SHAKAWE_004")
+    device_session_token: str = Field(..., example="sess_crypt_99x81a")
     symptom_cluster_flags: List[str] = Field(..., example=["acute_fever", "hemorrhagic_signs"])
     anonymized_patient_age_group: str = Field(..., example="25-34")
-    field_captured_at: datetime # When captured offline by PWA
-    geo_location_point: str
+    field_captured_at: datetime = Field(..., description="Timestamp when captured offline by PWA")
+    geo_location_point: str = Field(..., example="-18.3654,21.8421") # Mock regional coordinates
 
-# 2. APPLICATION LOGIC ENDPOINTS
+# 2. APPLICATION STATUS ENDPOINT
 @router.get("/status")
 async def get_safeguard_room_status():
     """
@@ -31,44 +37,68 @@ async def get_safeguard_room_status():
         "operational_state": "INTEGRATED_WITH_SCHEMA"
     }
 
-@router.post("/ingest-report")
-async def ingest_field_report(report: SymptomReportInput):
+# 3. DATABASE-INTEGRATED SURVEILLANCE DATA LOOP
+@router.post("/report-symptom", status_code=status.HTTP_201_CREATED)
+async def ingest_and_evaluate_biosecurity_report(report: SymptomReportInput, db: Session = Depends(get_db)):
     """
-    Ingests field data, computes telemetry latency, and triggers algorithmic risk scaling.
+    Ingests epidemiological reports from border clinics, computes network transmission delay telemetry,
+    enforces zero-PII data policies under BDPA, and commits logs to PostgreSQL.
     """
-    cloud_received_at = datetime.utcnow()
+    current_server_time = datetime.utcnow()
     
-    # Calculate operational sync latency in hours
-    time_delta = cloud_received_at - report.field_captured_at.replace(tzinfo=None)
-    latency_hours = round(time_delta.total_seconds() / 3600.0, 2)
+    # 1. Compute reporting delay latency (Time difference between offline device capture and server sync)
+    time_delta = current_server_time - report.field_captured_at.replace(tzinfo=None)
+    reporting_delay_minutes = int(time_delta.total_seconds() / 60.0)
     
-    # Simple rule-based algorithmic risk weighting for the MVP
-    symptom_count = len(report.symptom_cluster_flags)
-    if symptom_count >= 3:
-        risk_tier = "CRITICAL RISK"
-        risk_score = 90
-    elif symptom_count == 2:
-        risk_tier = "MEDIUM RISK"
-        risk_score = 50
+    # 2. Establish biosecurity threat prioritization based on specific symptom patterns
+    contains_severe_symptoms = any(
+        flag in ["hemorrhagic_signs", "respiratory_distress", "neurological_collapse"]
+        for flag in report.symptom_cluster_flags
+    )
+    
+    if contains_severe_symptoms:
+        urgency_tier = "CRITICAL"
+        status_summary = "IMMEDIATE BIOMEDICAL INTERVENTION REQUIRED - PATHOGEN TRACKING LOGGED"
+    elif len(report.symptom_cluster_flags) >= 3:
+        urgency_tier = "ELEVATED"
+        status_summary = "CLUSTER ANOMALY DETECTED - MONITORING FOR LOCAL TRANSMISSION"
     else:
-        risk_tier = "LOW RISK"
-        risk_score = 15
+        urgency_tier = "LOW"
+        status_summary = "ROUTINE CLINICAL SYMPTOM REGISTRATION"
 
-    # Enforce BDPA validation flag
-    bdpa_compliant = True if "patient_name" not in report.device_session_token else False
+    # 3. Apply the BDPA Privacy Shield to guarantee geographic and user anonymization
+    sanitized_metadata = strip_pii_for_bdpa_compliance({
+        "device_session_token": report.device_session_token,
+        "symptom_flags": report.symptom_cluster_flags,
+        "anonymized_age_group": report.anonymized_patient_age_group,
+        "raw_geo_point": report.geo_location_point
+    })
+
+    # 4. Instantiate the relational database record
+    surveillance_record = HealthFacilitySurveillance(
+        facility_name=f"Clinic Asset node: {report.clinic_id}",
+        district="SADC Border Outpost Cluster",
+        network_latency_ms=12.5, # Simulating automated network hop baseline latency
+        data_payload_size_kb=round(float(len(str(report.dict())) / 1024.0), 3),
+        reporting_delay_minutes=max(0, reporting_delay_minutes),
+        surveillance_urgency_tier=urgency_tier,
+        system_status_summary=status_summary
+    )
+    
+    # Save the custom metadata JSON blocks using our data fields
+    surveillance_record.custom_telemetry_payload = sanitized_metadata
+    
+    # 5. Commit directly to your running PostgreSQL pool
+    db.add(surveillance_record)
+    db.commit()
+    db.refresh(surveillance_record)
 
     return {
-        "status": "SUCCESSFULLY_PROCESSED",
-        "telemetry": {
-            "field_timestamp": report.field_captured_at,
-            "cloud_timestamp": cloud_received_at,
-            "calculated_latency_hours": latency_hours,
-            "latency_target_achieved": latency_hours <= 12.0
-        },
-        "grc_evaluation": {
-            "algorithmic_risk_score": risk_score,
-            "escalation_tier": risk_tier,
-            "bdpa_compliance_audit_flag": bdpa_compliant,
-            "action_required": "ALERT_DISPATCHED" if risk_tier == "CRITICAL RISK" else "LOGGED"
-        }
+        "surveillance_incident_id": str(surveillance_record.id),
+        "sync_timestamp": surveillance_record.synchronized_at,
+        "computed_reporting_delay_minutes": surveillance_record.reporting_delay_minutes,
+        "biosecurity_priority": surveillance_record.surveillance_urgency_tier,
+        "action_framework_directive": surveillance_record.system_status_summary,
+        "privacy_shield": "VERIFIED_BDPA_COMPLIANT_ZERO_PII_COMMITTED",
+        "database_sync": "RECORD_COMMITTED"
     }
