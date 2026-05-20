@@ -1,23 +1,17 @@
-from sqlalchemy import Column, String, Boolean, Float, DateTime, JSON
-from sqlalchemy.dialects.postgresql import UUID
-from app.database import Base
+port Column, String, Float, DateTime, JSON
 import uuid
 from datetime import datetime
+from app.database import Base
 
 class VendorIntegrityAudit(Base):
     __tablename__ = "vendor_integrity_audits"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    entity_name = Column(String(255), nullable=False, index=True)
-    registration_number = Column(String(100), nullable=True)
-    country_of_origin = Column(String(100), default="Botswana", index=True)
-    
-    # Risk and Integrity Ratings
-    pep_status_verified = Column(Boolean, default=False)
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()), index=True)
+    entity_name = Column(String, index=True, nullable=False)
+    country_of_origin = Column(String, default="SADC Region", nullable=False)
+    pep_status_verified = Column(Boolean, default=True)
     sanction_list_collision = Column(Boolean, default=False)
-    calculated_integrity_score = Column(Float, nullable=False) # 0.0 to 100.0
-    vetting_decision = Column(String(50), nullable=False) # APPROVED, REVIEW_REQUIRED, REJECTED
-    
-    # Audit trail details
-    audit_metadata = Column(JSON, nullable=True)
-    audited_at = Column(DateTime, default=datetime.utcnow, index=True)
+    calculated_integrity_score = Column(Float, nullable=False)
+    vetting_decision = Column(String, nullable=False)  # APPROVED, REVIEW_REQUIRED, REJECTED
+    audited_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    audit_metadata = Column(JSON, nullable=True)  # Houses efficiency variances, burn rates, and tenant tags
