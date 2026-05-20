@@ -9,6 +9,9 @@ from app.database import get_db
 from app.room_google.models import AICyberThreatLog
 from app.auth.security import strip_pii_for_bdpa_compliance
 
+# Import the monetization tier guard
+from app.auth.monetization import SubscriptionGuard
+
 router = APIRouter(
     prefix="/google",
     tags=["Google Challenge - AI Cybersecurity"]
@@ -42,12 +45,18 @@ async def get_google_room_status():
         "operational_state": "PRODUCTION_READY"
     }
 
-# 3. DATABASE-INTEGRATED THREAT ANALYSIS COMPONENT
+# 3. DATABASE-INTEGRATED THREAT ANALYSIS COMPONENT (WITH MONETIZATION GUARD)
 @router.post("/analyze-threat", status_code=status.HTTP_201_CREATED)
-async def analyze_perimeter_threat(log: PerimeterThreatLogInput, db: Session = Depends(get_db)):
+async def analyze_perimeter_threat(
+    log: PerimeterThreatLogInput, 
+    tenant_id: str, # Requires the client to pass their UUID token
+    db: Session = Depends(get_db),
+    _sub_check = Depends(SubscriptionGuard(required_room="google")) # Verifies Professional/Enterprise tier
+):
     """
     Evaluates cloud perimeter metrics to determine active threat severity levels,
     scrubs PII network footprints for BDPA, and saves the threat metrics to PostgreSQL.
+    Only accessible by authorized Professional and Enterprise subscribers.
     """
     # Calculate a composite threat weight matching your equation
     threat_score = (log.failed_login_attempts * 2) + (log.unauthorized_api_calls * 5)
@@ -68,20 +77,21 @@ async def analyze_perimeter_threat(log: PerimeterThreatLogInput, db: Session = D
         nist_action_mapping = "DE.CM-01 (Continuous Security Monitoring)"
         nist_rating = "LOW"
 
-    # Enforce zero-PII storage: strip IP addresses before logging to Postgres to protect location telemetry under BDPA
+    # Enforce zero-PII storage: strip IP addresses before logging to protect location telemetry under BDPA
     sanitized_metadata = strip_pii_for_bdpa_compliance({
         "raw_source_ip": log.source_ip,
         "failed_logins": log.failed_login_attempts,
         "unauthorized_calls": log.unauthorized_api_calls,
         "payload_anomaly": log.payload_anomaly_detected,
-        "recommended_framework_action": nist_action_mapping
+        "recommended_framework_action": nist_action_mapping,
+        "verified_tenant_id": tenant_id
     })
 
     # Instantiate the database row mapping
     threat_record = AICyberThreatLog(
         target_endpoint=log.target_cloud_service,
         detected_anomaly_type="AI_ADVERSARIAL_INJECTION" if log.payload_anomaly_detected else "PERIMETER_ANOMALY",
-        ai_confidence_score=round(min(threat_score / 50.0, 1.0), 4), # Generates a normalized score weight vector
+        ai_confidence_score=round(min(threat_score / 50.0, 1.0), 4),
         nist_impact_rating=nist_rating,
         model_inference_payload=sanitized_metadata
     )
@@ -108,7 +118,11 @@ async def analyze_perimeter_threat(log: PerimeterThreatLogInput, db: Session = D
 
 # 4. GOOGLE SAIF POSTURE COMPLIANCE ENDPOINT
 @router.post("/audit-saif")
-async def audit_google_saif_posture(audit: SaifComplianceInput):
+async def audit_google_saif_posture(
+    audit: SaifComplianceInput,
+    tenant_id: str,
+    _sub_check = Depends(SubscriptionGuard(required_room="google"))
+):
     """
     Validates model ecosystem alignment against Google's Secure AI Framework core pillars.
     """
