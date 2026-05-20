@@ -1,41 +1,32 @@
 version: '3.8'
 
 services:
-  # Database Service: Provisions the PostgreSQL container
   db:
     image: postgres:15-alpine
-    container_name: grc_postgres_db
+    container_name: open_grc_postgres_node
+    restart: always
     environment:
-      POSTGRES_USER: ethical_admin
-      POSTGRES_PASSWORD: secure_grc_password_2026
-      POSTGRES_DB: ethical_edge_grc
+      POSTGRES_USER: grc_admin
+      POSTGRES_PASSWORD: SuperSecurePassword2026!
+      POSTGRES_DB: ethical_edge_grc_pool
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
-      # Automatically executes your schema script during database initialization
-      - ./database/init_schema.sql:/docker-entrypoint-initdb.d/init_schema.sql
-    networks:
-      - grc_network
+      # This mapping executes our database script automatically on startup
+      - ./init_schema.sql:/docker-entrypoint-initdb.d/init_schema.sql
+      - postgres_runtime_data:/var/lib/postgresql/data
 
-  # Application Service: Boots your master multi-room FastAPI application
   web:
     build: .
-    container_name: grc_fastapi_engine
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    container_name: open_grc_api_engine
+    restart: always
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://ethical_admin:secure_grc_password_2026@db:5432/ethical_edge_grc
-      - ENV_STATE=development
+      - DATABASE_URL=postgresql://grc_admin:SuperSecurePassword2026!@db:5432/ethical_edge_grc_pool
+      - JWT_SECRET=YOUR_SUPER_SECRET_COMPLIANCE_KEY_2026
     depends_on:
       - db
-    networks:
-      - grc_network
 
 volumes:
-  pgdata:
-
-networks:
-  grc_network:
-    driver: bridge
+  postgres_runtime_data:
