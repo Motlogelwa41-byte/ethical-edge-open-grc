@@ -1,104 +1,39 @@
--- ETHICAL EDGE GRC - POSTGRESQL INITIALIZATION SCRIPT
-
--- Enable UUID extension for secure identifiers
+-- 1. ENABLE EXTENSION FOR AUTOMATED UNIQUE IDENTIFIERS
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Table 1: Risks (Powers "Risk Assessment & Management")
--- Aligned with ISO 31000 & COSO Framework
-CREATE TABLE risks (
-    risk_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    category VARCHAR(50) NOT NULL, -- Financial, Operational, Strategic, Regulatory
-    description TEXT NOT NULL,
-    impact_score INT CHECK (impact_score BETWEEN 1 AND 5),
-    likelihood_score INT CHECK (likelihood_score BETWEEN 1 AND 5),
+-- 2. CREATE THE ENTERPRISE USERS MULTI-TENANT TABLE
+CREATE TABLE IF NOT EXISTS enterprise_users (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    full_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    hashed_password VARCHAR(255) NOT NULL,
+    company_tenant_id VARCHAR(100) NOT NULL,
+    subscription_tier VARCHAR(50) DEFAULT 'STANDARD_FREE',
     
-    -- Inherent risk calculation (Impact x Likelihood)
-    risk_rating INT GENERATED ALWAYS AS (impact_score * likelihood_score) STORED,
+    -- Feature Flag Access Controls (Monetization Gateways)
+    can_access_king_v BOOLEAN DEFAULT TRUE,
+    can_access_nist_cyber BOOLEAN DEFAULT FALSE,
+    can_access_safeguard BOOLEAN DEFAULT FALSE,
     
-    -- NEW: Cognitive Engine Fields
-    control_effectiveness FLOAT DEFAULT 0.0 CHECK (control_effectiveness BETWEEN 0.0 AND 1.0),
-    residual_risk FLOAT, 
-    
-    status VARCHAR(20) DEFAULT 'Identified', -- Identified, Mitigated, Residual
+    -- Audit & Temporal Compliance Tracking
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Table 2: Compliance_Frameworks (Powers "Compliance Tracking")
-CREATE TABLE compliance_frameworks (
-    framework_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    framework_name VARCHAR(100) NOT NULL, 
-    requirement_text TEXT NOT NULL,
-    status VARCHAR(20) DEFAULT 'Under Review', 
-    last_assessment_date DATE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
+-- 3. OPTIMIZE INDEXING FOR FAST AUTHENTICATION LOOKUPS
+CREATE INDEX IF NOT EXISTS idx_users_email ON enterprise_users(email);
+CREATE INDEX IF NOT EXISTS idx_users_tenant ON enterprise_users(company_tenant_id);
 
--- Table 3: Audit_Logs (Powers "Audit & Reporting Tools")
-CREATE TABLE audit_logs (
-    log_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    action_taken TEXT NOT NULL,
-    user_id VARCHAR(100) NOT NULL, 
-    table_affected VARCHAR(50),
-    timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
+-- 4. CREATE A TEMPORAL TRIGGER TO AUTOMATICALLY UPDATE TIMESTAMP ROWS
+CREATE OR REPLACE FUNCTION update_timestamp_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
--- INITIAL SEED DATA
-INSERT INTO compliance_frameworks (framework_name, requirement_text, status) 
-VALUES 
-('King V', 'Ethical leadership and corporate citizenship requirements', 'Under Review'),
-('Botswana DPA', 'Personal data processing and cross-border transfer restrictions', 'Under Review'),
-('ISO 31000', 'Risk identification and treatment methodology', 'Compliant');
-
--- =========================================================================
--- ROOM 6: PROJECT SAFEGUARD - NATIONAL HEALTH SECURITY & SURVEILLANCE DATA TIER
--- =========================================================================
-
--- 1. CLINIC MASTER REGISTRY
--- Maps specific healthcare nodes across the strategic pilot districts
-CREATE TABLE IF NOT EXISTS safeguard_clinics (
-    clinic_id SERIAL PRIMARY KEY,
-    clinic_name VARCHAR(150) NOT NULL,
-    district VARCHAR(100) NOT NULL, -- Gaborone, Francistown, Maun, Lobatse
-    facility_type VARCHAR(50) NOT NULL, -- Rural Clinic, District Hospital, Border Post
-    latitude DECIMAL(9,6) NOT NULL,
-    longitude DECIMAL(9,6) NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
--- 2. FIELD SYNC LOGS (OFFLINE-FIRST TELEMETRY)
--- Tracks the latency gap between physical clinical entry and cloud intake
-CREATE TABLE IF NOT EXISTS safeguard_symptom_reports (
-    report_id SERIAL PRIMARY KEY,
-    clinic_id INT REFERENCES safeguard_clinics(clinic_id) ON DELETE RESTRICT,
-    device_session_token VARCHAR(255) NOT NULL, -- Identifies individual PWA browser cache nodes
-    symptom_cluster_flags TEXT[] NOT NULL, -- Array of symptoms e.g., ['acute_fever', 'hemorrhagic']
-    anonymized_patient_age_group VARCHAR(20) NOT NULL, -- Protects identity under BDPA
-    
-    -- Critical Synchronization Telemetry
-    field_captured_at TIMESTAMP WITH TIME ZONE NOT NULL, -- When the nurse typed it offline
-    cloud_received_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP, -- When network returned & synced
-    latency_hours DECIMAL(6,2) GENERATED ALWAYS AS (
-        EXTRACT(EPOCH FROM (cloud_received_at - field_captured_at)) / 3600
-    ) STORED, -- Automatically computes sync window latency in real-time
-    
-    -- Geospatial Tracking Point
-    geo_location_point VARCHAR(100) NOT NULL
-);
-
--- 3. ALGORITHMIC RISK ESCALATION & COMPLIANCE LOGS
--- Captures automated FastAPI GRC actions and alert validation flows
-CREATE TABLE IF NOT EXISTS safeguard_governance_alerts (
-    alert_id SERIAL PRIMARY KEY,
-    report_id INT REFERENCES safeguard_symptom_reports(report_id) ON DELETE CASCADE,
-    algorithmic_risk_score INT NOT NULL, -- Generated by Scikit-Learn analytical calculations
-    escalation_tier VARCHAR(20) NOT NULL, -- LOW, MEDIUM, CRITICAL RISK
-    multi_channel_dispatched_at TIMESTAMP WITH TIME ZONE, -- Verification timestamp of SMS/Email triggers
-    bdpa_compliance_audit_flag BOOLEAN DEFAULT TRUE, -- Validates zero personally identifiable data leaked
-    resolution_status VARCHAR(50) DEFAULT 'PENDING_DISTRICT_VALIDATION'
-);
-
--- Indexing for High-Concurrency Optimization
-CREATE INDEX IF NOT EXISTS idx_safeguard_district ON safeguard_clinics(district);
-CREATE INDEX IF NOT EXISTS idx_safeguard_latency ON safeguard_symptom_reports(latency_hours);
-CREATE INDEX IF NOT EXISTS idx_safeguard_alert_tier ON safeguard_governance_alerts(escalation_tier);
+CREATE TRIGGER update_enterprise_users_modtime
+BEFORE UPDATE ON enterprise_users
+FOR EACH ROW
+EXECUTE FUNCTION update_timestamp_column();
