@@ -3,11 +3,11 @@ from pydantic import BaseModel, Field
 from typing import List, Dict, Any
 from sqlalchemy.orm import Session
 
-# Import your database core layer and models
+# Import database core architecture models
 from app.database import get_db
 from app.room_isoc.models import NetworkTelemetry
 
-# Import the monetization tier guard
+# Import the premium tier monetization guard
 from app.auth.monetization import SubscriptionGuard
 
 router = APIRouter(
@@ -15,54 +15,56 @@ router = APIRouter(
     tags=["Internet Society - Community Network Trust"]
 )
 
-# 1. ISOC TELEMETRY INGESTION SCHEMAS
+# 1. NETWORK TELEMETRY COMPLIANCE SCHEMAS
 class MeshNodeTelemetryInput(BaseModel):
     node_id: str = Field(..., example="NODE_CHOBE_EAST_01")
-    latency_ms: float = Field(..., ge=0.0, description="Ping round-trip latency")
-    packet_loss_percentage: float = Field(..., ge=0.0, le=100.0)
+    latency_ms: float = Field(..., ge=0.0, description="Ping round-trip time latency")
+    packet_loss_percentage: float = Field(..., ge=0.0, le=100.0, description="Packet delivery drop rate")
     manrs_security_profile_passed: bool = Field(..., description="Validates routing security standard compliance")
-    solar_power_reserve_percentage: float = Field(..., ge=0.0, le=100.0, description="Off-grid battery status")
+    solar_power_reserve_percentage: float = Field(..., ge=0.0, le=100.0, description="Off-grid battery telemetry status")
 
-# 2. STATUS TRACKING ENDPOINT
+# 2. OPERATIONAL ARCHITECTURE HEALTH STATUS
 @router.get("/status")
 async def get_isoc_room_status():
     """
-    Returns the real-time status of the Community Network Trust engine.
+    Returns the real-time configuration status of the Community Network Trust module.
     """
     return {
         "room": "Internet Society Community Wing",
         "engine_status": "ACTIVE",
-        "focus": "Resilient Mesh Networking, Telemetry Auditing & MANRS Security",
+        "focus": "Resilient Mesh Networking, Telemetry Auditing & MANRS Routing Security",
+        "compliance_frameworks": ["MANRS Actions Matrix", "Off-Grid Critical Infrastructure Management"],
         "operational_state": "PRODUCTION_READY"
     }
 
-# 3. DATABASE-INTEGRATED TELEMETRY COMPONENT (WITH MONETIZATION GUARD)
+# 3. SECURED, MONETIZED INGESTION SUITE
 @router.post("/log-telemetry", status_code=status.HTTP_201_CREATED)
 async def log_node_telemetry(
     telemetry: MeshNodeTelemetryInput,
-    tenant_id: str, # Requires the client to pass their UUID token
+    tenant_id: str, # Requires the enterprise user UUID token
     db: Session = Depends(get_db),
     _sub_check = Depends(SubscriptionGuard(required_room="isoc")) # Restricts to Enterprise Premium Tier
 ):
     """
-    Ingests off-grid mesh node telemetry, computes system resiliency metrics,
-    checks tier authorization, and logs the payload directly into PostgreSQL.
+    Ingests off-grid mesh node data, evaluates system resiliency parameters,
+    validates tenant monetization privileges, and logs the payload directly into PostgreSQL.
     Accessible only by Enterprise Premium Tier accounts.
     """
-    # Algorithmic calculation of operational health
+    # Algorithmic check of operational performance metrics
     is_operational = not (telemetry.packet_loss_percentage > 5.0 or telemetry.latency_ms > 150.0)
     
     if is_operational and telemetry.manrs_security_profile_passed:
         health_status = "OPTIMAL_HEALTH"
         incident_alert_level = "NONE"
     elif not telemetry.manrs_security_profile_passed:
+        # Generate high alert states if basic secure routing conventions are violated
         health_status = "SECURITY_BREACH_VULNERABILITY"
         incident_alert_level = "HIGH"
     else:
         health_status = "DEGRADED_PERFORMANCE"
         incident_alert_level = "MEDIUM"
 
-    # Instantiate the database record using our relational model mapping
+    # Map input parameters straight to database columns
     telemetry_record = NetworkTelemetry(
         node_identifier=telemetry.node_id,
         latency=telemetry.latency_ms,
@@ -76,7 +78,7 @@ async def log_node_telemetry(
         }
     )
 
-    # Commit transaction to the PostgreSQL database pool
+    # Execute database context pool transaction
     db.add(telemetry_record)
     db.commit()
     db.refresh(telemetry_record)
