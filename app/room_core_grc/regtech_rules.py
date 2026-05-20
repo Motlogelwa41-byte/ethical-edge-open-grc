@@ -7,6 +7,9 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.room_core_grc.models import GovernanceAssessment
 
+# Import the monetization tier guard we just created
+from app.auth.monetization import SubscriptionGuard
+
 router = APIRouter(
     prefix="/grc",
     tags=["Normal GRC - RegTech Frameworks"]
@@ -40,12 +43,17 @@ async def get_grc_status():
         "compliance_tracking_state": "OPERATIONAL"
     }
 
-# 3. DATABASE-INTEGRATED KING V COMPLIANCE ENDPOINT
+# 3. DATABASE-INTEGRATED KING V COMPLIANCE ENDPOINT (WITH MONETIZATION GUARD)
 @router.post("/evaluate-king-v", status_code=status.HTTP_201_CREATED)
-async def evaluate_king_v_compliance(checklist: KingVChecklistInput, db: Session = Depends(get_db)):
+async def evaluate_king_v_compliance(
+    checklist: KingVChecklistInput, 
+    tenant_id: str, # Requires the client to pass their UUID token
+    db: Session = Depends(get_db),
+    _sub_check = Depends(SubscriptionGuard(required_room="core_grc")) # Intercepts and validates payment status
+):
     """
-    Ingests a corporate governance checklist, computes a localized King V compliance rating,
-    and logs the complete assessment metadata straight into PostgreSQL.
+    Ingests a corporate governance checklist, checks if the tenant has paid for this tier,
+    computes King V compliance, and logs the assessment metadata straight into PostgreSQL.
     """
     # Track the core pillars based on King V operational outcomes
     pillars = {
@@ -80,7 +88,8 @@ async def evaluate_king_v_compliance(checklist: KingVChecklistInput, db: Session
         assessment_metadata={
             "pillar_breakdown": pillars,
             "corporate_governance_standing": standing,
-            "additional_metric_flags": checklist.additional_metric_flags
+            "additional_metric_flags": checklist.additional_metric_flags,
+            "verified_tenant_id": tenant_id
         }
     )
 
@@ -112,13 +121,13 @@ async def calculate_risk_matrix(risk: InherentRiskInput):
     
     if inherent_risk_score >= 15:
         risk_tier = "CRITICAL RISK"
-        reremediation_window = "Immediate Action Required / Board Level Escalation"
+        remediation_window = "Immediate Action Required / Board Level Escalation"
     elif inherent_risk_score >= 8:
         risk_tier = "MEDIUM RISK"
-        reremediation_window = "Quarterly Monitoring / Management Mitigation"
+        remediation_window = "Quarterly Monitoring / Management Mitigation"
     else:
         risk_tier = "LOW RISK"
-        reremediation_window = "Routine Operational Logging"
+        remediation_window = "Routine Operational Logging"
 
     return {
         "risk_title": risk.risk_title,
@@ -128,5 +137,5 @@ async def calculate_risk_matrix(risk: InherentRiskInput):
             "calculated_inherent_score": inherent_risk_score
         },
         "risk_classification": risk_tier,
-        "governance_action_protocol": reremediation_window
+        "governance_action_protocol": remediation_window
     }
