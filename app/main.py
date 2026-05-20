@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
+from app.auth.billing_webhooks import router as billing_webhook_router
 
 # 1. IMPORT ALL OPERATIONAL ROUTERS & SECURITY GATEKEEPERS
 from app.auth.routes import router as auth_router
