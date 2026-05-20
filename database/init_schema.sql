@@ -53,4 +53,20 @@ CREATE TABLE IF NOT EXISTS vendor_integrity_audits (
 CREATE INDEX IF NOT EXISTS idx_vendor_name ON vendor_integrity_audits(entity_name);
 CREATE INDEX IF NOT EXISTS idx_vendor_decision ON vendor_integrity_audits(vetting_decision);
 
+-- 8. CREATE EPIDEMIC SURVEILLANCE DATA LOOP TABLE
+CREATE TABLE IF NOT EXISTS health_facility_surveillance (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    facility_name VARCHAR(255) NOT NULL,
+    district VARCHAR(100) NOT NULL,
+    network_latency_ms REAL NOT NULL,
+    data_payload_size_kb REAL NOT NULL,
+    reporting_delay_minutes INTEGER NOT NULL,
+    surveillance_urgency_tier VARCHAR(50) NOT NULL,
+    system_status_summary VARCHAR(255) NOT NULL,
+    synchronized_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_facility_name ON health_facility_surveillance(facility_name);
+CREATE INDEX IF NOT EXISTS idx_health_district ON health_facility_surveillance(district);
+
 
