@@ -1,73 +1,60 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
-from typing import List, Dict
-from datetime import datetime
+from sqlalchemy.orm import Session
+from typing import Optional, Dict, Any
+from app.database import get_db
+from app.isoc.models import NetworkTelemetry
+from app.auth.security import strip_pii_for_bdpa_compliance
 
 router = APIRouter(
     prefix="/isoc",
-    tags=["ISOC Challenge - Connectivity & Trust Infrastructure"]
+    tags=["Pillar 4 - Internet Society Trust Network Room"]
 )
 
-# 1. NETWORK RESILIENCE AND MANRS INTAKE SCHEMAS
-class CommunityNetworkAuditInput(BaseModel):
-    network_identifier: str = Field(..., example="Kgalagadi_Community_Mesh_04")
-    wpa3_encryption_enforced: bool = Field(..., description="Validates last-mile wireless encryption tier")
-    manrs_anti_spoofing_active: bool = Field(..., description="MANRS Action 2: Filtering to prevent spoofed traffic")
-    manrs_global_coordination_ready: bool = Field(..., description="MANRS Action 4: Up-to-date contact info in peering DBs")
-    average_latency_ms: float = Field(..., ge=0.0)
-    packet_loss_percentage: float = Field(..., ge=0.0, le=100.0)
+class TelemetryIngestInput(BaseModel):
+    node_id: str = Field(..., example="NODE_CHOBE_012")
+    district: str = Field(..., example="Chobe District")
+    packet_loss_percentage: float = Field(..., example=0.45)
+    latency_ms: float = Field(..., example=12.4)
+    bandwidth_mbps: float = Field(..., example=45.2)
+    solar_battery_voltage: Optional[float] = Field(None, example=13.8)
+    solar_panel_output_watts: Optional[float] = Field(None, example=85.0)
+    ambient_temperature_celsius: Optional[float] = Field(None, example=34.5)
+    local_weather_anomaly: Optional[str] = Field("NORMAL", example="EXTREME_HEAT")
+    raw_device_metadata: Optional[Dict[str, Any]] = Field(None, description="Contains non-PII operational settings")
 
-# 2. APPLICATION LOGIC ENDPOINTS
-@router.get("/status")
-async def get_isoc_room_status():
+@router.post("/telemetry/ingest", status_code=status.HTTP_201_CREATED)
+async def ingest_edge_research_data(payload: TelemetryIngestInput, db: Session = Depends(get_db)):
     """
-    Returns the real-time operational state of the ISOC network trust engine.
+    Ingests live telemetry from experimental rural nodes, runs it through the BDPA Privacy Shield 
+    interceptor at the edge, and logs the records safely to PostgreSQL.
     """
-    return {
-        "room": "Internet Society (ISOC) Challenge Room",
-        "engine_status": "ACTIVE",
-        "focus": "Community Network Resilience & Global Routing Integrity",
-        "core_framework": "MANRS (Mutually Assured Norms for Routing Security) Core Pillars",
-        "operational_state": "PRODUCTION_READY"
-    }
-
-@router.post("/audit-network")
-async def audit_network_trust_infrastructure(network: CommunityNetworkAuditInput):
-    """
-    Evaluates local infrastructure metrics against MANRS global routing safety norms.
-    """
-    # Evaluate explicit MANRS alignment vectors
-    manrs_score = 0
-    if network.manrs_anti_spoofing_active:
-        manrs_score += 50
-    if network.manrs_global_coordination_ready:
-        manrs_score += 50
-
-    # Determine structural connectivity performance
-    is_performant = network.average_latency_ms <= 150.0 and network.packet_loss_percentage <= 2.0
+    # 1. Convert input to dict and enforce zero-PII data stripping under the BDPA
+    raw_data = payload.dict()
+    sanitized_metadata = strip_pii_for_bdpa_compliance(raw_data.get("raw_device_metadata") or {})
     
-    # Establish overall Network Trust Status
-    if manrs_score == 100 and network.wpa3_encryption_enforced and is_performant:
-        trust_tier = "SECURE & RESILIENT INFRASTRUCTURE"
-        clearance_status = "APPROVED_FOR_ISOC_CONSORTIUM"
-    elif manrs_score >= 50:
-        trust_tier = "PARTIALLY COMPLIANT - ROUTING SECURITY REFORMS REQUIRED"
-        clearance_status = "CONDITIONAL_HOLD"
-    else:
-        trust_tier = "CRITICAL NON-COMPLIANCE - VULNERABLE TO SPOOFING/INTERCEPTION"
-        clearance_status = "REJECTED_GOVERNANCE_FAIL"
-
+    # 2. Map input variables directly to the relational database structure
+    telemetry_record = NetworkTelemetry(
+        node_id=payload.node_id,
+        district=payload.district,
+        packet_loss_percentage=payload.packet_loss_percentage,
+        latency_ms=payload.latency_ms,
+        bandwidth_mbps=payload.bandwidth_mbps,
+        solar_battery_voltage=payload.solar_battery_voltage,
+        solar_panel_output_watts=payload.solar_panel_output_watts,
+        ambient_temperature_celsius=payload.ambient_temperature_celsius,
+        local_weather_anomaly=payload.local_weather_anomaly,
+        custom_telemetry_payload=sanitized_metadata
+    )
+    
+    # 3. Securely commit transaction block
+    db.add(telemetry_record)
+    db.commit()
+    db.refresh(telemetry_record)
+    
     return {
-        "evaluation_timestamp": datetime.utcnow(),
-        "network_node": network.network_identifier,
-        "performance_telemetry": {
-            "latency_status": "OPTIMAL" if network.average_latency_ms <= 100.0 else "ACCEPTABLE",
-            "packet_loss_integrity": f"{100.0 - network.packet_loss_percentage}%"
-        },
-        "compliance_matrix": {
-            "manrs_routing_score": f"{manrs_score}/100",
-            "last_mile_encryption_secured": network.wpa3_encryption_enforced,
-            "overall_trust_tier": trust_tier
-        },
-        "isoc_funding_eligibility": clearance_status
+        "status": "TELEMETRY_INGESTED",
+        "record_id": str(telemetry_record.id),
+        "node_context": telemetry_record.node_id,
+        "privacy_shield": "VERIFIED_ZERO_PII_COMPLIANT"
     }
