@@ -3,7 +3,7 @@ from pydantic import BaseModel, EmailStr, Field
 from typing import Dict, Any
 from sqlalchemy.orm import Session
 
-# Import our secure connection dependencies and schemas
+# Import our secure connection dependencies and models
 from app.database import get_db
 from app.auth.models import EnterpriseUser
 from app.auth.security import hash_password, verify_password, create_access_token
