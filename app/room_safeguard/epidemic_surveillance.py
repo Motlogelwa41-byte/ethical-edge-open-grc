@@ -9,6 +9,9 @@ from app.database import get_db
 from app.safeguard.models import HealthFacilitySurveillance
 from app.auth.security import strip_pii_for_bdpa_compliance
 
+# Import the monetization tier guard
+from app.auth.monetization import SubscriptionGuard
+
 router = APIRouter(
     prefix="/safeguard",
     tags=["Project SAFEGUARD - State Dept Biosecurity Engine"]
@@ -21,7 +24,7 @@ class SymptomReportInput(BaseModel):
     symptom_cluster_flags: List[str] = Field(..., example=["acute_fever", "hemorrhagic_signs"])
     anonymized_patient_age_group: str = Field(..., example="25-34")
     field_captured_at: datetime = Field(..., description="Timestamp when captured offline by PWA")
-    geo_location_point: str = Field(..., example="-18.3654,21.8421") # Mock regional coordinates
+    geo_location_point: str = Field(..., example="-18.3654,21.8421")
 
 # 2. APPLICATION STATUS ENDPOINT
 @router.get("/status")
@@ -37,16 +40,22 @@ async def get_safeguard_room_status():
         "operational_state": "INTEGRATED_WITH_SCHEMA"
     }
 
-# 3. DATABASE-INTEGRATED SURVEILLANCE DATA LOOP
+# 3. DATABASE-INTEGRATED SURVEILLANCE DATA LOOP (WITH MONETIZATION GUARD)
 @router.post("/report-symptom", status_code=status.HTTP_201_CREATED)
-async def ingest_and_evaluate_biosecurity_report(report: SymptomReportInput, db: Session = Depends(get_db)):
+async def ingest_and_evaluate_biosecurity_report(
+    report: SymptomReportInput, 
+    tenant_id: str, # Requires the client to pass their UUID token
+    db: Session = Depends(get_db),
+    _sub_check = Depends(SubscriptionGuard(required_room="safeguard")) # Restricts to Enterprise Premium Tier
+):
     """
     Ingests epidemiological reports from border clinics, computes network transmission delay telemetry,
     enforces zero-PII data policies under BDPA, and commits logs to PostgreSQL.
+    Accessible only by Enterprise Premium Tier accounts.
     """
     current_server_time = datetime.utcnow()
     
-    # 1. Compute reporting delay latency (Time difference between offline device capture and server sync)
+    # 1. Compute reporting delay latency
     time_delta = current_server_time - report.field_captured_at.replace(tzinfo=None)
     reporting_delay_minutes = int(time_delta.total_seconds() / 60.0)
     
@@ -71,21 +80,21 @@ async def ingest_and_evaluate_biosecurity_report(report: SymptomReportInput, db:
         "device_session_token": report.device_session_token,
         "symptom_flags": report.symptom_cluster_flags,
         "anonymized_age_group": report.anonymized_patient_age_group,
-        "raw_geo_point": report.geo_location_point
+        "raw_geo_point": report.geo_location_point,
+        "verified_tenant_id": tenant_id
     })
 
     # 4. Instantiate the relational database record
     surveillance_record = HealthFacilitySurveillance(
         facility_name=f"Clinic Asset node: {report.clinic_id}",
         district="SADC Border Outpost Cluster",
-        network_latency_ms=12.5, # Simulating automated network hop baseline latency
+        network_latency_ms=12.5,
         data_payload_size_kb=round(float(len(str(report.dict())) / 1024.0), 3),
         reporting_delay_minutes=max(0, reporting_delay_minutes),
         surveillance_urgency_tier=urgency_tier,
         system_status_summary=status_summary
     )
     
-    # Save the custom metadata JSON blocks using our data fields
     surveillance_record.custom_telemetry_payload = sanitized_metadata
     
     # 5. Commit directly to your running PostgreSQL pool
