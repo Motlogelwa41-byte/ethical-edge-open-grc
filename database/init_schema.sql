@@ -85,4 +85,18 @@ CREATE TABLE IF NOT EXISTS governance_assessments (
 CREATE INDEX IF NOT EXISTS idx_gov_company ON governance_assessments(company_name);
 CREATE INDEX IF NOT EXISTS idx_gov_standard ON governance_assessments(framework_standard);
 
+-- 10. CREATE AI CYBERSECURITY ANOMALY REPOSITORY TABLE
+CREATE TABLE IF NOT EXISTS ai_cyber_threat_logs (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    target_endpoint VARCHAR(255) NOT NULL,
+    detected_anomaly_type VARCHAR(100) NOT NULL,
+    ai_confidence_score REAL NOT NULL,
+    nist_impact_rating VARCHAR(50) NOT NULL,
+    model_inference_payload JSONB,
+    logged_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_threat_anomaly ON ai_cyber_threat_logs(detected_anomaly_type);
+CREATE INDEX IF NOT EXISTS idx_threat_nist ON ai_cyber_threat_logs(nist_impact_rating);
+
 
