@@ -6,6 +6,7 @@ from pathlib import Path
 
 # 1. IMPORT ALL OPERATIONAL ROUTERS & SECURITY GATEKEEPERS
 from app.auth.routes import router as auth_router
+from app.auth.admin_provisioning import router as admin_provisioning_router  # Cleaned & Standardized
 from app.room_core_grc.regtech_rules import router as core_grc_router
 from app.room_google.ai_cybersecurity import router as google_challenge_router
 from app.room_gates.donor_vetting import router as gates_foundation_router
@@ -22,6 +23,7 @@ app = FastAPI(
 
 # 3. CONFIGURE FILE PATHING FOR JINJA2 FRONTEND UI RENDERING
 BASE_DIR = Path(__file__).resolve().parent
+# Points to app/templates. Change to BASE_DIR.parent / "templates" if folder is in project root.
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 # 4. ENABLE CROSS-ORIGIN RESOURCE SHARING (CORS) FOR REGIONAL PWAs
@@ -35,6 +37,7 @@ app.add_middleware(
 
 # 5. MOUNT ALL BACKEND SECURITY AND COMPLIANCE INFRASTRUCTURE ROUTERS
 app.include_router(auth_router)
+app.include_router(admin_provisioning_router)  # Mounted systematically in order
 app.include_router(core_grc_router)
 app.include_router(google_challenge_router)
 app.include_router(gates_foundation_router)
@@ -79,9 +82,3 @@ async def serve_visual_dashboard(request: Request):
         "can_access_safeguard": True
     }
     return templates.TemplateResponse("dashboard.html", context_payload)
-
-# Import the new administrative provisioning file
-from app.auth import admin_provisioning
-
-# Append this include statement alongside your other room registrations
-app.include_router(admin_provisioning.router)
