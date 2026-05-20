@@ -69,4 +69,20 @@ CREATE TABLE IF NOT EXISTS health_facility_surveillance (
 CREATE INDEX IF NOT EXISTS idx_facility_name ON health_facility_surveillance(facility_name);
 CREATE INDEX IF NOT EXISTS idx_health_district ON health_facility_surveillance(district);
 
+-- 9. CREATE CORE GOVERNANCE AND REGTECH COMPLIANCE TABLE
+CREATE TABLE IF NOT EXISTS governance_assessments (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    company_name VARCHAR(255) NOT NULL,
+    framework_standard VARCHAR(50) DEFAULT 'KING_V',
+    transparency_score REAL NOT NULL,
+    accountability_index REAL NOT NULL,
+    overall_compliance_percentage REAL NOT NULL,
+    compliance_status VARCHAR(50) NOT NULL,
+    assessment_metadata JSONB,
+    evaluated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_gov_company ON governance_assessments(company_name);
+CREATE INDEX IF NOT EXISTS idx_gov_standard ON governance_assessments(framework_standard);
+
 
