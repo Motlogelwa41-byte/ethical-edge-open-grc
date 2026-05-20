@@ -45,6 +45,7 @@ app.include_router(gates_foundation_router)
 app.include_router(unicef_challenge_router)
 app.include_router(isoc_challenge_router)
 app.include_router(safeguard_router)
+app.include_router(billing_webhook_router)
 
 # 6. SYSTEM STATUS ORCHESTRATION HEALTH ENDPOINT
 @app.get("/")
