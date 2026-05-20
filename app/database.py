@@ -3,10 +3,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 # 1. RETRIEVE ENVIRONMENT CORE CONNECTION STRING
-# Fallback points to the exact credentials mapped in your docker-compose.yml file
+# Aligned strictly with our Docker Compose network routing parameters
 DATABASE_URL = os.getenv(
     "DATABASE_URL", 
-    "postgresql://ethical_admin:secure_grc_password_2026@localhost:5432/ethical_edge_grc"
+    "postgresql://grc_admin:SuperSecurePassword2026!@db:5432/ethical_edge_grc_pool"
 )
 
 # 2. INITIALIZE ENGINE WITH CONNECTION POOL MANAGEMENT
