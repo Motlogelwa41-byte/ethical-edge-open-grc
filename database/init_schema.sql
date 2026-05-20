@@ -1,39 +1,21 @@
--- 1. ENABLE EXTENSION FOR AUTOMATED UNIQUE IDENTIFIERS
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
--- 2. CREATE THE ENTERPRISE USERS MULTI-TENANT TABLE
-CREATE TABLE IF NOT EXISTS enterprise_users (
+-- 5. CREATE NETWORK TELEMETRY INSTRUMENTATION TABLE
+CREATE TABLE IF NOT EXISTS network_telemetry (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    full_name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    hashed_password VARCHAR(255) NOT NULL,
-    company_tenant_id VARCHAR(100) NOT NULL,
-    subscription_tier VARCHAR(50) DEFAULT 'STANDARD_FREE',
-    
-    -- Feature Flag Access Controls (Monetization Gateways)
-    can_access_king_v BOOLEAN DEFAULT TRUE,
-    can_access_nist_cyber BOOLEAN DEFAULT FALSE,
-    can_access_safeguard BOOLEAN DEFAULT FALSE,
-    
-    -- Audit & Temporal Compliance Tracking
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    node_id VARCHAR(50) NOT NULL,
+    district VARCHAR(100) NOT NULL,
+    packet_loss_percentage REAL NOT NULL,
+    latency_ms REAL NOT NULL,
+    bandwidth_mbps REAL NOT NULL,
+    manrs_violations_count INTEGER DEFAULT 0,
+    solar_battery_voltage REAL,
+    solar_panel_output_watts REAL,
+    ambient_temperature_celsius REAL,
+    local_weather_anomaly VARCHAR(255) DEFAULT 'NORMAL',
+    custom_telemetry_payload JSONB,
+    captured_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 3. OPTIMIZE INDEXING FOR FAST AUTHENTICATION LOOKUPS
-CREATE INDEX IF NOT EXISTS idx_users_email ON enterprise_users(email);
-CREATE INDEX IF NOT EXISTS idx_users_tenant ON enterprise_users(company_tenant_id);
-
--- 4. CREATE A TEMPORAL TRIGGER TO AUTOMATICALLY UPDATE TIMESTAMP ROWS
-CREATE OR REPLACE FUNCTION update_timestamp_column()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = CURRENT_TIMESTAMP;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER update_enterprise_users_modtime
-BEFORE UPDATE ON enterprise_users
-FOR EACH ROW
-EXECUTE FUNCTION update_timestamp_column();
+-- OPTIMIZE TELEMETRY DATA INDEXES FOR RESEARCH CLUSTER QUERYING
+CREATE INDEX IF NOT EXISTS idx_telemetry_node ON network_telemetry(node_id);
+CREATE INDEX IF NOT EXISTS idx_telemetry_district ON network_telemetry(district);
+CREATE INDEX IF NOT EXISTS idx_telemetry_time ON network_telemetry(captured_at);
