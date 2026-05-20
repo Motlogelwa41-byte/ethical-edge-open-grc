@@ -7,6 +7,9 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.unicef.models import ClimateRiskAssessment
 
+# Import the monetization tier guard
+from app.auth.monetization import SubscriptionGuard
+
 router = APIRouter(
     prefix="/unicef",
     tags=["UNICEF Challenge - Open-Source Risk Engine"]
@@ -40,12 +43,17 @@ async def get_unicef_room_status():
         "deployment_tier": "PREPPED_FOR_SANDBOX"
     }
 
-# 3. DATABASE-INTEGRATED CLIMATE VULNERABILITY COMPONENT
+# 3. DATABASE-INTEGRATED CLIMATE VULNERABILITY COMPONENT (WITH MONETIZATION GUARD)
 @router.post("/evaluate-climate-risk", status_code=status.HTTP_201_CREATED)
-async def evaluate_child_centric_risk(assessment: ClimateRiskAssessmentInput, db: Session = Depends(get_db)):
+async def evaluate_child_centric_risk(
+    assessment: ClimateRiskAssessmentInput, 
+    tenant_id: str, # Requires the client to pass their UUID token
+    db: Session = Depends(get_db),
+    _sub_check = Depends(SubscriptionGuard(required_room="unicef")) # Verifies Professional/Enterprise tier
+):
     """
     Computes localized climate vulnerability scores scaled to youth infrastructure impact,
-    and logs the analytical assessment directly to the PostgreSQL instance.
+    checks if the tenant has paid for this tier, and logs the assessment directly to PostgreSQL.
     """
     # Calculate algorithmic hazard metrics matching your model logic
     base_hazard_score = (assessment.drought_severity_index + assessment.flood_probability_score) / 2.0
@@ -64,7 +72,6 @@ async def evaluate_child_centric_risk(assessment: ClimateRiskAssessmentInput, db
         impact_rating = "LOW"
 
     # Normalize your input fields into our Postgres relational structure
-    # Scales 0-10 index inputs down to 0.0-1.0 float percentages for standard reporting
     risk_record = ClimateRiskAssessment(
         district=assessment.district_location,
         hazard_type="COMBINED_CLIMATE_STRESS",
@@ -76,7 +83,8 @@ async def evaluate_child_centric_risk(assessment: ClimateRiskAssessmentInput, db
             "flood_probability_score": assessment.flood_probability_score,
             "impacted_youth_infrastructure": assessment.impacted_youth_infrastructure,
             "calculated_child_vulnerability_index": final_vulnerability_index,
-            "unicef_grant_action_tier": intervention_priority
+            "unicef_grant_action_tier": intervention_priority,
+            "verified_tenant_id": tenant_id
         }
     )
     
@@ -99,9 +107,13 @@ async def evaluate_child_centric_risk(assessment: ClimateRiskAssessmentInput, db
 
 # 4. OPEN SOURCE ETHICAL COMPLIANCE ENDPOINT
 @router.post("/validate-open-source")
-async def validate_open_source_compliance(compliance: OpenSourceComplianceInput):
+async def validate_open_source_compliance(
+    compliance: OpenSourceComplianceInput,
+    tenant_id: str,
+    _sub_check = Depends(SubscriptionGuard(required_room="unicef"))
+):
     """
-    Enforces strict UNICEF Venture Fund eligibility criteria regarding public repository licensing.
+    Enforces strict open-source licensing compliance checks for authorized Professional/Enterprise tiers.
     """
     approved_licenses = ["MIT", "Apache-2.0", "GPL-3.0", "BSD-3-Clause", "BSD-2-Clause"]
     license_valid = compliance.license_type in approved_licenses
