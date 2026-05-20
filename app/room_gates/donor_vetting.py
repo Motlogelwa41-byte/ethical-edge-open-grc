@@ -4,9 +4,12 @@ from typing import List, Dict, Any
 from datetime import datetime
 from sqlalchemy.orm import Session
 
-# Import your core database utilities and models
+# Import your database core utilities and models
 from app.database import get_db
 from app.gates.models import VendorIntegrityAudit
+
+# Import the monetization tier guard
+from app.auth.monetization import SubscriptionGuard
 
 router = APIRouter(
     prefix="/gates",
@@ -37,12 +40,18 @@ async def get_gates_room_status():
         "operational_state": "PRODUCTION_READY"
     }
 
-# 3. DATABASE-INTEGRATED AUDIT SYSTEM
+# 3. DATABASE-INTEGRATED AUDIT SYSTEM (WITH MONETIZATION GUARD)
 @router.post("/audit-grant", status_code=status.HTTP_201_CREATED)
-async def audit_grant_distribution(grant: FundingDistributionInput, db: Session = Depends(get_db)):
+async def audit_grant_distribution(
+    grant: FundingDistributionInput, 
+    tenant_id: str, # Requires the client to pass their UUID token
+    db: Session = Depends(get_db),
+    _sub_check = Depends(SubscriptionGuard(required_room="gates")) # Restricts to Enterprise Premium Tier
+):
     """
     Evaluates resource distribution integrity, calculates project execution alignment,
     and commits the financial audit trail permanently to the PostgreSQL instance.
+    Accessible only by Enterprise Premium Tier accounts.
     """
     # Enforce a strict programmatic stop if basic anti-corruption vetting fails
     if not grant.anti_corruption_screening_passed:
@@ -97,7 +106,8 @@ async def audit_grant_distribution(grant: FundingDistributionInput, db: Session 
             "efficiency_variance_delta": round(efficiency_variance, 2),
             "integrity_index_status": integrity_status,
             "audit_risk_tier": audit_risk_tier,
-            "next_scheduled_action": "HOLD_FURTHER_DISBURSEMENT" if audit_risk_tier == "HIGH" else "PROCEED_WITH_TRANCHE"
+            "next_scheduled_action": "HOLD_FURTHER_DISBURSEMENT" if audit_risk_tier == "HIGH" else "PROCEED_WITH_TRANCHE",
+            "verified_tenant_id": tenant_id
         }
     )
 
