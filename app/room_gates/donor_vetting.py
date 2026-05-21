@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 # Import your database core utilities and models
 from app.database import get_db
-from app.gates.models import VendorIntegrityAudit
+from app.room_gates.models import VendorIntegrityAudit
 
 # Import the monetization tier guard
 from app.auth.monetization import SubscriptionGuard

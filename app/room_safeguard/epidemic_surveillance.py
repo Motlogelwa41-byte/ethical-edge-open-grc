@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 # Import your database core structures and models
 from app.database import get_db
-from app.safeguard.models import HealthFacilitySurveillance
+from app.room_safeguard.models import HealthFacilitySurveillance
 from app.auth.security import strip_pii_for_bdpa_compliance
 
 # Import the monetization tier guard

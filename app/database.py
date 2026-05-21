@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 # Aligned strictly with our Docker Compose network routing parameters
 DATABASE_URL = os.getenv(
     "DATABASE_URL", 
-    "postgresql://grc_admin:SuperSecurePassword2026!@db:5432/ethical_edge_grc_pool"
+    "postgresql://grc_admin:SuperSecurePassword2026!@localhost:5432/ethical_edge_grc_pool"
 )
 
 # 2. INITIALIZE ENGINE WITH CONNECTION POOL MANAGEMENT

@@ -1,4 +1,4 @@
-port Column, String, Float, DateTime, JSON
+from sqlalchemy import Column, String, Float, DateTime, JSON, Boolean
 import uuid
 from datetime import datetime
 from app.database import Base

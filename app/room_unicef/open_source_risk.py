@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 # Import your database core layer and models
 from app.database import get_db
-from app.unicef.models import ClimateRiskAssessment
+from app.room_unicef.models import ClimateRiskAssessment
 
 # Import the monetization tier guard
 from app.auth.monetization import SubscriptionGuard

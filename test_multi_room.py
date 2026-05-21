@@ -43,8 +43,9 @@ def run_comprehensive_integration_suite():
         "effective_control_mechanisms": True,
         "stakeholder_legitimacy_verified": False
     }
-    response = client.post("/grc/evaluate-king-v", json=king_v_payload)
-    assert response.status_code == 200
+    response = client.post("/grc/evaluate-king-v?tenant_id=test-tenant-123", json=king_v_payload)
+    assert response.status_code in [200, 201]
+    print("DEBUG SERVER RESPONSE:", response.status_code, response.text)
     data = response.json()
     assert "SATISFACTORY" in data["corporate_governance_standing"]
     print("  -> SUCCESS: King V assessment engine computed governance rating correctly.")

@@ -1,12 +1,11 @@
-#from .risk import RiskEngine  # Import the engine we just built
 from .risk import RiskEngine
 from .database import save_automated_risk
 from . import models
 
 def evaluate_bdpa_compliance(answers, vendor_name="Unknown Vendor", db=None):
     """
-    Evaluates 5 critical BDPA questions and returns a total risk score.
-    Now automatically flags risks in the Risk Register.
+    Evaluates 5 critical BDPA questions and returns a total risk score out of 10.
+    Now automatically flags risks in the Risk Register if compliance lapses.
     """
     score = 0
     total_questions = 5
@@ -15,71 +14,74 @@ def evaluate_bdpa_compliance(answers, vendor_name="Unknown Vendor", db=None):
     if answers.get("data_outside_botswana") == "No":
         score += 10
     else:
-        score += 2 
+        score += 2
 
     # 2. Consent Management
     if answers.get("consent_process") == "Yes":
         score += 10
     else:
-        score += 1 
+        score += 1
 
     # 3. Data Protection Officer
     if answers.get("has_dpo") == "Yes":
         score += 10
     else:
-        score += 4 
+        score += 4
 
     # 4. Security Measures
     if answers.get("security_measures") == "Yes":
         score += 10
     else:
-        score += 1 
+        score += 1
 
     # 5. Purpose Specification
     if answers.get("purpose_limit") == "Yes":
         score += 10
     else:
-        score += 3 
+        score += 3
 
-    # Calculate final score
-    final_score = round(score / total_questions, 1)
+    # Calculate final score out of 10
+    final_score = score / total_questions
 
-    # --- THE POWER MOVE: AUTOMATIC RISK TRIGGER ---
-    # If the score is below 7, we automatically define the Risk Level
+    # --- AUTOMATIC RISK TRIGGER ---
     if final_score < 7:
-        # We determine impact based on how low the score is
+        # Determine impact based on how severe the lapse is
         impact = 5 if final_score < 4 else 3
-        
+
         auto_risk_data = {
             "title": f"BDPA Compliance Gap: {vendor_name}",
-            "likelihood": 4, # High likelihood of regulatory fine
+            "likelihood": 4,  # High likelihood of regulatory fine
             "impact": impact,
-            "description": f"Compliance score of {final_score}/10. Review needed for BDPA Sections 48, 8, and 24."
+            "description": f"Compliance score of {round(final_score, 1)}/10. Review needed for BDPA compliance metrics."
         }
         print(f"⚠️ ALERT: Low Compliance detected. Risk flagged for {vendor_name}.")
-        # Note: In the next step, we will pass this auto_risk_data to the database
-    # ... (the 5 questions are above here) ...
-
-    # Calculate average score out of 10
-    final_score = score / total_questions
-    
-    # --- PASTE START ---
-    if final_score < 7:
-        impact = 5 if final_score < 4 else 3
-        auto_risk_data = {
-            "title": f"BDPA Compliance Gap: {vendor_name}",
-            "likelihood": 4, 
-            "impact": impact,
-            "description": f"Compliance score of {final_score}/10. Review needed."
-        }
+        
         if db:
             save_automated_risk(db, auto_risk_data)
             print(f"✅ Risk recorded in database for {vendor_name}")
-    # --- PASTE END ---
 
     return round(final_score, 1)
-    
-    return final_score
+
+
+def evaluate_vendor_risk(score, red_line_fail):
+    """
+    Applies King V 'Red Line' rules to corporate vendor risk scores.
+    """
+    if red_line_fail:
+        impact = 5
+        likelihood = 4
+        total_risk = impact * likelihood  # 20 (Critical)
+    else:
+        total_risk = score
+
+    # The Decision Engine
+    if total_risk >= 20:
+        return "TERMINATE", "Vendor fails critical ethical standards."
+    elif 13 <= total_risk < 20:
+        return "MITIGATION REQUIRED", "Upload a Remediation Plan to proceed."
+    else:
+        return "APPROVED", "Vendor meets Ethical Edge standards."
+
 
 def get_compliance_status(score):
     if score >= 8:
@@ -89,7 +91,27 @@ def get_compliance_status(score):
     else:
         return "RED: High Risk - Non-Compliant"
 
-# --- TEST BLOCK (Move to bottom) ---
+
+def calculate_unicef_child_index(climate_score: float, school_density: int, clinic_status: str):
+    """
+    Calculates the Child Vulnerability Index for the UNICEF Venture Fund.
+    """
+    impact_weight = 0.7
+    resilience_weight = 0.3
+
+    # If clinics are overwhelmed, risk increases
+    resilience_penalty = 0.2 if clinic_status == "low_capacity" else 0.0
+
+    # Calculation
+    child_index = (climate_score * impact_weight) + (school_density * resilience_weight) + resilience_penalty
+
+    return {
+        "unicef_priority": "CRITICAL" if child_index > 0.8 else "STANDARD",
+        "score": round(min(child_index, 1.0), 2)  # Cap at 1.0
+    }
+
+
+# --- CLEAN TEST BLOCK ---
 if __name__ == "__main__":
     sample_answers = {
         "data_outside_botswana": "Yes",
@@ -98,45 +120,10 @@ if __name__ == "__main__":
         "security_measures": "No",
         "purpose_limit": "Yes"
     }
-    score = evaluate_bdpa_compliance(sample_answers, "Test Corp")
-    def evaluate_vendor_risk(score, red_line_fail):
-    # The King V "Red Line" Rule
-    if red_line_fail:
-        impact = 5
-        likelihood = 4
-        total_risk = impact * likelihood # 20 (Critical)
-    else:
-        total_risk = score
-
-    # The Decision Engine
-    if total_risk >= 20:
-        return "TERMINATE", "Vendor fails critical ethical standards."
+    calculated_score = evaluate_bdpa_compliance(sample_answers, "Test Corp")
+    status, message = evaluate_vendor_risk(calculated_score * 2, red_line_fail=False)
     
-    elif 13 <= total_risk < 20:
-        return "MITIGATION REQUIRED", "Upload a Remediation Plan to proceed."
-    
-    else:
-        return "APPROVED", "Vendor meets Ethical Edge standards."
     print(f"--- TEST RUN COMPLETE ---")
-    print(f"Compliance Score: {score}/10")
-    print(f"Status: {get_compliance_status(score)}") vetting_logic.py
-
-def calculate_unicef_child_index(climate_score: float, school_density: int, clinic_status: str):
-    """
-    Calculates the Child Vulnerability Index for the UNICEF Venture Fund.
-    """
-    # 0.0 to 1.0 scale
-    impact_weight = 0.7 
-    resilience_weight = 0.3
-    
-    # If clinics are overwhelmed, risk increases
-    resilience_penalty = 0.2 if clinic_status == "low_capacity" else 0.0
-    
-    # Calculation
-    child_index = (climate_score * impact_weight) + (school_density * resilience_weight) + resilience_penalty
-    
-    return {
-        "unicef_priority": "CRITICAL" if child_index > 0.8 else "STANDARD",
-        "score": round(min(child_index, 1.0), 2) # Cap at 1.0
-    }
-
+    print(f"Compliance Score: {calculated_score}/10")
+    print(f"Status Category: {get_compliance_status(calculated_score)}")
+    print(f"Risk Decision: {status} ({message})")
