@@ -1,11 +1,13 @@
 import json
 from typing import Dict, List, Optional
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
 # Internal App Imports
 from app.middleware.tier_guard import verify_account_tier, TenantProfile, TierGuard
 from app.room_gates import RoomEngine  
+from app.utils.llm_client import AIAuditorClient
 from database.connection import get_db_session 
 
 # Single, Unified Router Instantiation
@@ -42,35 +44,86 @@ class KingVAnalyticsResponse(BaseModel):
 @router.post("/audit-document")
 async def run_automated_ai_audit(
     file: UploadFile = File(...),
-    tenant: TenantProfile = Depends(verify_account_tier)
+    assessment_id: str = Form(...),
+    gate_id: str = Form(...),
+    requirement_text: str = Form(...),
+    tenant: TenantProfile = Depends(verify_account_tier),
+    db: Session = Depends(get_db_session)
 ):
     """
-    Evaluates unstructured documents using ai_auditor_prompt.txt
-    while strictly checking account tier boundaries.
+    Ingests unstructured corporate files, evaluates compliance using Gemini 2.5
+    under strict tier guardrails, and records the gate assessment telemetry.
     """
-    # Calculate file footprint to guard data ingestion costs
-    file_size_mb = len(await file.read()) / (1024 * 1024)
-    await file.seek(0)  # Reset stream pointer after reading footprint size
+    # Read file content safely to calculate the file's scale footprint
+    content = await file.read()
+    file_size_mb = len(content) / (1024 * 1024)
+    await file.seek(0)  # Reset stream pointer
     
-    # 1. Block Standard cloud users from racking up token bills
+    # 1. Enforce tier rules to protect backend API margins
     TierGuard.enforce_ai_auditor_access(tenant)
-    
-    # 2. Enforce data bandwidth limits for Professional/Premium accounts
     TierGuard.enforce_upload_limits(tenant, incoming_payload_size_mb=file_size_mb)
     
-    # --- Execute Your AI Auditor Core Logic below ---
-    # response = execution_engine.run_ai_auditor(file, prompt_template="ai_auditor_prompt.txt")
+    # 2. Extract textual data safely, handling varied document encodings
+    try:
+        document_text = content.decode("utf-8", errors="ignore")
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            detail=f"Unable to read file content encoding. Please upload a valid text document: {str(e)}"
+        )
+        
+    if not document_text.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="The uploaded verification document is empty."
+        )
+
+    # 3. Initialize and run the Gemini 2.5 Audit Engine
+    try:
+        auditor = AIAuditorClient()
+        audit_result = await auditor.execute_document_audit(
+            gate_id=gate_id,
+            requirement_text=requirement_text,
+            document_text=document_text
+        )
+    except HTTPException as http_exc:
+        raise http_exc
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=f"Downstream compliance evaluation error: {str(e)}"
+        )
+
+    # 4. Initialize RoomEngine to commit the audit result into PostgreSQL (Table 14)
+    try:
+        engine = RoomEngine(db_session=db)
+        
+        # Determine the local reference path to act as the audit trace
+        mock_telemetry_url = f"/uploads/proof/{file.filename}"
+        
+        engine.evaluate_single_gate_telemetry(
+            assessment_id=assessment_id,
+            gate_id=gate_id,
+            check_passed=audit_result.get("is_passed", False),
+            telemetry_url=mock_telemetry_url
+        )
+    except Exception as db_err:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Relational storage transaction failed: {str(db_err)}"
+        )
     
     return {
         "status": "Audit Complete",
         "organization": tenant.name,
         "tier_validated": tenant.tier,
-        "processed_file_footprint": f"{round(file_size_mb, 2)} MB"
+        "processed_file_footprint": f"{round(file_size_mb, 2)} MB",
+        "evaluation_metrics": audit_result
     }
 
 
 @router.get("/king-v/metrics", response_model=KingVAnalyticsResponse)
-async def get_king_v_dashboard_metrics(db=Depends(get_db_session)):
+async def get_king_v_dashboard_metrics(db: Session = Depends(get_db_session)):
     """
     Evaluates engine telemetry across room_gates math schemas 
     and groups results into King V's 4 core governing functions.
