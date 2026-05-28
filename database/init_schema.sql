@@ -99,4 +99,60 @@ CREATE TABLE IF NOT EXISTS ai_cyber_threat_logs (
 CREATE INDEX IF NOT EXISTS idx_threat_anomaly ON ai_cyber_threat_logs(detected_anomaly_type);
 CREATE INDEX IF NOT EXISTS idx_threat_nist ON ai_cyber_threat_logs(nist_impact_rating);
 
+-- =========================================================================
+-- 11. CREATE MASTER COMPLIANCE CATEGORIES TABLE (King V Governing Functions)
+-- =========================================================================
+CREATE TABLE IF NOT EXISTS compliance_categories (
+    category_id VARCHAR(100) PRIMARY KEY,
+    display_name VARCHAR(255) NOT NULL,
+    weight REAL DEFAULT 1.0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- =========================================================================
+-- 12. CREATE MASTER COMPLIANCE PRINCIPLES TABLE (The 13 King V Principles)
+-- =========================================================================
+CREATE TABLE IF NOT EXISTS compliance_principles (
+    principle_id VARCHAR(50) PRIMARY KEY,
+    category_id VARCHAR(100) NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_category FOREIGN KEY (category_id) REFERENCES compliance_categories(category_id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_principles_category ON compliance_principles(category_id);
+
+-- =========================================================================
+-- 13. CREATE THE CORE OPERATIONAL ROOM GATES CHECKPOINT TABLE
+-- =========================================================================
+CREATE TABLE IF NOT EXISTS room_gates (
+    gate_id VARCHAR(50) PRIMARY KEY,
+    principle_id VARCHAR(50) NOT NULL,
+    requirement_text TEXT NOT NULL,
+    validation_type VARCHAR(50) DEFAULT 'automated', -- 'automated' or 'manual_upload'
+    order_index INTEGER DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_principle FOREIGN KEY (principle_id) REFERENCES compliance_principles(principle_id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_gates_principle ON room_gates(principle_id);
+
+-- =========================================================================
+-- 14. CREATE GRANULAR GATE ATTESTATION EXECUTION MATRIX (Links Engine to Assets)
+-- =========================================================================
+CREATE TABLE IF NOT EXISTS gate_evaluations (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    assessment_id UUID NOT NULL, -- Links back to Section 9: governance_assessments.id
+    gate_id VARCHAR(50) NOT NULL, -- Links to Section 13: room_gates.gate_id
+    is_passed BOOLEAN DEFAULT FALSE,
+    telemetry_proof_url TEXT, -- Point of reference proof (or path to logs)
+    evaluated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_assessment FOREIGN KEY (assessment_id) REFERENCES governance_assessments(id) ON DELETE CASCADE,
+    CONSTRAINT fk_gate FOREIGN KEY (gate_id) REFERENCES room_gates(gate_id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_eval_assessment ON gate_evaluations(assessment_id);
+CREATE INDEX IF NOT EXISTS idx_eval_gate ON gate_evaluations(gate_id);
+
 
