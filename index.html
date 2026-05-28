@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ethical Edge Dashboard</title>
+    <!-- CSS goes here -->
+    <style>
+        .checklist-item {
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            transition: background 0.2s;
+        }
+        .risk-high { border-left: 5px solid #ff4d4d; }
+        .risk-low { border-left: 5px solid #28a745; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+    <!-- Dashboard Content -->
+    <h4 class="text-center">Ethical Edge📊 Dashboard</h4>
+    <div id="status-message" style="margin: 10px 0; font-weight: bold;"></div>
+    
+    <div class="controls">
+        <button onclick="saveAssessment()">💾 Save Assessment</button>
+    </div>
+
+    <div id="checklist-container">
+        <!-- JS will inject items here -->
+    </div>
+
+    <!-- JavaScript goes at the bottom -->
+    <script>
+        async function loadChecklist() { /* your load code */ }
+        async function saveAssessment() { /* your save code */ }
+        
+        document.addEventListener('DOMContentLoaded', loadChecklist);
+    </script>
+</body>
+</html>
