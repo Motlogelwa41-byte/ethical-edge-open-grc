@@ -1,17 +1,18 @@
-from sqlalchemy import Column, String, Float, DateTime, JSON, Boolean
-import uuid
-from datetime import datetime
-from app.database import Base
+from sqlalchemy import Column, String, Boolean, ForeignKey, UniqueConstraint, Integer, DateTime, func
+from sqlalchemy.dialects.postgresql import UUID
+from database.base import Base # Adjust import based on where your declarative base sits
 
-class VendorIntegrityAudit(Base):
-    __tablename__ = "vendor_integrity_audits"
-
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()), index=True)
-    entity_name = Column(String, index=True, nullable=False)
-    country_of_origin = Column(String, default="SADC Region", nullable=False)
-    pep_status_verified = Column(Boolean, default=True)
-    sanction_list_collision = Column(Boolean, default=False)
-    calculated_integrity_score = Column(Float, nullable=False)
-    vetting_decision = Column(String, nullable=False)  # APPROVED, REVIEW_REQUIRED, REJECTED
-    audited_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    audit_metadata = Column(JSON, nullable=True)  # Houses efficiency variances, burn rates, and tenant tags
+class GateEvaluation(Base):
+    __tablename__ = 'gate_evaluations'
+    
+    id = Column(UUID(as_uuid=True), primary_key=True, server_default=text("uuid_generate_v4()"))
+    assessment_id = Column(UUID(as_uuid=True), ForeignKey('governance_assessments.id', ondelete='CASCADE'), nullable=False)
+    gate_id = Column(String(50), ForeignKey('room_gates.gate_id', ondelete='CASCADE'), nullable=False)
+    is_passed = Column(Boolean, default=False)
+    telemetry_proof_url = Column(String)
+    evaluated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    
+    # FIX: Enforce the unique compound constraint at the SQLAlchemy model layer
+    __table_args__ = (
+        UniqueConstraint('assessment_id', 'gate_id', name='unique_assessment_gate'),
+    )
