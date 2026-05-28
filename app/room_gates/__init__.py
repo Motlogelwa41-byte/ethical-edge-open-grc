@@ -1,6 +1,4 @@
-"""
-Ethical Edge Open GRC - Room Gates Package
-Automates corporate governance due diligence and compliance friction modeling.
-"""
-from .gates_logic import analyze_governance_friction
-__all__ = ["analyze_governance_friction"]
+from app.room_gates.gates_logic import RoomEngine
+
+# This allows other modules to call: from app.room_gates import RoomEngine
+__all__ = ["RoomEngine"]
