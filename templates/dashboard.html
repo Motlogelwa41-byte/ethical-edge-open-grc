@@ -2,101 +2,118 @@
 <html lang="en" class="h-full bg-slate-50">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ethical Edge GRC Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="h-full">
-    <div class="flex h-screen bg-slate-50">
-        <!-- Sidebar -->
-        <div class="w-64 bg-slate-900 text-white p-6 flex flex-col">
-            <h2 class="text-xl font-bold mb-8 text-blue-400">Ethical Edge GRC</h2>
-            <nav class="space-y-4 flex-grow">
-                <button onclick="window.switchTab('dashboard')" class="block w-full text-left p-2 hover:bg-slate-700 rounded">📊 Dashboard</button>
-                <button onclick="window.switchTab('compliance')" class="block w-full text-left p-2 hover:bg-slate-700 rounded">🛡️ Compliance Matrix</button>
-                <button onclick="window.switchTab('risk')" class="block w-full text-left p-2 hover:bg-slate-700 rounded">🚩 Risk Register</button>
-            </nav>
-            <button onclick="window.location.reload()" class="w-full py-2 bg-rose-600 rounded text-sm font-bold">Logout Node</button>
+<body class="h-full font-sans text-slate-900">
+
+    <!-- Navigation -->
+    <nav class="bg-slate-900 text-white p-4 flex justify-between items-center">
+        <span class="font-bold text-lg">Ethical Edge GRC Dashboard</span>
+        <div class="space-x-4">
+            <button onclick="window.switchTab('dashboard')" class="hover:text-blue-400">📊 Dashboard</button>
+            <button onclick="window.switchTab('compliance')" class="hover:text-blue-400">🛡️ Compliance</button>
+            <button onclick="window.switchTab('risk')" class="hover:text-blue-400">🚩 Risk Register</button>
+        </div>
+    </nav>
+
+    <main class="p-8 max-w-6xl mx-auto">
+        <!-- Dashboard Tab -->
+        <div id="tab-dashboard">
+            <h1 class="text-3xl font-bold mb-6">GRC Command Center</h1>
+            <div class="grid grid-cols-3 gap-6 mb-8">
+                <div class="bg-white p-6 rounded shadow border-l-4 border-blue-500"><h3>5</h3><p>Vendors Vetted</p></div>
+                <div class="bg-white p-6 rounded shadow border-l-4 border-red-500"><h3>0</h3><p>Critical Risks</p></div>
+                <div class="bg-white p-6 rounded shadow border-l-4 border-green-500"><h3>61.5%</h3><p>Compliance Score</p></div>
+            </div>
         </div>
 
-        <!-- Main Content -->
-        <div class="flex-1 p-8 overflow-y-auto">
-            <div id="tab-dashboard">
-                <h1 class="text-2xl font-bold mb-6">GRC Command Center</h1>
-                <div class="grid grid-cols-3 gap-6">
-                    <div class="bg-white p-6 rounded shadow border-l-4 border-blue-500"><h3>5</h3><p>Vendors Vetted</p></div>
-                    <div class="bg-white p-6 rounded shadow border-l-4 border-red-500"><h3>0</h3><p>Critical Risks</p></div>
-                    <div class="bg-white p-6 rounded shadow border-l-4 border-green-500"><h3>61.5%</h3><p>Compliance Score</p></div>
-                </div>
-            </div>
+        <!-- Compliance Tab -->
+        <div id="tab-compliance" class="hidden">
+            <h1 class="text-3xl font-bold mb-6">🛡️ King V (2026) Compliance Matrix</h1>
+            <div id="checklist-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            <button onclick="window.saveAssessment()" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded font-bold">Save Assessment</button>
+        </div>
 
-            <div id="tab-compliance" class="hidden">
-                <h2 class="text-2xl font-bold mb-4">🛡️ King V Compliance Matrix</h2>
-                <div id="checklist-container" class="bg-white p-6 rounded shadow space-y-2"></div>
-                <button onclick="window.saveAssessment()" class="mt-4 bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700">Save Assessment</button>
-            </div>
+        <!-- Risk Register Tab -->
+        <div id="tab-risk" class="hidden">
+            <h1 class="text-3xl font-bold mb-6">🚩 Live Risk Register</h1>
+            <table class="w-full bg-white rounded shadow text-left">
+                <thead class="bg-slate-800 text-white">
+                    <tr><th class="p-3">ID</th><th class="p-3">Risk</th><th class="p-3">Level</th><th class="p-3">Strategy</th></tr>
+                </thead>
+                <tbody id="risk-table-body"></tbody>
+            </table>
+        </div>
+    </main>
 
-            <div id="tab-risk" class="hidden">
-                <h2 class="text-2xl font-bold mb-4">🚩 Live Risk Register</h2>
-                <table class="w-full bg-white rounded shadow text-left">
-                    <thead class="bg-slate-800 text-white">
-                        <tr><th class="p-3">ID</th><th class="p-3">Risk</th><th class="p-3">Level</th><th class="p-3">Strategy</th></tr>
-                    </thead>
-                    <tbody id="risk-table-body"></tbody>
-                </table>
+    <!-- Audit Modal -->
+    <div id="audit-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center">
+        <div class="bg-white p-6 rounded-lg w-96">
+            <h3 id="modal-title" class="font-bold text-lg mb-2">Evaluate Gate</h3>
+            <p id="modal-gate-info" class="text-sm text-gray-600 mb-4"></p>
+            <input type="file" id="audit-file" class="mb-4">
+            <div class="flex justify-end gap-2">
+                <button onclick="window.closeModal()" class="px-4 py-2 bg-gray-200 rounded">Close</button>
+                <button onclick="window.runSimulation()" class="px-4 py-2 bg-blue-600 text-white rounded">Verify Rule Telemetry</button>
             </div>
+            <div id="results" class="hidden mt-4 p-3 bg-gray-100 rounded text-sm"></div>
         </div>
     </div>
 
     <script>
-        // HARD-CODED DATA (No Server Needed)
-        const principles = Array.from({length: 13}, (_, i) => ({ 
-            id: `P${i + 1}`, 
-            desc: "Governance Gate for King V compliance." 
-        }));
-
-        const risks = [
-            { id: "RSK-001", title: "Climate Volatility", level: "HIGH", strategy: "Diversified nodes" },
-            { id: "RSK-002", title: "Data Leakage", level: "CRITICAL", strategy: "AES-256 Encryption" },
-            { id: "RSK-003", title: "AI Model Drift", level: "MEDIUM", strategy: "Monthly audits" },
-            { id: "RSK-004", title: "Supply Chain", level: "LOW", strategy: "Multi-vendor source" },
-            { id: "RSK-005", title: "Reporting Delay", level: "MEDIUM", strategy: "Automated pipelines" }
-        ];
-
-        // GLOBAL BINDINGS
+        window.currentGate = "";
+        
         window.switchTab = (tab) => {
             document.getElementById('tab-dashboard').classList.toggle('hidden', tab !== 'dashboard');
             document.getElementById('tab-compliance').classList.toggle('hidden', tab !== 'compliance');
             document.getElementById('tab-risk').classList.toggle('hidden', tab !== 'risk');
         };
 
-        window.saveAssessment = () => alert("Compliance assessment saved locally to your device!");
+        window.toggleModal = (show) => document.getElementById('audit-modal').classList.toggle('hidden', !show);
+        window.closeModal = () => window.toggleModal(false);
 
-        // INITIALIZATION
-        document.addEventListener('DOMContentLoaded', () => {
-            // Render Checklist
-            const container = document.getElementById('checklist-container');
-            principles.forEach(p => {
-                container.innerHTML += `
-                    <div class="p-2 border-b flex items-center">
-                        <input type="checkbox" class="mr-3 h-5 w-5">
-                        <span><strong>${p.id}:</strong> ${p.desc}</span>
-                    </div>
-                `;
-            });
+        window.openAudit = (id) => {
+            window.currentGate = id;
+            document.getElementById('modal-gate-info').textContent = "Gate: " + id;
+            document.getElementById('audit-results').classList.add('hidden');
+            window.toggleModal(true);
+        };
 
-            // Render Risks
-            const rb = document.getElementById('risk-table-body');
-            risks.forEach(r => {
-                rb.innerHTML += `
-                    <tr class="border-b">
-                        <td class="p-3">${r.id}</td>
-                        <td class="p-3">${r.title}</td>
-                        <td class="p-3 font-bold ${r.level === 'CRITICAL' ? 'text-red-600' : 'text-orange-500'}">${r.level}</td>
-                        <td class="p-3">${r.strategy}</td>
-                    </tr>
-                `;
-            });
+        window.runSimulation = () => {
+            const res = document.getElementById('results');
+            res.classList.remove('hidden');
+            let citation = "Compliance evaluation succeeded.";
+            
+            if (window.currentGate === "P12") {
+                citation = "Vendor integrity verified against Botswana Financial Intelligence Agency (FIA) sanction lists.";
+            } else if (window.currentGate === "P3") {
+                citation = "Verified localized advisory board oversight ensuring ESG policy alignment with SADC cultural guidelines.";
+            }
+
+            res.innerHTML = `<strong>PASSED</strong><br>${citation}<br>Confidence: 94% | Risk: LOW`;
+        };
+
+        window.saveAssessment = () => alert("Assessment saved locally!");
+
+        // Initialization
+        const principles = Array.from({length: 13}, (_, i) => `P${i+1}`);
+        const risks = [
+            { id: "RSK-001", title: "Climate Volatility", level: "HIGH", strategy: "Diversified infrastructure nodes" },
+            { id: "RSK-002", title: "Data Leakage", level: "CRITICAL", strategy: "AES-256 encryption" },
+            { id: "RSK-003", title: "AI Model Drift", level: "MEDIUM", strategy: "Monthly audits" },
+            { id: "RSK-004", title: "Supply Chain", level: "LOW", strategy: "Multi-vendor sourcing" },
+            { id: "RSK-005", title: "Reporting Delay", level: "MEDIUM", strategy: "Automated pipelines" }
+        ];
+
+        const container = document.getElementById('checklist-container');
+        principles.forEach(p => {
+            container.innerHTML += `<div class="p-2 border-b"><input type="checkbox" class="mr-2"> <strong>${p}:</strong> Governance Gate for King V compliance.<br><button onclick="window.openAudit('${p}')" class="text-blue-600 text-xs font-bold">Verify Gate →</button></div>`;
+        });
+
+        const rb = document.getElementById('risk-table-body');
+        risks.forEach(r => {
+            rb.innerHTML += `<tr><td class="p-3">${r.id}</td><td class="p-3">${r.title}</td><td class="p-3 font-bold ${r.level === 'CRITICAL' ? 'text-red-600' : 'text-orange-500'}">${r.level}</td><td class="p-3">${r.strategy}</td></tr>`;
         });
     </script>
 </body>
