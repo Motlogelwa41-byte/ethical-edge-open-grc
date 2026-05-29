@@ -1,92 +1,83 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="en" class="h-full bg-slate-50">
 <head>
     <meta charset="UTF-8">
     <title>Ethical Edge GRC | Sovereign Command</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .risk-high { color: #dc2626; font-weight: bold; }
-        .risk-med { color: #d97706; font-weight: bold; }
-        .risk-low { color: #16a34a; font-weight: bold; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        .risk-crit { color: #b91c1c; font-weight: 800; }
+        .risk-high { color: #c2410c; font-weight: 700; }
+        .risk-med { color: #b45309; font-weight: 600; }
+        .risk-low { color: #15803d; font-weight: 600; }
     </style>
 </head>
 <body class="h-full font-sans text-slate-900">
 
-    <!-- 1. SOVEREIGN GATEWAY -->
-    <div id="login-gateway" class="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/95 backdrop-blur-md p-4">
+    <!-- LOGIN GATEWAY -->
+    <div id="login-gateway" class="fixed inset-0 z-[5000] flex items-center justify-center bg-slate-900/95 backdrop-blur-md p-4">
         <div class="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 border border-slate-200">
-            <h2 class="text-2xl font-bold mb-6 text-center">Sovereign Node Gateway</h2>
+            <h2 class="text-2xl font-bold mb-6 text-center text-slate-900">Sovereign Node Gateway</h2>
             <div class="grid grid-cols-2 gap-3 text-xs">
-                <button onclick="window.initSession('SME Standard')" class="p-4 border-2 border-slate-200 rounded-lg font-bold hover:bg-blue-600 hover:text-white transition-colors cursor-pointer">SME Standard</button>
-                <button onclick="window.initSession('FinTech Pro')" class="p-4 border-2 border-slate-200 rounded-lg font-bold hover:bg-blue-600 hover:text-white transition-colors cursor-pointer">FinTech Pro</button>
-                <button onclick="window.initSession('Capital Premium')" class="p-4 border-2 border-slate-200 rounded-lg font-bold hover:bg-blue-600 hover:text-white transition-colors cursor-pointer">Capital Premium</button>
-                <button onclick="window.initSession('Pure Sandbox')" class="p-4 bg-amber-100 border-2 border-amber-200 text-amber-900 rounded-lg font-bold hover:bg-amber-500 hover:text-white transition-colors cursor-pointer">Pure Sandbox</button>
+                <button onclick="window.initSession('SME Standard')" class="p-4 border-2 border-slate-200 rounded-lg font-bold hover:bg-blue-50">SME Standard</button>
+                <button onclick="window.initSession('FinTech Pro')" class="p-4 border-2 border-slate-200 rounded-lg font-bold hover:bg-blue-50">FinTech Pro</button>
+                <button onclick="window.initSession('Capital Premium')" class="p-4 border-2 border-slate-200 rounded-lg font-bold hover:bg-blue-50">Capital Premium</button>
+                <button onclick="window.initSession('Pure Sandbox')" class="p-4 bg-amber-100 border-2 border-amber-200 text-amber-900 rounded-lg font-bold">Pure Sandbox</button>
             </div>
         </div>
     </div>
 
-    <!-- 2. LAYOUT -->
+    <!-- APP LAYOUT -->
     <div class="flex h-screen">
         <aside class="w-64 bg-slate-900 text-white p-6 z-[100]">
             <h2 class="text-xl font-bold mb-8 text-blue-400">Ethical Edge GRC</h2>
             <nav class="space-y-4">
-                <button onclick="window.switchTab('dashboard')" class="block w-full text-left p-3 hover:bg-slate-700 rounded cursor-pointer font-bold">📊 Dashboard</button>
-                <button onclick="window.switchTab('compliance')" class="block w-full text-left p-3 hover:bg-slate-700 rounded cursor-pointer font-bold">🛡️ Compliance Matrix</button>
-                <button onclick="window.switchTab('risk')" class="block w-full text-left p-3 hover:bg-slate-700 rounded cursor-pointer font-bold">🚩 Risk Register</button>
-                <button onclick="location.reload()" class="block w-full text-left p-3 mt-10 text-rose-400 border-t border-slate-700 hover:bg-slate-800 rounded cursor-pointer font-bold">Logout Node</button>
+                <button onclick="window.switchTab('dashboard')" class="block w-full text-left p-3 hover:bg-slate-700 rounded font-bold">📊 Dashboard</button>
+                <button onclick="window.switchTab('compliance')" class="block w-full text-left p-3 hover:bg-slate-700 rounded font-bold">🛡️ Compliance Matrix</button>
+                <button onclick="window.switchTab('risk')" class="block w-full text-left p-3 hover:bg-slate-700 rounded font-bold">🚩 Risk Register</button>
+                <button onclick="window.location.reload()" class="block w-full text-left p-3 mt-10 text-rose-400 border-t border-slate-700 hover:bg-slate-800 rounded font-bold">Logout Node</button>
             </nav>
         </aside>
 
         <main class="flex-1 p-8 overflow-y-auto">
             <h1 id="brand-title" class="text-3xl font-bold mb-6">GRC Command Center</h1>
-
-            <div id="tab-dashboard" class="tab-content active grid grid-cols-3 gap-6">
+            
+            <div id="tab-dashboard" class="grid grid-cols-3 gap-6">
                 <div class="bg-white p-6 rounded shadow border-l-4 border-blue-500"><h3>5</h3><p>Vendors Vetted</p></div>
                 <div class="bg-white p-6 rounded shadow border-l-4 border-red-500"><h3>0</h3><p>Critical Risks</p></div>
                 <div class="bg-white p-6 rounded shadow border-l-4 border-green-500"><h3>61.5%</h3><p>Compliance Score</p></div>
             </div>
 
-            <div id="tab-compliance" class="tab-content hidden space-y-4">
-                <h2 class="text-2xl font-bold mb-6">🛡️ King V (2026) Compliance Matrix</h2>
-                <div id="matrix-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-            </div>
+            <div id="tab-compliance" class="hidden"><div id="matrix-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div></div>
 
-            <div id="tab-risk" class="tab-content hidden">
-                <h2 class="text-2xl font-bold mb-6">🚩 Live Risk Register</h2>
+            <div id="tab-risk" class="hidden">
                 <table class="w-full bg-white rounded shadow text-left">
                     <thead class="bg-slate-800 text-white"><tr><th class="p-3">ID</th><th class="p-3">Risk</th><th class="p-3">Level</th><th class="p-3">Strategy</th></tr></thead>
-                    <tbody id="risk-table-body"></tbody>
+                    <tbody id="risk-body"></tbody>
                 </table>
             </div>
         </main>
     </div>
 
-    <!-- 3. MODAL -->
-    <div id="audit-modal" class="hidden fixed inset-0 z-[2000] bg-black/50 flex items-center justify-center p-4">
-        <div class="bg-white p-6 rounded-xl w-96 shadow-2xl relative">
-            <button onclick="window.toggleModal(false)" class="absolute top-4 right-4 text-slate-500 hover:text-black text-xl font-bold">✕</button>
+    <!-- Modal -->
+    <div id="audit-modal" class="hidden fixed inset-0 z-[6000] bg-black/50 flex items-center justify-center">
+        <div class="bg-white p-6 rounded-lg w-96 shadow-2xl relative">
+            <button onclick="window.toggleModal(false)" class="absolute top-4 right-4 text-gray-500 text-xl font-bold">✕</button>
             <h3 id="modal-title" class="font-bold text-lg mb-2">Audit Gate</h3>
-            <p id="modal-req" class="text-sm text-slate-600 mb-4"></p>
+            <p id="modal-req" class="text-sm text-gray-600 mb-4"></p>
             <input type="file" class="block w-full mb-4 border p-2 text-sm rounded">
-            <button onclick="window.runAudit()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700">Verify Rule Telemetry</button>
-            <div id="audit-results" class="hidden mt-4 p-4 bg-green-50 text-green-800 rounded text-sm border border-green-200"></div>
+            <button onclick="window.runAudit()" class="w-full bg-blue-600 text-white py-2 rounded font-bold">Verify Rule Telemetry</button>
+            <div id="audit-results" class="hidden mt-4 p-3 bg-green-50 rounded border text-sm"></div>
         </div>
     </div>
 
     <script>
-        // Force functions to window so they are globally click-able
         window.initSession = (name) => {
             document.getElementById('login-gateway').classList.add('hidden');
             document.getElementById('brand-title').textContent = name + " — Command Center";
         };
 
         window.switchTab = (tab) => {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active', 'hidden'));
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.getElementById('tab-' + tab).classList.remove('hidden');
-            document.getElementById('tab-' + tab).classList.add('active');
+            ['dashboard', 'compliance', 'risk'].forEach(t => document.getElementById('tab-' + t).classList.toggle('hidden', t !== tab));
         };
 
         window.toggleModal = (show) => document.getElementById('audit-modal').classList.toggle('hidden', !show);
@@ -105,14 +96,18 @@
         };
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Render 13 Principles
             const m = document.getElementById('matrix-grid');
             for(let i=1; i<=13; i++) m.innerHTML += `<div class="p-4 bg-white border rounded shadow"><strong>P${i}:</strong> King V Principle.<br><button onclick="window.openAudit('P${i}', 'Governance Gate for King V compliance.')" class="mt-2 text-blue-600 font-bold text-sm">Verify Gate →</button></div>`;
             
-            // Render Risks
-            const rb = document.getElementById('risk-table-body');
-            const risks = [{id:"RSK-001", t:"Climate Volatility", l:"HIGH", s:"Nodes"}, {id:"RSK-002", t:"Data Leakage", l:"CRITICAL", s:"Encryption"}];
-            risks.forEach(r => rb.innerHTML += `<tr class="border-b"><td class="p-3">${r.id}</td><td class="p-3">${r.t}</td><td class="p-3 font-bold ${r.l=='CRITICAL'?'text-red-600':'text-orange-600'}">${r.l}</td><td class="p-3">${r.s}</td></tr>`);
+            const rb = document.getElementById('risk-body');
+            const risks = [
+                { id: "RSK-001", t: "Climate Volatility", l: "HIGH", s: "Infrastructure Nodes" },
+                { id: "RSK-002", t: "Data Leakage", l: "CRITICAL", s: "AES-256 Encryption" },
+                { id: "RSK-003", t: "AI Model Drift", l: "MEDIUM", s: "Monthly Validation" },
+                { id: "RSK-004", t: "Supply Chain", l: "LOW", s: "Multi-vendor Sourcing" },
+                { id: "RSK-005", t: "Reporting Delay", l: "MEDIUM", s: "Automated Pipelines" }
+            ];
+            risks.forEach(r => rb.innerHTML += `<tr class="border-b"><td class="p-3">${r.id}</td><td class="p-3">${r.t}</td><td class="p-3 font-bold ${r.l=='CRITICAL'?'risk-crit':r.l=='HIGH'?'risk-high':r.l=='MEDIUM'?'risk-med':'risk-low'}">${r.l}</td><td class="p-3">${r.s}</td></tr>`);
         });
     </script>
 </body>
