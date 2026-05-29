@@ -2,68 +2,64 @@
 <html lang="en" class="h-full bg-slate-50">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ethical Edge GRC — Sovereign Portal</title>
+    <title>Ethical Edge GRC Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .risk-high { color: #dc2626; font-weight: bold; }
+        .risk-med { color: #d97706; font-weight: bold; }
+        .risk-low { color: #16a34a; font-weight: bold; }
+    </style>
 </head>
 <body class="h-full">
-
-    <!-- 1. LOGIN GATEWAY (The "Professional" Front Door) -->
+    <!-- Login Gateway -->
     <div id="login-gateway" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/95 backdrop-blur-md p-4">
-        <div class="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 border border-slate-200 space-y-6">
-            <div class="text-center">
-                <h2 class="text-2xl font-bold text-slate-900">Sovereign Node Gateway</h2>
-                <p class="text-sm text-slate-500 mt-2">Access the King V command loop.</p>
-            </div>
+        <div class="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 border border-slate-200">
+            <h2 class="text-2xl font-bold text-slate-900 mb-6 text-center">Sovereign Node Gateway</h2>
             <div class="grid grid-cols-2 gap-3 text-xs">
-                <button onclick="window.applyPreset('SME Standard')" class="p-3 border-2 border-slate-200 hover:border-blue-500 rounded-lg font-bold">SME Standard</button>
-                <button onclick="window.applyPreset('FinTech Pro')" class="p-3 border-2 border-slate-200 hover:border-blue-500 rounded-lg font-bold">FinTech Pro</button>
-                <button onclick="window.applyPreset('Capital Premium')" class="p-3 border-2 border-slate-200 hover:border-blue-500 rounded-lg font-bold">Capital Premium</button>
+                <button onclick="window.applyPreset('SME Standard')" class="p-3 border-2 border-slate-200 rounded-lg font-bold">SME Standard</button>
+                <button onclick="window.applyPreset('FinTech Pro')" class="p-3 border-2 border-slate-200 rounded-lg font-bold">FinTech Pro</button>
+                <button onclick="window.applyPreset('Capital Premium')" class="p-3 border-2 border-slate-200 rounded-lg font-bold">Capital Premium</button>
                 <button onclick="window.applyPreset('Pure Sandbox')" class="p-3 bg-amber-100 border-2 border-amber-200 text-amber-900 rounded-lg font-bold">Pure Sandbox</button>
             </div>
         </div>
     </div>
 
-    <!-- 2. MAIN LAYOUT -->
     <div class="flex h-screen">
         <div class="w-64 bg-slate-900 text-white p-6">
-            <h2 class="text-lg font-bold mb-8 text-blue-400">Ethical Edge GRC</h2>
+            <h2 class="text-xl font-bold mb-8 text-blue-400">Ethical Edge</h2>
             <nav class="space-y-4">
                 <button onclick="window.switchTab('dashboard')" class="block w-full text-left p-2 hover:bg-slate-700 rounded">📊 Dashboard</button>
-                <button onclick="window.switchTab('compliance')" class="block w-full text-left p-2 hover:bg-slate-700 rounded">🛡️ Compliance Matrix</button>
+                <button onclick="window.switchTab('compliance')" class="block w-full text-left p-2 hover:bg-slate-700 rounded">🛡️ Compliance</button>
                 <button onclick="window.switchTab('risk')" class="block w-full text-left p-2 hover:bg-slate-700 rounded">🚩 Risk Register</button>
                 <button onclick="window.switchTab('checklist')" class="block w-full text-left p-2 hover:bg-slate-700 rounded">📝 Compliance Checklist</button>
-                <button onclick="window.location.reload()" class="block w-full text-left p-2 mt-10 text-rose-400 border-t border-slate-700 hover:bg-slate-800 rounded">Logout</button>
+                <button onclick="window.location.reload()" class="w-full mt-10 p-2 text-rose-400 border-t border-slate-700">Logout</button>
             </nav>
         </div>
 
         <div class="flex-1 p-8 overflow-y-auto">
-            <h1 id="brand-title" class="text-3xl font-bold mb-6">GRC Command Center</h1>
-
-            <!-- Dashboard -->
-            <div id="tab-dashboard" class="space-y-6">
-                <div class="grid grid-cols-3 gap-6">
-                    <div class="bg-white p-6 rounded shadow border-l-4 border-blue-500"><h3>5</h3><p>Vendors Vetted</p></div>
-                    <div class="bg-white p-6 rounded shadow border-l-4 border-red-500"><h3>0</h3><p>Critical Risks</p></div>
-                    <div class="bg-white p-6 rounded shadow border-l-4 border-green-500"><h3>61.5%</h3><p>Compliance Score</p></div>
-                </div>
+            <h1 id="brand-title" class="text-2xl font-bold mb-6">GRC Command Center</h1>
+            
+            <div id="tab-dashboard" class="grid grid-cols-3 gap-6 mb-8">
+                <div class="bg-white p-6 rounded shadow border-l-4 border-blue-500"><h3>5</h3><p>Vendors Vetted</p></div>
+                <div class="bg-white p-6 rounded shadow border-l-4 border-red-500"><h3>0</h3><p>Critical Risks</p></div>
+                <div class="bg-white p-6 rounded shadow border-l-4 border-green-500"><h3>61.5%</h3><p>Compliance Score</p></div>
             </div>
 
-            <!-- Compliance Matrix -->
             <div id="tab-compliance" class="hidden">
+                <h2 class="text-xl font-bold mb-4">🛡️ King V Matrix</h2>
                 <div id="matrix-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
             </div>
 
-            <!-- Risk Register -->
             <div id="tab-risk" class="hidden">
+                <h2 class="text-xl font-bold mb-4">🚩 Live Risk Register</h2>
                 <table class="w-full bg-white rounded shadow text-left">
-                    <thead class="bg-slate-800 text-white"><tr><th class="p-3">ID</th><th class="p-3">Risk</th><th class="p-3">Strategy</th></tr></thead>
-                    <tbody id="risk-body"></tbody>
+                    <thead class="bg-slate-800 text-white"><tr><th class="p-3">ID</th><th class="p-3">Risk</th><th class="p-3">Level</th><th class="p-3">Score</th><th class="p-3">Strategy</th></tr></thead>
+                    <tbody id="risk-table-body"></tbody>
                 </table>
             </div>
 
-            <!-- Checklist -->
             <div id="tab-checklist" class="hidden">
+                <h2 class="text-xl font-bold mb-4">📝 Compliance Checklist</h2>
                 <div id="checklist-container" class="bg-white p-6 rounded shadow"></div>
                 <button onclick="alert('Assessment Saved!')" class="mt-4 bg-blue-600 text-white px-6 py-2 rounded">Save Assessment</button>
             </div>
@@ -71,34 +67,37 @@
     </div>
 
     <script>
-        window.applyPreset = (preset) => {
+        window.applyPreset = (p) => {
             document.getElementById('login-gateway').classList.add('hidden');
-            document.getElementById('brand-title').textContent = `${preset} — GRC Dashboard`;
+            document.getElementById('brand-title').textContent = `${p} Dashboard`;
         };
 
         window.switchTab = (tab) => {
-            ['dashboard', 'compliance', 'risk', 'checklist'].forEach(t => {
-                document.getElementById('tab-' + t).classList.toggle('hidden', t !== tab);
-            });
+            ['dashboard', 'compliance', 'risk', 'checklist'].forEach(t => 
+                document.getElementById('tab-' + t).classList.toggle('hidden', t !== tab));
         };
 
-        // Render Data
+        window.openAudit = (id) => alert("Running AI Audit Simulation for " + id);
+
         document.addEventListener('DOMContentLoaded', () => {
-            // Render Matrix
+            // Matrix
             const m = document.getElementById('matrix-container');
-            for(let i=1; i<=13; i++) {
-                m.innerHTML += `<div class="p-4 bg-white border rounded shadow"><strong>P${i}:</strong> Governance Gate.<br><button class="text-blue-600 font-bold">Verify Gate →</button></div>`;
-            }
-            // Render Risks
-            const rb = document.getElementById('risk-body');
-            ['Climate Volatility', 'Data Leakage', 'AI Drift', 'Supply Chain', 'Reporting'].forEach((r, i) => {
-                rb.innerHTML += `<tr><td class="p-3">RSK-00${i+1}</td><td class="p-3">${r}</td><td class="p-3">Mitigated</td></tr>`;
-            });
-            // Render Checklist
+            for(let i=1; i<=13; i++) m.innerHTML += `<div class="p-4 bg-white border rounded shadow"><strong>P${i}:</strong> Governance Gate<br><button onclick="window.openAudit('P${i}')" class="text-blue-600 text-sm font-bold">Verify Gate →</button></div>`;
+            
+            // Risks
+            const risks = [
+                { id: "RSK-001", title: "Climate Volatility", level: "HIGH", score: "22/25", strategy: "Nodes" },
+                { id: "RSK-002", title: "Data Leakage", level: "CRITICAL", score: "24/25", strategy: "Encryption" },
+                { id: "RSK-003", title: "AI Model Drift", level: "MEDIUM", score: "15/25", strategy: "Audits" },
+                { id: "RSK-004", title: "Supply Chain", level: "LOW", score: "8/25", strategy: "Diversify" },
+                { id: "RSK-005", title: "Reporting Delay", level: "MEDIUM", score: "12/25", strategy: "Automated" }
+            ];
+            const rb = document.getElementById('risk-table-body');
+            risks.forEach(r => rb.innerHTML += `<tr><td class="p-3">${r.id}</td><td class="p-3">${r.title}</td><td class="p-3 font-bold ${r.level === 'CRITICAL' ? 'risk-high' : 'risk-med'}">${r.level}</td><td class="p-3">${r.score}</td><td class="p-3">${r.strategy}</td></tr>`);
+            
+            // Checklist
             const ch = document.getElementById('checklist-container');
-            for(let i=1; i<=13; i++) {
-                ch.innerHTML += `<div class="p-2 border-b"><input type="checkbox"> King V Principle ${i}</div>`;
-            }
+            for(let i=1; i<=13; i++) ch.innerHTML += `<div class="p-2 border-b"><input type="checkbox" class="mr-2"> Principle P${i}: King V compliance gate.</div>`;
         });
     </script>
 </body>
