@@ -2,25 +2,46 @@
 <html lang="en" class="h-full bg-slate-50">
 <head>
     <meta charset="UTF-8">
-    <title>Ethical Edge GRC — King V Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ethical Edge GRC — Sovereign Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="h-full">
+
+    <!-- 1. LOGIN GATEWAY (The "Professional" Front Door) -->
+    <div id="login-gateway" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/95 backdrop-blur-md p-4">
+        <div class="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 border border-slate-200 space-y-6">
+            <div class="text-center">
+                <h2 class="text-2xl font-bold text-slate-900">Sovereign Node Gateway</h2>
+                <p class="text-sm text-slate-500 mt-2">Access the King V command loop.</p>
+            </div>
+            <div class="grid grid-cols-2 gap-3 text-xs">
+                <button onclick="window.applyPreset('SME Standard')" class="p-3 border-2 border-slate-200 hover:border-blue-500 rounded-lg font-bold">SME Standard</button>
+                <button onclick="window.applyPreset('FinTech Pro')" class="p-3 border-2 border-slate-200 hover:border-blue-500 rounded-lg font-bold">FinTech Pro</button>
+                <button onclick="window.applyPreset('Capital Premium')" class="p-3 border-2 border-slate-200 hover:border-blue-500 rounded-lg font-bold">Capital Premium</button>
+                <button onclick="window.applyPreset('Pure Sandbox')" class="p-3 bg-amber-100 border-2 border-amber-200 text-amber-900 rounded-lg font-bold">Pure Sandbox</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. MAIN LAYOUT -->
     <div class="flex h-screen">
-        <!-- Sidebar -->
         <div class="w-64 bg-slate-900 text-white p-6">
-            <h2 class="text-xl font-bold mb-8 text-blue-400">Ethical Edge GRC</h2>
+            <h2 class="text-lg font-bold mb-8 text-blue-400">Ethical Edge GRC</h2>
             <nav class="space-y-4">
                 <button onclick="window.switchTab('dashboard')" class="block w-full text-left p-2 hover:bg-slate-700 rounded">📊 Dashboard</button>
-                <button onclick="window.switchTab('compliance')" class="block w-full text-left p-2 hover:bg-slate-700 rounded">🛡️ Compliance</button>
+                <button onclick="window.switchTab('compliance')" class="block w-full text-left p-2 hover:bg-slate-700 rounded">🛡️ Compliance Matrix</button>
+                <button onclick="window.switchTab('risk')" class="block w-full text-left p-2 hover:bg-slate-700 rounded">🚩 Risk Register</button>
+                <button onclick="window.switchTab('checklist')" class="block w-full text-left p-2 hover:bg-slate-700 rounded">📝 Compliance Checklist</button>
+                <button onclick="window.location.reload()" class="block w-full text-left p-2 mt-10 text-rose-400 border-t border-slate-700 hover:bg-slate-800 rounded">Logout</button>
             </nav>
         </div>
 
-        <!-- Main -->
         <div class="flex-1 p-8 overflow-y-auto">
-            <!-- Dashboard Tab -->
-            <div id="tab-dashboard">
-                <h1 class="text-2xl font-bold mb-6">GRC Command Center</h1>
+            <h1 id="brand-title" class="text-3xl font-bold mb-6">GRC Command Center</h1>
+
+            <!-- Dashboard -->
+            <div id="tab-dashboard" class="space-y-6">
                 <div class="grid grid-cols-3 gap-6">
                     <div class="bg-white p-6 rounded shadow border-l-4 border-blue-500"><h3>5</h3><p>Vendors Vetted</p></div>
                     <div class="bg-white p-6 rounded shadow border-l-4 border-red-500"><h3>0</h3><p>Critical Risks</p></div>
@@ -28,65 +49,57 @@
                 </div>
             </div>
 
-            <!-- Compliance Matrix Tab -->
+            <!-- Compliance Matrix -->
             <div id="tab-compliance" class="hidden">
-                <h2 class="text-2xl font-bold mb-4">🛡️ King V (2026) Compliance Matrix</h2>
-                <div id="matrix-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6"></div>
-                <button onclick="window.saveAssessment()" class="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700">Save Assessment</button>
+                <div id="matrix-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
             </div>
-        </div>
-    </div>
 
-    <!-- Modal -->
-    <div id="audit-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center">
-        <div class="bg-white p-6 rounded-lg w-96 shadow-xl">
-            <h3 id="modal-title" class="font-bold text-lg mb-4">Verify Gate</h3>
-            <p id="modal-req" class="text-sm mb-4"></p>
-            <input type="file" class="block w-full mb-4">
-            <div class="flex justify-end gap-2">
-                <button onclick="window.toggleModal(false)" class="px-4 py-2 bg-gray-200 rounded">Close</button>
-                <button onclick="window.verifyGate()" class="px-4 py-2 bg-blue-600 text-white rounded">Verify Rule Telemetry</button>
+            <!-- Risk Register -->
+            <div id="tab-risk" class="hidden">
+                <table class="w-full bg-white rounded shadow text-left">
+                    <thead class="bg-slate-800 text-white"><tr><th class="p-3">ID</th><th class="p-3">Risk</th><th class="p-3">Strategy</th></tr></thead>
+                    <tbody id="risk-body"></tbody>
+                </table>
             </div>
-            <div id="modal-results" class="hidden mt-4 p-3 bg-green-50 text-green-800 rounded text-sm"></div>
+
+            <!-- Checklist -->
+            <div id="tab-checklist" class="hidden">
+                <div id="checklist-container" class="bg-white p-6 rounded shadow"></div>
+                <button onclick="alert('Assessment Saved!')" class="mt-4 bg-blue-600 text-white px-6 py-2 rounded">Save Assessment</button>
+            </div>
         </div>
     </div>
 
     <script>
-        window.activeGate = "";
+        window.applyPreset = (preset) => {
+            document.getElementById('login-gateway').classList.add('hidden');
+            document.getElementById('brand-title').textContent = `${preset} — GRC Dashboard`;
+        };
 
         window.switchTab = (tab) => {
-            document.getElementById('tab-dashboard').classList.toggle('hidden', tab !== 'dashboard');
-            document.getElementById('tab-compliance').classList.toggle('hidden', tab !== 'compliance');
+            ['dashboard', 'compliance', 'risk', 'checklist'].forEach(t => {
+                document.getElementById('tab-' + t).classList.toggle('hidden', t !== tab);
+            });
         };
 
-        window.toggleModal = (show) => document.getElementById('audit-modal').classList.toggle('hidden', !show);
-
-        window.openVerification = (id, desc) => {
-            window.activeGate = id;
-            document.getElementById('modal-title').textContent = "Verify: " + id;
-            document.getElementById('modal-req').textContent = desc;
-            document.getElementById('audit-results').classList.add('hidden');
-            window.toggleModal(true);
-        };
-
-        window.verifyGate = () => {
-            const res = document.getElementById('audit-results');
-            res.classList.remove('hidden');
-            res.innerHTML = "<strong>PASSED</strong><br>Citation: Compliance verification mapped to King V 2026 framework.";
-        };
-
-        window.saveAssessment = () => alert("Assessment saved locally!");
-
-        // Load 13 Principles
-        const grid = document.getElementById('matrix-grid');
-        for(let i=1; i<=13; i++) {
-            grid.innerHTML += `
-                <div class="p-4 border rounded shadow bg-white">
-                    <input type="checkbox" class="mr-2"> <strong>P${i}:</strong> Governance Gate for King V compliance.<br>
-                    <button onclick="window.openVerification('P${i}', 'Governance Gate for King V compliance.')" class="mt-2 text-blue-600 font-bold text-sm">Verify Gate →</button>
-                </div>
-            `;
-        }
+        // Render Data
+        document.addEventListener('DOMContentLoaded', () => {
+            // Render Matrix
+            const m = document.getElementById('matrix-container');
+            for(let i=1; i<=13; i++) {
+                m.innerHTML += `<div class="p-4 bg-white border rounded shadow"><strong>P${i}:</strong> Governance Gate.<br><button class="text-blue-600 font-bold">Verify Gate →</button></div>`;
+            }
+            // Render Risks
+            const rb = document.getElementById('risk-body');
+            ['Climate Volatility', 'Data Leakage', 'AI Drift', 'Supply Chain', 'Reporting'].forEach((r, i) => {
+                rb.innerHTML += `<tr><td class="p-3">RSK-00${i+1}</td><td class="p-3">${r}</td><td class="p-3">Mitigated</td></tr>`;
+            });
+            // Render Checklist
+            const ch = document.getElementById('checklist-container');
+            for(let i=1; i<=13; i++) {
+                ch.innerHTML += `<div class="p-2 border-b"><input type="checkbox"> King V Principle ${i}</div>`;
+            }
+        });
     </script>
 </body>
 </html>
