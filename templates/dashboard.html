@@ -1,22 +1,16 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" class="h-full bg-slate-50">
 <head>
     <meta charset="UTF-8">
     <title>Ethical Edge GRC | Sovereign Command</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .risk-crit { color: #b91c1c; font-weight: 800; }
-        .risk-high { color: #c2410c; font-weight: 700; }
-        .risk-med { color: #b45309; font-weight: 600; }
-        .risk-low { color: #15803d; font-weight: 600; }
-    </style>
 </head>
 <body class="h-full font-sans text-slate-900">
 
     <!-- LOGIN GATEWAY -->
     <div id="login-gateway" class="fixed inset-0 z-[5000] flex items-center justify-center bg-slate-900/95 backdrop-blur-md p-4">
         <div class="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 border border-slate-200">
-            <h2 class="text-2xl font-bold mb-6 text-center text-slate-900">Sovereign Node Gateway</h2>
+            <h2 class="text-2xl font-bold mb-6 text-center">Sovereign Node Gateway</h2>
             <div class="grid grid-cols-2 gap-3 text-xs">
                 <button onclick="window.initSession('SME Standard')" class="p-4 border-2 border-slate-200 rounded-lg font-bold hover:bg-blue-50">SME Standard</button>
                 <button onclick="window.initSession('FinTech Pro')" class="p-4 border-2 border-slate-200 rounded-lg font-bold hover:bg-blue-50">FinTech Pro</button>
@@ -26,34 +20,45 @@
         </div>
     </div>
 
-    <!-- APP LAYOUT -->
+    <!-- MAIN LAYOUT -->
     <div class="flex h-screen">
-        <aside class="w-64 bg-slate-900 text-white p-6 z-[100]">
-            <h2 class="text-xl font-bold mb-8 text-blue-400">Ethical Edge GRC</h2>
-            <nav class="space-y-4">
-                <button onclick="window.switchTab('dashboard')" class="block w-full text-left p-3 hover:bg-slate-700 rounded font-bold">📊 Dashboard</button>
-                <button onclick="window.switchTab('compliance')" class="block w-full text-left p-3 hover:bg-slate-700 rounded font-bold">🛡️ Compliance Matrix</button>
-                <button onclick="window.switchTab('risk')" class="block w-full text-left p-3 hover:bg-slate-700 rounded font-bold">🚩 Risk Register</button>
-                <button onclick="window.location.reload()" class="block w-full text-left p-3 mt-10 text-rose-400 border-t border-slate-700 hover:bg-slate-800 rounded font-bold">Logout Node</button>
+        <aside class="w-64 bg-slate-950 text-slate-300 p-6 z-[100]">
+            <h2 class="text-white font-bold text-lg mb-8">Ethical Edge GRC</h2>
+            <nav class="space-y-4 text-sm font-semibold">
+                <button onclick="window.switchTab('dashboard')" class="w-full text-left hover:text-white">📊 Dashboard</button>
+                <button onclick="window.switchTab('compliance')" class="w-full text-left hover:text-white">🛡️ King V Matrix</button>
+                <button onclick="window.switchTab('risk')" class="w-full text-left hover:text-white">🚩 Risk Register</button>
+                <button onclick="window.switchTab('checklist')" class="w-full text-left hover:text-white">📝 Compliance Checklist</button>
+                <button onclick="location.reload()" class="w-full mt-10 text-rose-400 border-t border-slate-700 pt-4">Logout</button>
             </nav>
         </aside>
 
         <main class="flex-1 p-8 overflow-y-auto">
-            <h1 id="brand-title" class="text-3xl font-bold mb-6">GRC Command Center</h1>
-            
+            <h1 id="brand-title" class="text-3xl font-bold mb-8">GRC Command Center</h1>
+
+            <!-- Dashboard -->
             <div id="tab-dashboard" class="grid grid-cols-3 gap-6">
-                <div class="bg-white p-6 rounded shadow border-l-4 border-blue-500"><h3>5</h3><p>Vendors Vetted</p></div>
-                <div class="bg-white p-6 rounded shadow border-l-4 border-red-500"><h3>0</h3><p>Critical Risks</p></div>
-                <div class="bg-white p-6 rounded shadow border-l-4 border-green-500"><h3>61.5%</h3><p>Compliance Score</p></div>
+                <div class="bg-white p-6 rounded shadow border-l-4 border-blue-600"><h3>5</h3><p class="text-xs uppercase font-bold text-slate-400">Vendors Vetted</p></div>
+                <div class="bg-white p-6 rounded shadow border-l-4 border-red-600"><h3>0</h3><p class="text-xs uppercase font-bold text-slate-400">Critical Risks</p></div>
+                <div class="bg-white p-6 rounded shadow border-l-4 border-green-600"><h3>61.5%</h3><p class="text-xs uppercase font-bold text-slate-400">Compliance</p></div>
             </div>
 
-            <div id="tab-compliance" class="hidden"><div id="matrix-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div></div>
+            <!-- Compliance Matrix -->
+            <div id="tab-compliance" class="hidden space-y-8"><div id="matrix-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div></div>
 
+            <!-- Risk Register -->
             <div id="tab-risk" class="hidden">
                 <table class="w-full bg-white rounded shadow text-left">
                     <thead class="bg-slate-800 text-white"><tr><th class="p-3">ID</th><th class="p-3">Risk</th><th class="p-3">Level</th><th class="p-3">Strategy</th></tr></thead>
-                    <tbody id="risk-body"></tbody>
+                    <tbody id="risk-table-body"></tbody>
                 </table>
+            </div>
+
+            <!-- Checklist -->
+            <div id="tab-checklist" class="hidden">
+                <h2 class="text-2xl font-bold mb-6">📝 King V Compliance Checklist</h2>
+                <div id="checklist-container" class="bg-white p-6 rounded shadow space-y-2"></div>
+                <button onclick="alert('Assessment Saved!')" class="mt-4 bg-blue-600 text-white px-6 py-2 rounded font-bold">Save Assessment</button>
             </div>
         </main>
     </div>
@@ -61,53 +66,28 @@
     <!-- Modal -->
     <div id="audit-modal" class="hidden fixed inset-0 z-[6000] bg-black/50 flex items-center justify-center">
         <div class="bg-white p-6 rounded-lg w-96 shadow-2xl relative">
-            <button onclick="window.toggleModal(false)" class="absolute top-4 right-4 text-gray-500 text-xl font-bold">✕</button>
+            <button onclick="window.toggleModal(false)" class="absolute top-4 right-4 text-gray-500 font-bold">✕</button>
             <h3 id="modal-title" class="font-bold text-lg mb-2">Audit Gate</h3>
-            <p id="modal-req" class="text-sm text-gray-600 mb-4"></p>
-            <input type="file" class="block w-full mb-4 border p-2 text-sm rounded">
+            <input type="file" class="block w-full mb-4 text-sm">
             <button onclick="window.runAudit()" class="w-full bg-blue-600 text-white py-2 rounded font-bold">Verify Rule Telemetry</button>
             <div id="audit-results" class="hidden mt-4 p-3 bg-green-50 rounded border text-sm"></div>
         </div>
     </div>
 
     <script>
-        window.initSession = (name) => {
-            document.getElementById('login-gateway').classList.add('hidden');
-            document.getElementById('brand-title').textContent = name + " — Command Center";
-        };
-
-        window.switchTab = (tab) => {
-            ['dashboard', 'compliance', 'risk'].forEach(t => document.getElementById('tab-' + t).classList.toggle('hidden', t !== tab));
-        };
-
+        window.initSession = (n) => { document.getElementById('login-gateway').classList.add('hidden'); document.getElementById('brand-title').textContent = n + " — Command Center"; };
+        window.switchTab = (t) => { ['dashboard', 'compliance', 'risk', 'checklist'].forEach(tab => document.getElementById('tab-' + tab).classList.toggle('hidden', tab !== t)); };
         window.toggleModal = (show) => document.getElementById('audit-modal').classList.toggle('hidden', !show);
-
-        window.openAudit = (id, desc) => {
-            document.getElementById('modal-title').textContent = "Verify: " + id;
-            document.getElementById('modal-req').textContent = desc;
-            document.getElementById('audit-results').classList.add('hidden');
-            window.toggleModal(true);
-        };
-
-        window.runAudit = () => {
-            const res = document.getElementById('audit-results');
-            res.classList.remove('hidden');
-            res.innerHTML = "<strong>PASSED</strong><br>Citation: Verified per King V 2026 standards.";
-        };
+        window.openAudit = (id) => { document.getElementById('modal-title').textContent = "Verify " + id; document.getElementById('audit-results').classList.add('hidden'); window.toggleModal(true); };
+        window.runAudit = () => { const res = document.getElementById('audit-results'); res.classList.remove('hidden'); res.innerHTML = "<strong>PASSED:</strong> Verification mapped to King V standards."; };
 
         document.addEventListener('DOMContentLoaded', () => {
             const m = document.getElementById('matrix-grid');
-            for(let i=1; i<=13; i++) m.innerHTML += `<div class="p-4 bg-white border rounded shadow"><strong>P${i}:</strong> King V Principle.<br><button onclick="window.openAudit('P${i}', 'Governance Gate for King V compliance.')" class="mt-2 text-blue-600 font-bold text-sm">Verify Gate →</button></div>`;
-            
-            const rb = document.getElementById('risk-body');
-            const risks = [
-                { id: "RSK-001", t: "Climate Volatility", l: "HIGH", s: "Infrastructure Nodes" },
-                { id: "RSK-002", t: "Data Leakage", l: "CRITICAL", s: "AES-256 Encryption" },
-                { id: "RSK-003", t: "AI Model Drift", l: "MEDIUM", s: "Monthly Validation" },
-                { id: "RSK-004", t: "Supply Chain", l: "LOW", s: "Multi-vendor Sourcing" },
-                { id: "RSK-005", t: "Reporting Delay", l: "MEDIUM", s: "Automated Pipelines" }
-            ];
-            risks.forEach(r => rb.innerHTML += `<tr class="border-b"><td class="p-3">${r.id}</td><td class="p-3">${r.t}</td><td class="p-3 font-bold ${r.l=='CRITICAL'?'risk-crit':r.l=='HIGH'?'risk-high':r.l=='MEDIUM'?'risk-med':'risk-low'}">${r.l}</td><td class="p-3">${r.s}</td></tr>`);
+            for(let i=1; i<=13; i++) m.innerHTML += `<div class="p-4 bg-white border rounded shadow"><strong>P${i}:</strong> Principle<br><button onclick="window.openAudit('P${i}')" class="mt-2 text-blue-600 font-bold text-sm">Verify Gate →</button></div>`;
+            const rb = document.getElementById('risk-table-body');
+            [{id:"RSK-001",t:"Climate Volatility",l:"HIGH",s:"Nodes"},{id:"RSK-002",t:"Data Leakage",l:"CRITICAL",s:"Encryption"},{id:"RSK-003",t:"AI Model Drift",l:"MEDIUM",s:"Audits"},{id:"RSK-004",t:"Supply Chain",l:"LOW",s:"Diversify"},{id:"RSK-005",t:"Reporting Delay",l:"MEDIUM",s:"Automated"}].forEach(r => rb.innerHTML += `<tr class="border-b"><td class="p-3">${r.id}</td><td class="p-3">${r.t}</td><td class="p-3 font-bold ${r.l=='CRITICAL'?'text-red-600':'text-orange-600'}">${r.l}</td><td class="p-3">${r.s}</td></tr>`);
+            const ch = document.getElementById('checklist-container');
+            for(let i=1; i<=13; i++) ch.innerHTML += `<div class="p-2 border-b"><input type="checkbox" class="mr-2"> Principle P${i}: King V Compliance Gate.</div>`;
         });
     </script>
 </body>
