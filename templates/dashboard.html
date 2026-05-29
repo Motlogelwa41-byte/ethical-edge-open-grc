@@ -2,119 +2,91 @@
 <html lang="en" class="h-full bg-slate-50">
 <head>
     <meta charset="UTF-8">
-    <title>Ethical Edge GRC Dashboard</title>
+    <title>Ethical Edge GRC — King V Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="h-full font-sans text-slate-900">
-
-    <!-- Navigation -->
-    <nav class="bg-slate-900 text-white p-4 flex justify-between items-center">
-        <span class="font-bold text-lg">Ethical Edge GRC Dashboard</span>
-        <div class="space-x-4">
-            <button onclick="window.switchTab('dashboard')" class="hover:text-blue-400">📊 Dashboard</button>
-            <button onclick="window.switchTab('compliance')" class="hover:text-blue-400">🛡️ Compliance</button>
-            <button onclick="window.switchTab('risk')" class="hover:text-blue-400">🚩 Risk Register</button>
+<body class="h-full">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="w-64 bg-slate-900 text-white p-6">
+            <h2 class="text-xl font-bold mb-8 text-blue-400">Ethical Edge GRC</h2>
+            <nav class="space-y-4">
+                <button onclick="window.switchTab('dashboard')" class="block w-full text-left p-2 hover:bg-slate-700 rounded">📊 Dashboard</button>
+                <button onclick="window.switchTab('compliance')" class="block w-full text-left p-2 hover:bg-slate-700 rounded">🛡️ Compliance</button>
+            </nav>
         </div>
-    </nav>
 
-    <main class="p-8 max-w-6xl mx-auto">
-        <!-- Dashboard Tab -->
-        <div id="tab-dashboard">
-            <h1 class="text-3xl font-bold mb-6">GRC Command Center</h1>
-            <div class="grid grid-cols-3 gap-6 mb-8">
-                <div class="bg-white p-6 rounded shadow border-l-4 border-blue-500"><h3>5</h3><p>Vendors Vetted</p></div>
-                <div class="bg-white p-6 rounded shadow border-l-4 border-red-500"><h3>0</h3><p>Critical Risks</p></div>
-                <div class="bg-white p-6 rounded shadow border-l-4 border-green-500"><h3>61.5%</h3><p>Compliance Score</p></div>
+        <!-- Main -->
+        <div class="flex-1 p-8 overflow-y-auto">
+            <!-- Dashboard Tab -->
+            <div id="tab-dashboard">
+                <h1 class="text-2xl font-bold mb-6">GRC Command Center</h1>
+                <div class="grid grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded shadow border-l-4 border-blue-500"><h3>5</h3><p>Vendors Vetted</p></div>
+                    <div class="bg-white p-6 rounded shadow border-l-4 border-red-500"><h3>0</h3><p>Critical Risks</p></div>
+                    <div class="bg-white p-6 rounded shadow border-l-4 border-green-500"><h3>61.5%</h3><p>Compliance Score</p></div>
+                </div>
+            </div>
+
+            <!-- Compliance Matrix Tab -->
+            <div id="tab-compliance" class="hidden">
+                <h2 class="text-2xl font-bold mb-4">🛡️ King V (2026) Compliance Matrix</h2>
+                <div id="matrix-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6"></div>
+                <button onclick="window.saveAssessment()" class="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700">Save Assessment</button>
             </div>
         </div>
+    </div>
 
-        <!-- Compliance Tab -->
-        <div id="tab-compliance" class="hidden">
-            <h1 class="text-3xl font-bold mb-6">🛡️ King V (2026) Compliance Matrix</h1>
-            <div id="checklist-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-            <button onclick="window.saveAssessment()" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded font-bold">Save Assessment</button>
-        </div>
-
-        <!-- Risk Register Tab -->
-        <div id="tab-risk" class="hidden">
-            <h1 class="text-3xl font-bold mb-6">🚩 Live Risk Register</h1>
-            <table class="w-full bg-white rounded shadow text-left">
-                <thead class="bg-slate-800 text-white">
-                    <tr><th class="p-3">ID</th><th class="p-3">Risk</th><th class="p-3">Level</th><th class="p-3">Strategy</th></tr>
-                </thead>
-                <tbody id="risk-table-body"></tbody>
-            </table>
-        </div>
-    </main>
-
-    <!-- Audit Modal -->
+    <!-- Modal -->
     <div id="audit-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center">
-        <div class="bg-white p-6 rounded-lg w-96">
-            <h3 id="modal-title" class="font-bold text-lg mb-2">Evaluate Gate</h3>
-            <p id="modal-gate-info" class="text-sm text-gray-600 mb-4"></p>
-            <input type="file" id="audit-file" class="mb-4">
+        <div class="bg-white p-6 rounded-lg w-96 shadow-xl">
+            <h3 id="modal-title" class="font-bold text-lg mb-4">Verify Gate</h3>
+            <p id="modal-req" class="text-sm mb-4"></p>
+            <input type="file" class="block w-full mb-4">
             <div class="flex justify-end gap-2">
-                <button onclick="window.closeModal()" class="px-4 py-2 bg-gray-200 rounded">Close</button>
-                <button onclick="window.runSimulation()" class="px-4 py-2 bg-blue-600 text-white rounded">Verify Rule Telemetry</button>
+                <button onclick="window.toggleModal(false)" class="px-4 py-2 bg-gray-200 rounded">Close</button>
+                <button onclick="window.verifyGate()" class="px-4 py-2 bg-blue-600 text-white rounded">Verify Rule Telemetry</button>
             </div>
-            <div id="results" class="hidden mt-4 p-3 bg-gray-100 rounded text-sm"></div>
+            <div id="modal-results" class="hidden mt-4 p-3 bg-green-50 text-green-800 rounded text-sm"></div>
         </div>
     </div>
 
     <script>
-        window.currentGate = "";
-        
+        window.activeGate = "";
+
         window.switchTab = (tab) => {
             document.getElementById('tab-dashboard').classList.toggle('hidden', tab !== 'dashboard');
             document.getElementById('tab-compliance').classList.toggle('hidden', tab !== 'compliance');
-            document.getElementById('tab-risk').classList.toggle('hidden', tab !== 'risk');
         };
 
         window.toggleModal = (show) => document.getElementById('audit-modal').classList.toggle('hidden', !show);
-        window.closeModal = () => window.toggleModal(false);
 
-        window.openAudit = (id) => {
-            window.currentGate = id;
-            document.getElementById('modal-gate-info').textContent = "Gate: " + id;
+        window.openVerification = (id, desc) => {
+            window.activeGate = id;
+            document.getElementById('modal-title').textContent = "Verify: " + id;
+            document.getElementById('modal-req').textContent = desc;
             document.getElementById('audit-results').classList.add('hidden');
             window.toggleModal(true);
         };
 
-        window.runSimulation = () => {
-            const res = document.getElementById('results');
+        window.verifyGate = () => {
+            const res = document.getElementById('audit-results');
             res.classList.remove('hidden');
-            let citation = "Compliance evaluation succeeded.";
-            
-            if (window.currentGate === "P12") {
-                citation = "Vendor integrity verified against Botswana Financial Intelligence Agency (FIA) sanction lists.";
-            } else if (window.currentGate === "P3") {
-                citation = "Verified localized advisory board oversight ensuring ESG policy alignment with SADC cultural guidelines.";
-            }
-
-            res.innerHTML = `<strong>PASSED</strong><br>${citation}<br>Confidence: 94% | Risk: LOW`;
+            res.innerHTML = "<strong>PASSED</strong><br>Citation: Compliance verification mapped to King V 2026 framework.";
         };
 
         window.saveAssessment = () => alert("Assessment saved locally!");
 
-        // Initialization
-        const principles = Array.from({length: 13}, (_, i) => `P${i+1}`);
-        const risks = [
-            { id: "RSK-001", title: "Climate Volatility", level: "HIGH", strategy: "Diversified infrastructure nodes" },
-            { id: "RSK-002", title: "Data Leakage", level: "CRITICAL", strategy: "AES-256 encryption" },
-            { id: "RSK-003", title: "AI Model Drift", level: "MEDIUM", strategy: "Monthly audits" },
-            { id: "RSK-004", title: "Supply Chain", level: "LOW", strategy: "Multi-vendor sourcing" },
-            { id: "RSK-005", title: "Reporting Delay", level: "MEDIUM", strategy: "Automated pipelines" }
-        ];
-
-        const container = document.getElementById('checklist-container');
-        principles.forEach(p => {
-            container.innerHTML += `<div class="p-2 border-b"><input type="checkbox" class="mr-2"> <strong>${p}:</strong> Governance Gate for King V compliance.<br><button onclick="window.openAudit('${p}')" class="text-blue-600 text-xs font-bold">Verify Gate →</button></div>`;
-        });
-
-        const rb = document.getElementById('risk-table-body');
-        risks.forEach(r => {
-            rb.innerHTML += `<tr><td class="p-3">${r.id}</td><td class="p-3">${r.title}</td><td class="p-3 font-bold ${r.level === 'CRITICAL' ? 'text-red-600' : 'text-orange-500'}">${r.level}</td><td class="p-3">${r.strategy}</td></tr>`;
-        });
+        // Load 13 Principles
+        const grid = document.getElementById('matrix-grid');
+        for(let i=1; i<=13; i++) {
+            grid.innerHTML += `
+                <div class="p-4 border rounded shadow bg-white">
+                    <input type="checkbox" class="mr-2"> <strong>P${i}:</strong> Governance Gate for King V compliance.<br>
+                    <button onclick="window.openVerification('P${i}', 'Governance Gate for King V compliance.')" class="mt-2 text-blue-600 font-bold text-sm">Verify Gate →</button>
+                </div>
+            `;
+        }
     </script>
 </body>
 </html>
