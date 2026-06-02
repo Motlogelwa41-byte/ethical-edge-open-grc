@@ -1,2 +1,6 @@
 *.db
 echo "sql_app.db" >> .gitignore
+
+# Local Database Engines
+*.db
+data/
