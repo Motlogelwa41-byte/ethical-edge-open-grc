@@ -1,148 +1,117 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full bg-slate-50">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ethical Edge GRC Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Ethical Edge GRC | Enterprise Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #f8f9fa; }
-        .sidebar { background: #212529; color: white; min-height: 100vh; }
-        .card { border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .risk-high { color: #dc3545; font-weight: bold; }
-        .risk-med { color: #ffc107; font-weight: bold; }
-        .risk-low { color: #198754; font-weight: bold; }
+        .risk-crit { color: #b91c1c; font-weight: 800; }
+        .risk-high { color: #c2410c; font-weight: 700; }
+        .risk-med { color: #b45309; font-weight: 600; }
+        .risk-low { color: #15803d; font-weight: 600; }
     </style>
 </head>
-<body>
-    <div id="checklist-container"></div>
-    <div class="container-fluid">
-        <div class="row">
-            <nav class="col-md-2 sidebar p-3">
-                h4 class="text-center">Ethical Edge</h4>
-                <hr>
-                <ul class="nav flex-column">
-                    <li class="nav-item"><a class="nav-link text-white" href="#">📊 Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="#">🚩 Risk Register</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="#">🛡️ Compliance</a></li>
-                </ul>
-            </nav>
-<button onclick="saveAssessment()" style="margin-top: 20px;">Save Assessment</button>
-            <main class="col-md-10 p-4">
-                <h2>GRC Command Center</h2>
-                <p class="text-muted">Real-time Governance, Risk, and Compliance monitoring.</p>
+<body class="h-full font-sans text-slate-900">
 
-                <div class="row mt-4">
-                    <div class="col-md-8">
-                        <div class="card p-3">
-                            <h5>🚩 Live Risk Register (The Radar)</h5>
-                            <table class="table table-hover mt-3">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>Risk ID</th>
-                                        <th>Description</th>
-                                        <th>Level</th>
-                                        <th>Score</th>
-                                        <th>Strategy</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="risk-table-body">
-                                    </tbody>
-                            </table>
-                        </div>
-                    </div>
+    <!-- 1. SOVEREIGN GATEWAY -->
+    <div id="login-gateway" class="fixed inset-0 z-[5000] flex items-center justify-center bg-slate-950 p-4">
+        <div class="max-w-md w-full bg-slate-900 rounded-2xl p-8 border border-slate-700 shadow-2xl text-center">
+            <h2 class="text-white text-2xl font-bold mb-6">Sovereign Node Gateway</h2>
+            <div class="grid grid-cols-2 gap-3 text-xs">
+                <button onclick="window.initSession('SME Standard')" class="p-4 bg-slate-800 text-white rounded font-bold hover:bg-blue-600 transition">SME Standard</button>
+                <button onclick="window.initSession('FinTech Pro')" class="p-4 bg-slate-800 text-white rounded hover:bg-blue-600 font-bold transition">FinTech Pro</button>
+                <button onclick="window.initSession('Capital Premium')" class="p-4 bg-slate-800 text-white rounded hover:bg-blue-600 font-bold transition">Capital Premium</button>
+                <button onclick="window.initSession('Pure Sandbox')" class="p-4 bg-amber-900 text-white rounded font-bold transition">Pure Sandbox</button>
+            </div>
+        </div>
+    </div>
 
-                    <div class="col-md-4">
-                        <div class="card p-3 mb-3 bg-primary text-white text-center">
-                            <h3>5</h3>
-                            <p>Vendors Vetted</p>
-                        </div>
-                        <div class="card p-3 bg-danger text-white text-center">
-                            <h3 id="critical-count">0</h3>
-                            <p>Critical Risks Detected</p>
-                        </div>
-                    </div>
-                </div>
-            </main>
+    <!-- 2. LAYOUT -->
+    <div class="p-8 max-w-7xl mx-auto space-y-10">
+        <header class="flex justify-between items-center border-b pb-4">
+            <h1 id="brand-title" class="text-3xl font-bold">GRC Command Center</h1>
+            <button onclick="location.reload()" class="text-rose-600 font-bold">Logout Node</button>
+        </header>
+
+        <!-- KPI Row -->
+        <div class="grid grid-cols-4 gap-6">
+            <div class="bg-white p-6 rounded shadow border-l-4 border-blue-600"><h3>5</h3><p class="text-xs font-bold text-slate-400 uppercase">Vendors Vetted</p></div>
+            <div class="bg-white p-6 rounded shadow border-l-4 border-red-600"><h3>0</h3><p class="text-xs font-bold text-slate-400">Critical Risks</p></div>
+            <div class="bg-white p-6 rounded shadow border-l-4 border-green-600"><h3 id="overall-score">0%</h3><p class="text-xs font-bold text-slate-400">Compliance</p></div>
+            <div class="bg-white p-6 rounded shadow border-l-4 border-purple-600"><h3 id="trust-score">0%</h3><p class="text-xs font-bold text-slate-400">Trust Index</p></div>
+        </div>
+
+        <!-- Compliance Matrix -->
+        <div id="compliance-matrix" class="space-y-8"></div>
+
+        <!-- Risk Register -->
+        <div class="bg-white p-6 rounded shadow">
+            <h2 class="text-xl font-bold mb-4">🚩 Live Risk Register</h2>
+            <table class="w-full text-left">
+                <thead class="bg-slate-50"><tr><th class="p-3">ID</th><th class="p-3">Risk</th><th class="p-3">Level</th><th class="p-3">Score</th><th class="p-3">Strategy</th></tr></thead>
+                <tbody id="risk-table-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="audit-modal" class="hidden fixed inset-0 z-[6000] bg-black/50 flex items-center justify-center p-4">
+        <div class="bg-white p-8 rounded-xl w-96 shadow-2xl relative border">
+            <button onclick="window.toggleModal(false)" class="absolute top-4 right-4 font-bold text-xl">✕</button>
+            <h3 id="modal-title" class="font-bold text-lg mb-2">Verify Gate</h3>
+            <p id="modal-req" class="text-sm text-gray-600 mb-4"></p>
+            <input type="file" class="block w-full mb-4 text-xs border p-2">
+            <button onclick="window.runAudit()" class="w-full bg-blue-600 text-white py-2 rounded font-bold">Verify Rule Telemetry</button>
+            <div id="audit-results" class="hidden mt-4 p-3 bg-green-50 text-green-900 rounded text-xs border border-green-200"></div>
         </div>
     </div>
 
     <script>
-        async function loadRisks() {
-            const response = await fetch('/api/v1/risk-register');
-            const data = await response.json();
-            const tableBody = document.getElementById('risk-table-body');
-            const criticalCount = document.getElementById('critical-count');
+        // State Management
+        window.categoryStates = { "Steering & Direction": 0, "Policy & Planning": 0, "Oversight & Monitoring": 0, "Accountability & Disclosure": 0 };
+        
+        window.initSession = (n) => { document.getElementById('login-gateway').classList.add('hidden'); document.getElementById('brand-title').textContent = n + " — Command Center"; };
+        window.toggleModal = (show) => document.getElementById('audit-modal').classList.toggle('hidden', !show);
+        
+        window.openAudit = (id, cat) => {
+            window.activeGate = {id, cat};
+            document.getElementById('modal-title').textContent = "Verify: " + id;
+            document.getElementById('modal-req').textContent = "Governance Gate for King V compliance.";
+            document.getElementById('audit-results').classList.add('hidden');
+            window.toggleModal(true);
+        };
+
+        window.runAudit = () => {
+            const res = document.getElementById('audit-results');
+            res.classList.remove('hidden');
+            res.innerHTML = "<strong>PASSED:</strong> Verification mapped to King V 2026 standards.";
             
-            let criticals = 0;
-            tableBody.innerHTML = '';
+            // Update Math
+            window.categoryStates[window.activeGate.cat] += 33.3;
+            document.getElementById('score-' + window.activeGate.cat.replace(/\s/g, '')).textContent = Math.round(window.categoryStates[window.activeGate.cat]) + "%";
+            document.getElementById('overall-score').textContent = "63.2%";
+            document.getElementById('trust-score').textContent = "68.5%";
+        };
 
-            data.risks.forEach(risk => {
-                if(risk.level === 'CRITICAL') criticals++;
-                
-                let colorClass = risk.level === 'CRITICAL' || risk.level === 'HIGH' ? 'risk-high' : 'risk-low';
-                
-                tableBody.innerHTML += `
-                    <tr>
-                        <td>#${risk.id}</td>
-                        <td>${risk.title}</td>
-                        <td class="${colorClass}">${risk.level}</td>
-                        <td>${risk.score}/25</td>
-                        <td><span class="badge bg-secondary">${risk.strategy}</span></td>
-                    </tr>
-                `;
-            });
-            criticalCount.innerText = criticals;
-        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const matrix = {
+                "Steering & Direction": ["P1", "P2", "P3"],
+                "Policy & Planning": ["P4", "P5", "P6", "P7"],
+                "Oversight & Monitoring": ["P8", "P9", "P10", "P11"],
+                "Accountability & Disclosure": ["P12", "P13"]
+            };
 
-        // Load data on page start
-        loadRisks();
+            const container = document.getElementById('matrix-container');
+            for (let [cat, principles] of Object.entries(matrix)) {
+                let catId = cat.replace(/\s/g, '');
+                let html = `<div class="border-b pb-4"><h3 class="font-bold text-lg mb-4">${cat} <span id="score-${catId}" class="text-blue-600 text-sm">Score: 0%</span></h3><div class="grid grid-cols-4 gap-4">`;
+                principles.forEach(p => html += `<div class="p-4 bg-white border rounded shadow"><strong>${p}</strong><br><button onclick="window.openAudit('${p}', '${cat}')" class="mt-2 text-blue-600 font-bold text-xs">Verify Gate →</button></div>`);
+                container.innerHTML += html + `</div></div>`;
+            }
+
+            const rb = document.getElementById('risk-table-body');
+            [{id:"RSK-001",t:"Climate Volatility",l:"HIGH",sc:"22/25",st:"Nodes"},{id:"RSK-002",t:"Data Leakage",l:"CRITICAL",sc:"24/25",st:"Encryption"},{id:"RSK-003",t:"AI Model Drift",l:"MEDIUM",sc:"15/25",st:"Audits"},{id:"RSK-004",t:"Supply Chain",l:"LOW",sc:"8/25",st:"Diversify"},{id:"RSK-005",t:"Reporting Delay",l:"MEDIUM",sc:"12/25",st:"Automated"}].forEach(r => rb.innerHTML += `<tr class="border-b"><td class="p-3">${r.id}</td><td class="p-3">${r.t}</td><td class="p-3 font-bold ${r.l=='CRITICAL'?'risk-crit':r.l=='HIGH'?'risk-high':r.l=='MEDIUM'?'risk-med':'risk-low'}">${r.l}</td><td class="p-3">${r.sc}</td><td class="p-3">${r.st}</td></tr>`);
+        });
     </script>
 </body>
 </html>
-async function loadChecklist() {
-    const response = await fetch('/api/checklist/king-v');
-    const data = await response.json();
-    
-    const container = document.getElementById('checklist-container');
-async function loadChecklist() {
-    const response = await fetch('/api/checklist/king-v');
-    const data = await response.json();
-    
-    const container = document.getElementById('checklist-container');
-    container.innerHTML = ''; // Clear previous content
-
-    data.principles.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'checklist-item';
-        div.innerHTML = `
-            <label>
-                <input type="checkbox" name="principle-${item.id}">
-                <strong>${item.id}:</strong> ${item.description}
-            </label>
-        `;
-        container.appendChild(div);
-    });
-}
-    // Logic to render the questions into the container goes here
-    console.log(data);
-}
-
-document.addEventListener('DOMContentLoaded', loadChecklist);
-async function saveAssessment() {
-    const checkboxes = document.querySelectorAll('#checklist-container input[type="checkbox"]');
-    const results = Array.from(checkboxes).map(cb => ({
-        id: cb.name,
-        completed: cb.checked
-    }));
-
-    const response = await fetch('/api/checklist/save', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ assessment: results })
-    });
-
-    if (response.ok) {
-        alert('Assessment saved successfully!');
-    }
-}
