@@ -12,7 +12,7 @@ from app.database.models import AuditRun, ControlFinding
 from app.services.evidence_collector import GRCEvidenceEngine
 
 def run_persisted_audit_pipeline():
-    print("🗄️ Initializing Local Compliance Database Ledger...")
+    print("🗄️  Initializing Local Compliance Database Ledger...")
     init_db()
     
     db = SessionLocal()
@@ -34,7 +34,7 @@ def run_persisted_audit_pipeline():
         # 1. Store the top-level run record
         new_run = AuditRun(
             tenant_id=payload.system_id,
-            timestamp=datetime.fromisoformat(payload.timestamp),
+            timestamp=datetime.fromisoformat(payload.timestamp.replace("Z", "+00:00")),
             attainment_rate=payload.calculated_attainment_rate
         )
         db.add(new_run)
@@ -48,7 +48,7 @@ def run_persisted_audit_pipeline():
                 control_name=result.control_name,
                 framework=result.framework,
                 status=result.status,
-                evidence_payload=json.dumps(result.evidence_payload) # Cast dict structural mapping to string
+                evidence_payload=json.dumps(result.evidence_payload) # Cast dict to string
             )
             db.add(finding)
             
@@ -68,3 +68,4 @@ def run_persisted_audit_pipeline():
 if __name__ == "__main__":
     run_persisted_audit_pipeline()
 EOF
+
