@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
+from app.database.session import init_db
 
 # 1. IMPORT ALL OPERATIONAL ROUTERS & SECURITY GATEKEEPERS
 from app.auth.routes import router as auth_router
@@ -14,6 +15,7 @@ from app.room_gates.donor_vetting import router as gates_foundation_router
 from app.room_unicef.open_source_risk import router as unicef_challenge_router
 from app.room_isoc.connectivity_trust import router as isoc_challenge_router
 from app.room_safeguard.epidemic_surveillance import router as safeguard_router
+from app.api.endpoints.audit import router as persistent_audit_router
 
 # 2. INITIALIZE THE MASTER APPLICATION INSTANCE
 app = FastAPI(
@@ -21,6 +23,11 @@ app = FastAPI(
     description="Unified multi-tenant orchestration engine handling standard RegTech framework compliance and localized action research tracking rooms.",
     version="3.0.0"
 )
+
+# Startup Database Tables Programmatically
+@app.on_event("startup")
+def startup_event():
+    init_db()
 
 # 3. CONFIGURE FILE PATHING FOR JINJA2 FRONTEND UI RENDERING
 BASE_DIR = Path(__file__).resolve().parent
@@ -45,6 +52,7 @@ app.include_router(gates_foundation_router)
 app.include_router(unicef_challenge_router)
 app.include_router(isoc_challenge_router)
 app.include_router(safeguard_router)
+app.include_router(persistent_audit_router)
 
 # 6. SYSTEM STATUS ORCHESTRATION HEALTH ENDPOINT
 @app.get("/")
