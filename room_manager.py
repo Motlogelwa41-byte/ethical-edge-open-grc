@@ -56,3 +56,16 @@ def get_room_data(room_key, user_role):
     
     # Existing logic...
     return rooms.get(room_key).to_json()
+
+import sqlite3
+
+def log_to_ledger(user_id, action, room_key):
+    """Writes to your persistent ledger database."""
+    conn = sqlite3.connect('compliance_ledger.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        INSERT INTO audit_log (timestamp, user_id, action, room)
+        VALUES (?, ?, ?, ?)
+    ''', (datetime.utcnow().isoformat(), user_id, action, room_key))
+    conn.commit()
+    conn.close()
