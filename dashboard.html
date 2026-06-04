@@ -1,134 +1,51 @@
-document.addEventListener("DOMContentLoaded", () => {
-    // Initialize the engine UI load sequence
-    fetchKingVMetrics();
-});
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ethical Edge GRC | Command Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex h-screen bg-gray-100">
+    <!-- Sidebar Navigation -->
+    <aside class="w-64 bg-slate-900 text-white p-6">
+        <h1 class="text-xl font-bold mb-8 text-blue-400">Ethical Edge GRC</h1>
+        <nav class="space-y-2">
+            <button onclick="loadRoom('core')" class="block w-full p-3 hover:bg-slate-700 rounded">CORE GRC</button>
+            <button onclick="loadRoom('gate')" class="block w-full p-3 hover:bg-slate-700 rounded">GATE FOUNDATION</button>
+            <button onclick="loadRoom('gougle')" class="block w-full p-3 hover:bg-slate-700 rounded">GOUGLE</button>
+            <button onclick="loadRoom('isoc')" class="block w-full p-3 hover:bg-slate-700 rounded">ISOC</button>
+            <button onclick="loadRoom('safeguard')" class="block w-full p-3 hover:bg-slate-700 rounded">SAFEGUARD</button>
+            <button onclick="loadRoom('unicef')" class="block w-full p-3 hover:bg-slate-700 rounded">UNICEF</button>
+        </nav>
+    </aside>
 
-/**
- * Async fetch engine to ingest calculations from the local GRC engine
- */
-async function fetchKingVMetrics() {
-    const endpoint = "/api/v1/compliance/king-v/metrics";
-    
-    try {
-        const response = await fetch(endpoint);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP Error! Status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        // Render top-level core KPI matrices
-        updateGlobalKPIs(data.overall_compliance_score, data.trust_dividend_index);
-        
-        // Render structural functional groups
-        renderGoverningFunctions(data.governing_functions);
-        
-    } catch (error) {
-        console.error("Failed to render engine analytics dashboard:", error);
-        showDashboardErrorState(error.message);
-    }
-}
-
-/**
- * Updates high-level scoring metrics on the dashboard header cards
- */
-function updateGlobalKPIs(complianceScore, trustDividend) {
-    const complianceEl = document.getElementById("overall-compliance-score");
-    const trustEl = document.getElementById("trust-dividend-index");
-    
-    if (complianceEl) complianceEl.textContent = `${complianceScore}%`;
-    if (trustEl) trustEl.textContent = `${trustDividend}%`;
-}
-
-/**
- * Iterates through the 4 core governing functions of King V and injects principles
- */
-function renderGoverningFunctions(functionsData) {
-    const container = document.getElementById("king-v-matrix-container");
-    if (!container) return;
-    
-    container.innerHTML = ""; // Clear existing skeletons or placeholder data
-
-    // Human-readable titles mapped to API schema dictionary keys
-    const categoryTitles = {
-        steering_direction: "Steering & Setting Direction",
-        policy_planning: "Policy & Planning",
-        oversight_monitoring: "Oversight & Monitoring",
-        accountability: "Accountability & Disclosure Framework"
-    };
-
-    for (const [key, category] of Object.entries(functionsData)) {
-        const sectionTitle = categoryTitles[key] || key.replace("_", " ");
-        
-        // Generate functional block element wrapper
-        const sectionHTML = `
-            <div class="governance-category-card" style="margin-bottom: 2rem; border: 1px solid #e2e8f0; padding: 1.5rem; border-radius: 8px;">
-                <div class="category-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #edf2f7; padding-bottom: 0.75rem; margin-bottom: 1rem;">
-                    <h3 style="margin: 0; font-size: 1.25rem; color: #2d3748;">${sectionTitle}</h3>
-                    <span class="score-badge" style="font-weight: bold; font-size: 1.1rem; color: #4a5568;">
-                        Category Score: <strong style="color: #3182ce;">${category.category_score}%</strong>
-                    </span>
-                </div>
-                <div class="principles-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
-                    ${category.principles.map(p => generatePrincipleCard(p)).join('')}
-                </div>
-            </div>
-        `;
-        
-        container.insertAdjacentHTML('beforeend', sectionHTML);
-    }
-}
-
-/**
- * Factory component generating individual UI matrix elements for the 13 principles
- */
-function generatePrincipleCard(principle) {
-    // Algorithmic color determination for compliance thresholds
-    let badgeColor = "#e53e3e"; // Non-Compliant Red
-    let badgeBg = "#fff5f5";
-    
-    if (principle.status === "Compliant") {
-        badgeColor = "#38a169"; // Compliant Green
-        badgeBg = "#f0fff4";
-    } else if (principle.status === "In Progress") {
-        badgeColor = "#dd6b20"; // In Progress Orange
-        badgeBg = "#fffaf0";
-    }
-
-    return `
-        <div class="principle-card" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
-                <span style="font-weight: bold; color: #4a5568;">${principle.principle_id}</span>
-                <span style="padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: bold; color: ${badgeColor}; background: ${badgeBg};">
-                    ${principle.status}
-                </span>
-            </div>
-            <h4 style="margin: 0 0 0.75rem 0; font-size: 0.95rem; color: #1a202c;">${principle.title}</h4>
-            <div style="font-size: 0.85rem; color: #718096;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
-                    <span>Engine Score:</span>
-                    <strong style="color: #2d3748;">${principle.score}%</strong>
-                </div>
-                <div style="display: flex; justify-content: space-between;">
-                    <span>Gates Validated:</span>
-                    <strong>${principle.gates_passed} / ${principle.gates_total}</strong>
-                </div>
-            </div>
+    <!-- Main Workspace -->
+    <main class="flex-1 p-8">
+        <h2 id="roomTitle" class="text-2xl font-bold mb-6">CORE GRC</h2>
+        <div id="king-v-matrix-container" class="grid gap-6">
+            <!-- Data will inject here -->
         </div>
-    `;
-}
+    </main>
 
-/**
- * Renders UI notification feedback if backend validation fails
- */
-function showDashboardErrorState(errorMessage) {
-    const container = document.getElementById("king-v-matrix-container");
-    if (container) {
-        container.innerHTML = `
-            <div class="error-alert" style="background: #fff5f5; color: #c53030; border: 1px solid #feb2b2; padding: 1rem; border-radius: 6px; text-align: center;">
-                <strong>Local Engine Error:</strong> Failed to fetch compliance matrix records. Line diagnostic: ${errorMessage}
-            </div>
-        `;
-    }
-}
+    <script>
+        document.addEventListener("DOMContentLoaded", () => loadRoom('core'));
+
+        async function loadRoom(roomKey) {
+            document.getElementById('roomTitle').innerText = roomKey.toUpperCase();
+            // Ensure your backend serves /api/room/{roomKey}
+            const response = await fetch(`/api/room/${roomKey}`);
+            const res = await response.json();
+            
+            if(roomKey === 'core') {
+                renderGoverningFunctions(res.data.governing_functions);
+            } else {
+                document.getElementById('king-v-matrix-container').innerHTML = `<p>Data for ${roomKey} loaded.</p>`;
+            }
+        }
+
+        function renderGoverningFunctions(data) {
+            // Your existing render logic here
+        }
+    </script>
+</body>
+</html>
