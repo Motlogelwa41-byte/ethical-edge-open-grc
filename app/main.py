@@ -91,3 +91,29 @@ async def serve_visual_dashboard(request: Request):
         "can_access_safeguard": True
     }
     return templates.TemplateResponse("dashboard.html", context_payload)
+
+from fastapi import FastAPI
+from app.database.session import SessionLocal
+from app.database.models import AuditRun
+
+app = FastAPI()
+
+@app.get("/api/room/{room_key}")
+async def get_room_data(room_key: str):
+    db = SessionLocal()
+    try:
+        # Fetch the latest run for this room (tenant)
+        latest_run = db.query(AuditRun).filter(AuditRun.tenant_id == room_key.upper()).order_by(AuditRun.timestamp.desc()).first()
+        
+        if not latest_run:
+            return {"data": {"governing_functions": [], "status": "No data found"}}
+            
+        return {
+            "data": {
+                "governing_functions": ["Principle 1", "Principle 2"], # Update this to pull from your findings
+                "status": "Success",
+                "attainment_rate": latest_run.attainment_rate
+            }
+        }
+    finally:
+        db.close()
