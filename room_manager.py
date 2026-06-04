@@ -42,3 +42,17 @@ def get_room_data(room_key):
         "unicef": UnicefRoom("UNICEF")
     }
     return rooms.get(room_key.lower(), BaseRoom("Unknown")).to_json()
+
+# Helper to check permissions
+def check_permission(user_role, required_role):
+    roles = {"guest": 1, "auditor": 2, "admin": 3}
+    return roles.get(user_role, 0) >= roles.get(required_role, 0)
+
+# Updated room access
+def get_room_data(room_key, user_role):
+    # Example: CORE GRC requires 'admin' role
+    if room_key == "core" and not check_permission(user_role, "admin"):
+        return {"error": "Access Denied: Admin role required"}
+    
+    # Existing logic...
+    return rooms.get(room_key).to_json()
