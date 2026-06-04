@@ -201,3 +201,9 @@ async def get_king_v_dashboard_metrics(db: Session = Depends(get_db_session)):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Engine Math Evaluation Failed: {str(e)}"
         )
+
+rom room_manager import get_room_data
+
+@app.route('/api/room/<room_key>')
+def api_room(room_key):
+    return get_room_data(room_key)
