@@ -117,3 +117,31 @@ async def get_room_data(room_key: str):
         }
     finally:
         db.close()
+
+from fastapi import FastAPI
+from app.database.session import SessionLocal
+from app.database.models import AuditRun
+
+app = FastAPI()
+
+# This endpoint matches the fetch() call in your dashboard.html
+@app.get("/api/room/{room_key}")
+async def get_room_data(room_key: str):
+    db = SessionLocal()
+    try:
+        # We search the database for the tenant (room_key)
+        # Using .upper() to match potential casing issues
+        run = db.query(AuditRun).filter(AuditRun.tenant_id == room_key.upper()).first()
+        
+        if not run:
+            return {"data": {"governing_functions": ["No data available"], "status": "Empty"}}
+            
+        return {
+            "data": {
+                "governing_functions": ["Principle 1", "Principle 2"], 
+                "status": "Success",
+                "attainment_rate": run.attainment_rate
+            }
+        }
+    finally:
+        db.close()
