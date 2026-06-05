@@ -25,3 +25,14 @@ class ControlFinding(Base):
     evidence_payload = Column(Text, nullable=False)
     
     audit_run = relationship("AuditRun", back_populates="findings")
+
+import uuid
+
+class ControlFinding(Base, TenantMixin): # <-- Inherits TenantMixin
+    __tablename__ = "control_findings"
+
+    # Changed id to UUID to match init_schema.sql consistency
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    audit_run_id = Column(UUID(as_uuid=True), ForeignKey("audit_runs.id"), nullable=False)
+    
+    # ... rest of your fields ...
