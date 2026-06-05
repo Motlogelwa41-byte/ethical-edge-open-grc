@@ -1,24 +1,27 @@
 #!/bin/bash
 echo "======================================================================"
-echo "🚀 STARTING ETHICAL EDGE OPEN GRC ENGINE AUTOMATED ENVIRONMENT 🚀"
+echo "🚀 STARTING ETHICAL EDGE OPEN GRC ENGINE..."
 echo "======================================================================"
 
-# Step 1: Stop any old stray containers running in the background
-echo "-> Cleaning up historical container states..."
+# 1. Clean up
 docker-compose down -v
 
-# Step 2: Build and launch the network architecture
-echo "-> Compiling application images and starting services..."
+# 2. Build and launch
+echo "-> Compiling and starting services..."
 docker-compose up --build -d
 
-echo "-> Waiting for database container initialization (5 seconds)..."
-sleep 5
+# 3. Wait for DB to be ready
+echo "-> Waiting for database..."
+sleep 10
 
-# Step 3: Execute your end-to-end multi-room verification suite inside the live container
-echo "-> Running comprehensive multi-room integration tests..."
-docker-compose exec web python test_multi_room.py
+# 4. CRITICAL: Perform Data Ingestion inside the running container
+echo "-> Injecting Framework Data..."
+docker-compose exec -T web python3 -m ingest_frameworks
+
+# 5. Run tests to confirm integrity
+echo "-> Running integration tests..."
+docker-compose exec -T web python3 test_master_pipeline.py
 
 echo "======================================================================"
-echo "✨ SYSTEM IS ONLINE! Interactive Swagger API Docs live at:"
-echo "👉 http://localhost:8000/docs"
+echo "✨ SYSTEM IS ONLINE! Docs: http://localhost:8000/docs"
 echo "======================================================================"
