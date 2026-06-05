@@ -1,6 +1,6 @@
 import os
 import json
-from typing import Dict, Any  # <-- This is likely missing
+from typing import Dict, Any
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 
@@ -10,7 +10,7 @@ def ingest_king_v_framework(framework_data: Dict[str, Any], session: Session, te
     categories = framework_data.get("governing_functions", {})
     
     for category_key, category_content in categories.items():
-        # 1. Upsert Category with tenant_id
+        # 1. Upsert Category
         session.execute(
             text("""
                 INSERT INTO compliance_categories (category_id, display_name, weight, tenant_id)
@@ -23,8 +23,8 @@ def ingest_king_v_framework(framework_data: Dict[str, Any], session: Session, te
              "weight": category_content.get("weight", 1.0), "tenant_id": tenant_id}
         )
         
-        # 2. Upsert Principles with tenant_id
-        for principle in categories[category_key].get("principles", []):
+        # 2. Upsert Principles
+        for principle in category_content.get("principles", []):
             p_id = principle.get("principle_id")
             session.execute(
                 text("""
@@ -37,7 +37,7 @@ def ingest_king_v_framework(framework_data: Dict[str, Any], session: Session, te
                  "description": principle.get("description"), "tenant_id": tenant_id}
             )
             
-            # 3. Upsert Gates with tenant_id
+            # 3. Upsert Gates
             for index, gate in enumerate(principle.get("checkpoints_or_gates", [])):
                 gate_id = f"GATE-{p_id}-{str(index + 1).zfill(2)}"
                 session.execute(
