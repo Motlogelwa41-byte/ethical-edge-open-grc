@@ -155,4 +155,14 @@ CREATE TABLE IF NOT EXISTS gate_evaluations (
 CREATE INDEX IF NOT EXISTS idx_eval_assessment ON gate_evaluations(assessment_id);
 CREATE INDEX IF NOT EXISTS idx_eval_gate ON gate_evaluations(gate_id);
 
+CREATE TABLE IF NOT EXISTS audit_log (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id UUID NOT NULL,
+    user_id VARCHAR(100),
+    action VARCHAR(255),
+    room VARCHAR(100),
+    metadata TEXT,
+    created_at TIMESTAMP WITH TIME ZONE
+);
+
 
