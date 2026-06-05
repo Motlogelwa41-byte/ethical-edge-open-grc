@@ -70,3 +70,20 @@ class Risk(Base, TenantMixin):
 class GovernanceAssessment(Base, TenantMixin):
     # ... existing fields ...
     pass
+
+# Add this to your models.py
+from sqlalchemy import Column, ForeignKey
+from sqlalchemy.dialects.postgresql import UUID
+
+class TenantMixin:
+    """Mixin to ensure all models are tenant-aware."""
+    tenant_id = Column(UUID(as_uuid=True), ForeignKey("tenants.id"), nullable=False, index=True)
+
+# Example of how to apply it to your existing classes:
+class Risk(Base, TenantMixin):
+    __tablename__ = "risks"
+    # ... existing fields ...
+
+class GovernanceAssessment(Base, TenantMixin):
+    __tablename__ = "governance_assessments"
+    # ... existing fields ...
