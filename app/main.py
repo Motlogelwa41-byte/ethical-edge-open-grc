@@ -167,3 +167,39 @@ def main():
         print(f"❌ Critical Production Pipeline Failure: {str(e)}")
     finally:
         session.close()
+
+import asyncio
+from fastapi import FastAPI, Depends, Header
+from sqlalchemy.orm import Session
+from app.database.connection import get_db
+from app.middleware.tier_guard import verify_account_tier, TenantProfile
+from app.room_manager import get_room_data_async
+
+app = FastAPI(title="Ethical Edge GRC Platform")
+
+@app.get("/dashboard/summary")
+async def get_dashboard_summary(
+    db: Session = Depends(get_db),
+    tenant: TenantProfile = Depends(verify_account_tier)
+):
+    """
+    Asynchronously aggregates all room data.
+    One slow room will not block the others.
+    """
+    # List of all rooms available in your ecosystem
+    rooms_to_query = ["core", "gate", "gougle", "isoc", "safeguard", "unicef"]
+    
+    # Create a list of coroutines (tasks)
+    tasks = [
+        get_room_data_async(room_key, "admin", db, tenant.token)
+        for room_key in rooms_to_query
+    ]
+    
+    # Execute all rooms concurrently
+    # This is where the magic happens: the platform fetches all 6 rooms at once!
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+    
+    # Map results to room names for the frontend
+    dashboard = {room: result for room, result in zip(rooms_to_query, results)}
+    
+    return {"tenant": tenant.name, "dashboard": dashboard}
