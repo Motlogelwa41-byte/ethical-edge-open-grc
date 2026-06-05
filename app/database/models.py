@@ -1,3 +1,10 @@
+from sqlalchemy import Column, ForeignKey
+from sqlalchemy.dialects.postgresql import UUID
+
+class TenantMixin:
+    """Mixin to ensure all models are tenant-aware."""
+    tenant_id = Column(UUID(as_uuid=True), ForeignKey("tenants.id"), nullable=False, index=True)
+
 class ControlFinding(Base):
     __tablename__ = "control_findings"
 
