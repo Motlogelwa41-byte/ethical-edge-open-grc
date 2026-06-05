@@ -82,3 +82,24 @@ class TierGuard:
                 status_code=status.HTTP_402_PAYMENT_REQUIRED,
                 detail="The AI Automated Auditor requires a Professional subscription tier or a locally configured personal LLM environment API key."
             )
+
+from app.context import current_tenant_id  # Import the context variable
+
+async def verify_account_tier(x_ethical_edge_token: Optional[str] = Header(None)) -> TenantProfile:
+    # ... (Keep your existing header/sandbox checks here) ...
+    
+    tenant = MOCK_TENANT_REGISTRY.get(x_ethical_edge_token)
+    if not tenant:
+        raise HTTPException(status_code=403, detail="Invalid token.")
+
+    # --- ADD THIS LINE ---
+    # This sets the tenant for the entire duration of the request!
+    current_tenant_id.set(x_ethical_edge_token) 
+    # ---------------------
+
+    return TenantProfile(
+        token=x_ethical_edge_token,
+        name=tenant["name"],
+        tier=tenant["tier"],
+        current_usage_mb=tenant["monthly_uploads_mb"]
+    )
