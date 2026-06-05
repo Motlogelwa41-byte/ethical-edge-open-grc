@@ -51,3 +51,27 @@ def ingest_king_v_framework(framework_data: Dict[str, Any], session: Session, te
                      "validation_type": gate.get("type", "automated"), "order_index": index, "tenant_id": tenant_id}
                 )
     session.commit()
+
+if __name__ == "__main__":
+    from app.database.connection import SessionLocal
+    
+    # Ensure the data file exists
+    data_path = 'data/king_v_checklist.json'
+    if not os.path.exists(data_path):
+        print(f"❌ Error: File not found at {data_path}")
+    else:
+        with open(data_path, 'r') as f:
+            data = json.load(f)
+        
+        db = SessionLocal()
+        try:
+            tenant_id = os.getenv("TARGET_TENANT_ID")
+            if not tenant_id:
+                print("❌ Error: TARGET_TENANT_ID environment variable not set.")
+            else:
+                ingest_king_v_framework(data, db, tenant_id)
+                print("✅ Ingestion successfully completed!")
+        except Exception as e:
+            print(f"❌ Critical Pipeline Failure: {e}")
+        finally:
+            db.close()
