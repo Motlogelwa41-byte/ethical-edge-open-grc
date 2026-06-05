@@ -26,3 +26,18 @@ def continuous_observation_loop():
 
 if __name__ == "__main__":
     continuous_observation_loop()
+
+from app.observers.file_observer import FileObserver
+import time
+
+def continuous_observation_loop():
+    # List of files you want to protect
+    monitors = [
+        FileObserver(".env", "GATE-ENV-SECURITY"),
+        FileObserver("data/king_v_checklist.json", "GATE-KINGV-DATA")
+    ]
+    
+    while True:
+        for monitor in monitors:
+            monitor.sync_to_db()
+        time.sleep(60) # Scan every minute
