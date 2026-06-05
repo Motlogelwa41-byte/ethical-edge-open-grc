@@ -145,3 +145,25 @@ async def get_room_data(room_key: str):
         }
     finally:
         db.close()
+
+def main():
+    # In a real scenario, you might pull this from an environment variable 
+    # or a list of active tenants in your database.
+    target_tenant_id = os.getenv("TARGET_TENANT_ID") 
+    
+    if not target_tenant_id:
+        print("❌ Error: TARGET_TENANT_ID not set.")
+        return
+
+    db_generator = get_db_session()
+    session = next(db_generator)
+    
+    try:
+        raw_framework = load_framework_source(CHECKLIST_PATH)
+        # Pass the tenant_id from the environment/config
+        ingest_king_v_framework(raw_framework, session, target_tenant_id)
+    except Exception as e:
+        session.rollback()
+        print(f"❌ Critical Production Pipeline Failure: {str(e)}")
+    finally:
+        session.close()
