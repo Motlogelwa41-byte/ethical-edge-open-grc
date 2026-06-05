@@ -2,3 +2,18 @@ from app.database.models import Base
 
 # Explicitly export the base mapping for legacy engine rooms
 __all__ = ["Base"]
+
+from sqlalchemy import event
+from app.context import current_tenant_id
+
+def apply_tenant_filter(query):
+    tenant_id = current_tenant_id.get()
+    if tenant_id:
+        return query.filter_by(tenant_id=tenant_id)
+    return query
+
+# When a query is compiled, SQLAlchemy will automatically inject the tenant_id
+@event.listens_for(Query, "before_compile", retval=True)
+def before_compile(query):
+    if query._setup_args.get("tenant_id_filter", True): # We can toggle this if needed
+        return apply_tenant_filter(query)
