@@ -87,3 +87,13 @@ class Risk(Base, TenantMixin):
 class GovernanceAssessment(Base, TenantMixin):
     __tablename__ = "governance_assessments"
     # ... existing fields ...
+
+class UniversalControl(Base, TenantMixin):
+    __tablename__ = "universal_controls"
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    # The common name (e.g., "Data Privacy Protection")
+    control_name = Column(String, nullable=False)
+    # The technical description
+    description = Column(Text, nullable=False)
+    # Mapping to external frameworks
+    framework_mappings = Column(JSONB) # Stores {"King_V": "Principle 9", "ISO_27001": "A.1
