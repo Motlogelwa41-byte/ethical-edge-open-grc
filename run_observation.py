@@ -1,19 +1,28 @@
 import time
-from app.database.connection import SessionLocal
-from sqlalchemy import text
+import logging
+from app.observers.aws_observer import AWSObserver
+from sqlalchemy.exc import SQLAlchemyError
+
+# Set up logging for audit trails
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 def continuous_observation_loop():
-    print("👀 Observer Service Started...")
+    logger.info("👀 Observer Service Started. Monitoring AWS Security Groups...")
+    observer = AWSObserver()
+    
     while True:
-        session = SessionLocal()
-        # Logic: Pull from AWS/System, verify against Gate, update DB
-        # E.g., if SystemFileObserver().check_status() == True:
-        #    session.execute(text("UPDATE room_gates SET status='PASS' WHERE ..."))
+        try:
+            logger.info("🔍 Scanning AWS Security Groups...")
+            observer.sync_to_db()
+            logger.info("✅ Sync completed successfully.")
+        except SQLAlchemyError as db_err:
+            logger.error(f"❌ Database connection lost: {db_err}. Retrying in 300s...")
+        except Exception as e:
+            logger.error(f"❌ AWS Observer unexpected error: {e}")
         
-        print("🔍 Scanning infrastructure for compliance drift...")
-        session.commit()
-        session.close()
-        time.sleep(60) # Wait 1 minute before next scan
+        # Sleep for 5 minutes
+        time.sleep(300)
 
 if __name__ == "__main__":
     continuous_observation_loop()
