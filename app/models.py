@@ -57,3 +57,16 @@ class ComplianceFramework(Base):
     framework_name = Column(String, nullable=False)
     requirement_text = Column(Text, nullable=False)
     status = Column(String, default="Under Review")
+
+# Add this class to your models.py
+class TenantMixin:
+    tenant_id = Column(UUID(as_uuid=True), ForeignKey("tenants.id"), nullable=False, index=True)
+
+# Update your existing classes to inherit from TenantMixin
+class Risk(Base, TenantMixin):
+    # ... existing fields ...
+    pass
+
+class GovernanceAssessment(Base, TenantMixin):
+    # ... existing fields ...
+    pass
