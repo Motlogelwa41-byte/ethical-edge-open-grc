@@ -69,3 +69,18 @@ def log_to_ledger(user_id, action, room_key):
     ''', (datetime.utcnow().isoformat(), user_id, action, room_key))
     conn.commit()
     conn.close()
+
+import asyncio
+
+class CoreGRCRoom(BaseRoom):
+    async def get_status(self):
+        # We make this async so we can perform non-blocking database queries
+        # await session.execute(...)
+        return {"overall_compliance_score": 95}
+
+# Update the getter
+async def get_room_data_async(room_key, user_role):
+    # This now allows you to run multiple rooms at once!
+    room = rooms.get(room_key.lower())
+    if room:
+        return await room.get_status()
