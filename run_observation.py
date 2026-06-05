@@ -41,3 +41,12 @@ def continuous_observation_loop():
         for monitor in monitors:
             monitor.sync_to_db()
         time.sleep(60) # Scan every minute
+
+# In run_observation.py
+from app.observers.github_observer import GitHubObserver
+
+monitors = [
+    AWSObserver(),
+    FileObserver(".env", "GATE-ENV-01"),
+    GitHubObserver("your-org/your-repo")
+]
