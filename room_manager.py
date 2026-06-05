@@ -1,86 +1,54 @@
+import asyncio
 from datetime import datetime
+from sqlalchemy.orm import Session
+from app.database.base import Base # Ensure your models are imported
 
 class BaseRoom:
-    def __init__(self, room_name):
+    def __init__(self, room_name: str, session: Session, tenant_id: str):
         self.room_name = room_name
+        self.session = session
+        self.tenant_id = tenant_id
 
-    def get_status(self):
+    async def get_status(self):
         return {"status": "inactive"}
 
-    def to_json(self):
+    async def to_json(self):
         return {
             "room": self.room_name,
             "timestamp": datetime.utcnow().isoformat(),
-            "data": self.get_status()
+            "data": await self.get_status()
         }
-
-class CoreGRCRoom(BaseRoom):
-    def get_status(self):
-        # Your existing King V metrics logic goes here
-        return {
-            "overall_compliance_score": 95, 
-            "trust_dividend_index": 88,
-            "governing_functions": {
-                "steering_direction": {"category_score": 92, "principles": []}
-            }
-        }
-
-# Define other rooms
-class GateFoundationRoom(BaseRoom): def get_status(self): return {"controls_operational": True}
-class GougleRoom(BaseRoom): def get_status(self): return {"regulatory_feeds": "Active"}
-class IsocRoom(BaseRoom): def get_status(self): return {"standards": "High"}
-class SafeguardRoom(BaseRoom): def get_status(self): return {"ethics_status": "Clean"}
-class UnicefRoom(BaseRoom): def get_status(self): return {"impact_score": 88}
-
-def get_room_data(room_key):
-    rooms = {
-        "core": CoreGRCRoom("CORE GRC"),
-        "gate": GateFoundationRoom("GATE FOUNDATION"),
-        "gougle": GougleRoom("GOUGLE"),
-        "isoc": IsocRoom("ISOC"),
-        "safeguard": SafeguardRoom("SAFEGUARD"),
-        "unicef": UnicefRoom("UNICEF")
-    }
-    return rooms.get(room_key.lower(), BaseRoom("Unknown")).to_json()
-
-# Helper to check permissions
-def check_permission(user_role, required_role):
-    roles = {"guest": 1, "auditor": 2, "admin": 3}
-    return roles.get(user_role, 0) >= roles.get(required_role, 0)
-
-# Updated room access
-def get_room_data(room_key, user_role):
-    # Example: CORE GRC requires 'admin' role
-    if room_key == "core" and not check_permission(user_role, "admin"):
-        return {"error": "Access Denied: Admin role required"}
-    
-    # Existing logic...
-    return rooms.get(room_key).to_json()
-
-import sqlite3
-
-def log_to_ledger(user_id, action, room_key):
-    """Writes to your persistent ledger database."""
-    conn = sqlite3.connect('compliance_ledger.db')
-    cursor = conn.cursor()
-    cursor.execute('''
-        INSERT INTO audit_log (timestamp, user_id, action, room)
-        VALUES (?, ?, ?, ?)
-    ''', (datetime.utcnow().isoformat(), user_id, action, room_key))
-    conn.commit()
-    conn.close()
-
-import asyncio
 
 class CoreGRCRoom(BaseRoom):
     async def get_status(self):
-        # We make this async so we can perform non-blocking database queries
-        # await session.execute(...)
-        return {"overall_compliance_score": 95}
+        # The 'before_compile' filter in base.py will automatically 
+        # add "WHERE tenant_id = :tid" to any query here!
+        return {
+            "overall_compliance_score": 95,
+            "tenant_context": self.tenant_id
+        }
 
-# Update the getter
-async def get_room_data_async(room_key, user_role):
-    # This now allows you to run multiple rooms at once!
-    room = rooms.get(room_key.lower())
-    if room:
-        return await room.get_status()
+# Room Registry Factory
+def get_room_instance(room_key: str, session: Session, tenant_id: str):
+    registry = {
+        "core": CoreGRCRoom("CORE GRC", session, tenant_id),
+        "gate": BaseRoom("GATE FOUNDATION", session, tenant_id),
+        "gougle": BaseRoom("GOUGLE", session, tenant_id),
+        "isoc": BaseRoom("ISOC", session, tenant_id),
+        "safeguard": BaseRoom("SAFEGUARD", session, tenant_id),
+        "unicef": BaseRoom("UNICEF", session, tenant_id)
+    }
+    return registry.get(room_key.lower())
+
+async def get_room_data_async(room_key: str, user_role: str, session: Session, tenant_id: str):
+    # 1. Permission Check
+    if room_key == "core" and user_role != "admin":
+        return {"error": "Access Denied: Admin role required"}
+    
+    # 2. Get Instance
+    room = get_room_instance(room_key, session, tenant_id)
+    if not room:
+        return {"error": "Room not found"}
+        
+    # 3. Async Execution
+    return await room.to_json()
