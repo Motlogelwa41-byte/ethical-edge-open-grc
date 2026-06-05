@@ -1,3 +1,9 @@
+import os
+import json
+from typing import Dict, Any  # <-- This is likely missing
+from sqlalchemy.orm import Session
+from sqlalchemy import text
+
 def ingest_king_v_framework(framework_data: Dict[str, Any], session: Session, tenant_id: str):
     print(f"🚀 Injecting framework for Tenant: {tenant_id}")
     
