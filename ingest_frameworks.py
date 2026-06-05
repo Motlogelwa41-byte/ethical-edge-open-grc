@@ -98,3 +98,17 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+def ingest_king_v_framework(framework_data: Dict[str, Any], session: Session, tenant_id: str):
+    # ... (Keep your current logic)
+    
+    # Update your INSERT statements to include the tenant_id
+    # Example:
+    session.execute(
+        text("""
+            INSERT INTO compliance_categories (category_id, display_name, weight, tenant_id)
+            VALUES (:category_id, :display_name, :weight, :tenant_id)
+            ON CONFLICT (category_id, tenant_id) DO UPDATE SET ...
+        """),
+        {..., "tenant_id": tenant_id}
+    )
