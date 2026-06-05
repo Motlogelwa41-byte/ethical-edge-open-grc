@@ -165,4 +165,24 @@ CREATE TABLE IF NOT EXISTS audit_log (
     created_at TIMESTAMP WITH TIME ZONE
 );
 
+-- =========================================================================
+-- SECURE AUDIT LOG LEDGER
+-- Required for ISO 27001 (A.12.4 Logging and Monitoring)
+-- =========================================================================
+CREATE TABLE IF NOT EXISTS audit_log (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id UUID NOT NULL, 
+    user_id VARCHAR(100) NOT NULL,
+    action VARCHAR(255) NOT NULL,
+    room VARCHAR(100) NOT NULL,
+    metadata TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Ensure we can filter by client instantly
+    CONSTRAINT fk_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE
+);
+
+-- Indexing for high-speed audit reporting
+CREATE INDEX IF NOT EXISTS idx_audit_tenant_time ON audit_log(tenant_id, created_at);
+
 
