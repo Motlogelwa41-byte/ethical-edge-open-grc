@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS compliance_audit_log (
+    log_id SERIAL PRIMARY KEY,
+    gate_id VARCHAR(50),
+    event_type VARCHAR(20), -- e.g., 'STATUS_CHANGE', 'REMEDIATION_TRIGGERED', 'MANUAL_OVERRIDE'
+    previous_status VARCHAR(20),
+    new_status VARCHAR(20),
+    actor VARCHAR(50),      -- e.g., 'SYSTEM_ENGINE', 'ADMIN_USER'
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    evidence_snapshot JSONB -- A copy of the evidence_payload at that time
+);
