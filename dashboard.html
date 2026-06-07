@@ -27,6 +27,20 @@
         </div>
     </main>
 
+    {% for finding in findings %}
+    <tr>
+        <td>{{ finding.control_name }}</td>
+        <td>{{ finding.status }}</td>
+        <td>
+            {% if finding.status == "FAILED" %}
+                <button onclick="triggerFix('{{ finding.control_reference }}')" class="btn-remediate">
+                    Fix Automatically
+                </button>
+            {% endif %}
+        </td>
+    </tr>
+{% endfor %}
+
     <script>
         document.addEventListener("DOMContentLoaded", () => loadRoom('core'));
 
