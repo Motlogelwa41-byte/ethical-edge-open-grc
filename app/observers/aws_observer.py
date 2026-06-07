@@ -1,8 +1,9 @@
 import boto3
-from app.database.connection import SessionLocal
-from sqlalchemy import text
+from datetime import datetime, timezone
+from app.services.base import BaseControlObserver
+from app.services.evidence_collector import ControlVerificationResult
 
-class AWSObserver:
+class AWSObserver(BaseControlObserver):
     def __init__(self):
         self.ec2 = boto3.client('ec2', region_name='us-east-1')
 
@@ -17,16 +18,14 @@ class AWSObserver:
                             return False  # Non-compliant
         return True  # Compliant
 
-    def sync_to_db(self):
+    def verify(self) -> ControlVerificationResult:
         is_compliant = self.check_ssh_port_access()
-        status = 'PASS' if is_compliant else 'FAIL'
         
-        session = SessionLocal()
-        # Update your specific room gate in the database
-        session.execute(
-            text("UPDATE room_gates SET validation_type = :status WHERE gate_id = 'GATE-KINGV-01'"),
-            {"status": status}
+        return ControlVerificationResult(
+            control_reference="AWS-SEC-01",
+            control_name="SSH Port 22 Access",
+            framework="ISO/IEC 27001:2022",
+            status="PASSED" if is_compliant else "FAILED",
+            evidence_payload={"ssh_open_to_world": not is_compliant},
+            checked_at=datetime.now(timezone.utc).isoformat()
         )
-        session.commit()
-        session.close()
-        print(f"📡 AWS Security Group Observer: Status updated to {status}")
