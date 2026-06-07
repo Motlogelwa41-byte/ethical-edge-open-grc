@@ -4,7 +4,7 @@ from sqlalchemy.pool import QueuePool
 import os
 
 # Database URL - Ensure this is set in your environment
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://user:password@localhost/grc_db")
+DATABASE_URL = "postgresql://postgres@localhost/grc_db"
 
 # Create engine with a connection pool to manage concurrent tenant requests
 engine = create_engine(
