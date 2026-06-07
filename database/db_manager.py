@@ -1,10 +1,12 @@
-import psycopg2 # Or your preferred driver like sqlite3
+import sqlite3 # Or psycopg2 if using Postgres
 
 class DBManager:
-    def __init__(self, db_config):
-        self.conn = psycopg2.connect(**db_config)
-    
-    def execute(self, query, params):
-        with self.conn.cursor() as cur:
-            cur.execute(query, params)
-            self.conn.commit()
+    def __init__(self, db_path='database/grc_engine.db'):
+        self.db_path = db_path
+
+    def execute(self, query, params=()):
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        cursor.execute(query, params)
+        conn.commit()
+        conn.close()
