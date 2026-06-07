@@ -57,6 +57,21 @@
             }
         }
 
+        <script>
+        async function triggerFix(ref) {
+            // Optional: Add a loading state to the button here for better UX
+            const response = await fetch(`/remediate/${ref}`, { method: 'POST' });
+            if(response.ok) {
+                alert("Fix applied! Refreshing...");
+                location.reload(); 
+            } else {
+                alert("Remediation failed. Check logs.");
+            }
+        }
+    </script>
+</body>
+</html>
+
         function renderGoverningFunctions(data) {
             // Your existing render logic here
         }
