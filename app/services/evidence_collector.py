@@ -1,3 +1,10 @@
+from abc import ABC, abstractmethod
+
+class BaseControlObserver(ABC):
+    @abstractmethod
+    def verify(self) -> ControlVerificationResult:
+        pass
+
 import os
 import boto3
 import requests
