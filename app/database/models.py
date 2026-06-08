@@ -2,7 +2,7 @@ from sqlalchemy import Column, ForeignKey, String, Float, Integer, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
-from app.database import Base # Ensure this import is correct for your project
+from app.database import Base
 
 class TenantMixin:
     """Mixin to ensure all models are tenant-aware."""
