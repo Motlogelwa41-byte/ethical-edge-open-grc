@@ -1,34 +1,46 @@
 import time
 import logging
+import signal
+import sys
 from app.observers.aws_observer import AWSObserver
 from app.observers.github_observer import GitHubObserver
 from app.observers.file_observer import FileObserver
 
-# Configure logging for audit trails
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - [%(levelname)s] - %(message)s')
 logger = logging.getLogger("EthicalEdgeOrchestrator")
 
+def handle_shutdown(signum, frame):
+    logger.info("🛑 Shutdown signal received. Cleaning up...")
+    sys.exit(0)
+
+# Register signals for clean exits
+signal.signal(signal.SIGINT, handle_shutdown)
+signal.signal(signal.SIGTERM, handle_shutdown)
+
 def run_orchestrator():
-    logger.info("🚀 Starting Ethical Edge Master Orchestrator...")
+    logger.info("🛡️ Ethical Edge Master Orchestrator: Initializing sensors...")
     
-    # Initialize your sensors
+    # Initialize sensors
     sensors = [
         AWSObserver(),
-        GitHubObserver("your-org/your-repo"),
-        FileObserver(".env", "GATE-ENV-01"),
-        FileObserver("data/king_v_checklist.json", "GATE-KINGV-DATA")
+        GitHubObserver(repo_name="Motlogelwa41-byte/ethical-edge-open-grc"),
+        FileObserver(target_file=".env", gate_id="GATE-ENV-01"),
+        FileObserver(target_file="data/king_v_checklist.json", gate_id="GATE-KINGV-DATA")
     ]
+    
+    logger.info(f"✅ {len(sensors)} sensors ready.")
     
     while True:
         for sensor in sensors:
             try:
-                sensor_name = sensor.__class__.__name__
-                logger.info(f"🔍 Running {sensor_name}...")
+                name = sensor.__class__.__name__
+                logger.info(f"🔍 Executing: {name}")
                 sensor.sync_to_db()
             except Exception as e:
-                logger.error(f"❌ {sensor.__class__.__name__} failed: {e}")
+                logger.error(f"❌ Failure in {sensor.__class__.__name__}: {e}")
         
-        logger.info("💤 Sleeping for 300 seconds...")
+        logger.info("💤 Cycle complete. Sleeping for 300s.")
         time.sleep(300)
 
 if __name__ == "__main__":
