@@ -1,3 +1,9 @@
+services:
+  web:
+    # ... your existing setup ...
+    command: python3 orchestrator.py
+    restart: always
+
 version: '3.8'
 
 services:
