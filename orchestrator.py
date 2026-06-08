@@ -45,3 +45,16 @@ def run_orchestrator():
 
 if __name__ == "__main__":
     run_orchestrator()
+
+# Add this inside your while loop
+sensor_health = {sensor.__class__.__name__: True for sensor in sensors}
+
+# ... inside your for loop ...
+except Exception as e:
+    sensor_health[name] = False  # Mark as unhealthy
+    logger.error(f"❌ Failure in {name}: {e}")
+    # ALERT: You should trigger an internal notification here!
+    
+# ... Optional: Only run healthy sensors
+if sensor_health[name]:
+    sensor.sync_to_db()
