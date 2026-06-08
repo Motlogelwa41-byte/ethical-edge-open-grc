@@ -1,3 +1,12 @@
+# In app/observers/aws_observer.py
+
+def sync_to_db(self, session):
+    # Fetch data
+    raw_data = self.get_aws_compliance_data()
+    # Process and add to session
+    for record in raw_data:
+        session.add(ComplianceEntry(**record))
+    # DO NOT commit here. Let BaseObserver handle it.
 import boto3
 from datetime import datetime, timezone
 from app.services.base import BaseControlObserver
@@ -29,3 +38,19 @@ class AWSObserver(BaseControlObserver):
             evidence_payload={"ssh_open_to_world": not is_compliant},
             checked_at=datetime.now(timezone.utc).isoformat()
         )
+
+def sync_to_db(self, session):
+        """Standardized database sync for AWS observations."""
+        result = self.verify()
+        
+        # Prepare the record
+        entry = ComplianceEntry(
+            control_reference=result.control_reference,
+            status=result.status,
+            evidence=str(result.evidence_payload),
+            framework=result.framework,
+            checked_at=result.checked_at
+        )
+        
+        # Add to the session provided by BaseObserver
+        session.add(entry)
