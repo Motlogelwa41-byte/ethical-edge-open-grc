@@ -1,12 +1,14 @@
-class BaseObserver:
-    def check_status(self) -> bool:
-        """Should return True if compliant, False if not."""
-        raise NotImplementedError
+# In app/observers/base_observer.py
 
-class SystemFileObserver(BaseObserver):
-    """Example: Checks if a critical config file exists."""
-    def __init__(self, filepath: str):
-        self.filepath = filepath
-
-    def check_status(self) -> bool:
-        return os.path.exists(self.filepath)
+def safe_sync(self):
+    """Template method to enforce transactional integrity."""
+    session = db_session()
+    try:
+        self.sync_to_db(session)
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        logger.error(f"Transaction failed for {self.__class__.__name__}: {e}")
+        raise
+    finally:
+        session.close()
