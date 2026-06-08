@@ -1,7 +1,7 @@
 from sqlalchemy.ext.declarative import declarative_base
 
-# Define Base locally
+# The single source of truth for the database base class
 Base = declarative_base()
 
-# If you need other models, import them here AFTER Base is defined
-# from .user import User
+# All your table models (User, Role, Audit, etc.) should be defined 
+# or imported here AFTER the line above.
