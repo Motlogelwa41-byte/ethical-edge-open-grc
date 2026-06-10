@@ -1,7 +1,7 @@
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from app.database.models import Base  # Use the absolute path from the root
+from .models import Base  # Use relative import here
 
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./data/grc_ledger.db")
 os.makedirs("./data", exist_ok=True)
