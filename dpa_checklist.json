@@ -2,11 +2,47 @@
   "framework": "Botswana DPA 2024",
   "version": "1.0",
   "controls": [
-    { "id": "SEC-52", "domain": "Design & Default", "requirement": "Mandatory 'Privacy by Design' implementation.", "input_key": "design_audit_score" },
-    { "id": "SEC-60", "domain": "RoPA", "requirement": "Maintain record of processing activities.", "input_key": "ropa_registry_exists" },
-    { "id": "SEC-62", "domain": "Breach Response", "requirement": "72-hour breach notification procedure.", "input_key": "breach_plan_active" },
-    { "id": "SEC-66", "domain": "DPIA", "requirement": "Data Protection Impact Assessment conducted for high-risk assets.", "input_key": "dpia_completed" },
-    { "id": "SEC-42", "domain": "DSAR", "requirement": "Data Subject Access Request portal/log.", "input_key": "dsar_log_active" },
-    { "id": "SEC-80", "domain": "Data Transfer", "requirement": "Assessment of cross-border transfer adequacy.", "input_key": "transfer_mechanism_valid" }
+    { 
+      "id": "SEC-52", 
+      "domain": "Privacy by Design", 
+      "requirement": "Technical/Org measures integrated at onset.", 
+      "evidence_type": "PDF/Policy",
+      "required": true 
+    },
+    { 
+      "id": "SEC-60", 
+      "domain": "RoPA", 
+      "requirement": "Record of Processing Activities (RoPA) maintained.", 
+      "evidence_type": "CSV/Ledger",
+      "required": true 
+    },
+    { 
+      "id": "SEC-62", 
+      "domain": "Breach Response", 
+      "requirement": "72-hour notification procedure active.", 
+      "evidence_type": "Procedure_Doc",
+      "required": true 
+    },
+    { 
+      "id": "SEC-66", 
+      "domain": "DPIA", 
+      "requirement": "Impact Assessment for high-risk processing.", 
+      "evidence_type": "DPIA_Report",
+      "required": false 
+    },
+    { 
+      "id": "SEC-42", 
+      "domain": "DSAR", 
+      "requirement": "Data Subject Access Request portal/log.", 
+      "evidence_type": "Log_Entry",
+      "required": true 
+    },
+    { 
+      "id": "SEC-80", 
+      "domain": "Cross-Border", 
+      "requirement": "Adequacy/Transfer mechanism assessment.", 
+      "evidence_type": "Legal_Memo",
+      "required": false 
+    }
   ]
 }
