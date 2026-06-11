@@ -52,7 +52,7 @@ def run_orchestrator():
         AWSObserver(),
         GitHubObserver(repo_name="Motlogelwa41-byte/ethical-edge-open-grc"),
         FileObserver(target_file=".env", gate_id="GATE-ENV-01"),
-        FileObserver(target_file="data/king_v_checklist.json", gate_id="GATE-KINGV-DATA")
+      FileObserver(target_file="king_v_checklist.json", gate_id="GATE-KINGV-DATA")
     ]
     
     sensor_health = {sensor.__class__.__name__: True for sensor in sensors}
