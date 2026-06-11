@@ -24,8 +24,8 @@ def validate_dpa_evidence(uploads_dir="uploads"):
     if not os.path.exists(checklist_path):
         return {"error": "Checklist file not found"}
     
-    with open(checklist_path, "r") as f:
-        config = json.load(f)
+    # Looks for the file in the same folder where the script is running
+checklist_path = "dpa_checklist.json"
     
     if not os.path.exists(uploads_dir):
         return {"error": "Uploads directory not found"}
