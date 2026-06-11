@@ -1,9 +1,9 @@
-from app.observers.base_observer import BaseControlObserver
+from app.services.base import BaseControlObserver
 from app.database.models import ControlFinding
 
 from app.observers.base_observer import BaseObserver
 
-class FileObserver(BaseObserver):
+class FileObserver(BaseControlObserver):
     def sync_to_db(self, session):
         # Implement file-system-specific logic here
         new_finding = ControlFinding(
