@@ -1,7 +1,9 @@
 from app.observers.base_observer import BaseControlObserver
 from app.database.models import ControlFinding
 
-class GitHubObserver(BaseControlObserver):
+from app.observers.base_observer import BaseObserver
+
+class GitHubObserver(BaseObserver):
     def sync_to_db(self, session):
         # Implement GitHub-specific logic here
         new_finding = ControlFinding(
