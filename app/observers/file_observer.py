@@ -11,3 +11,12 @@ class FileObserver(BaseControlObserver):
             evidence_payload="Checksum verified"
         )
         session.add(new_finding)
+
+def safe_sync(self):
+    try:
+        findings = self.observe()
+        self.sync_to_db(findings)
+        return True
+    except Exception as e:
+        self.logger.error(f"File sync failed: {e}")
+        return False
