@@ -1,5 +1,6 @@
 from sqlalchemy import text
 from app.observers.base_observer import BaseControlObserver
+
 class AWSObserver(BaseControlObserver):
     def __init__(self, region="us-east-1"):
         self.region = region
