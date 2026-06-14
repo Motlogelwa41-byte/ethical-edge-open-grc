@@ -1,3 +1,12 @@
+def ingest_king_v_framework(framework_data, session, tenant_id):
+    # If the root is a list, wrap it in a dummy dict structure to keep your logic working
+    if isinstance(framework_data, list):
+        # Assuming the list contains categories
+        framework_data = {"governing_functions": {f"cat_{i}": item for i, item in enumerate(framework_data)}}
+    
+    categories = framework_data.get("governing_functions", {})
+    # ... rest of your code ...
+
 import os
 import json
 from typing import Dict, Any
