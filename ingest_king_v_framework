@@ -1,0 +1,14 @@
+def ingest_king_v_framework(framework_data: Any, session: Session, tenant_id: str):
+    print(f"🚀 Injecting framework for Tenant: {tenant_id}")
+    
+    # Force conversion to dictionary immediately
+    if isinstance(framework_data, list):
+        print("ℹ️ Converting list input to dictionary structure...")
+        data_to_use = {"governing_functions": {f"cat_{i}": item for i, item in enumerate(framework_data)}}
+    else:
+        data_to_use = framework_data
+        
+    # Now we safely extract categories from our standardized data
+    categories = data_to_use.get("governing_functions", {})
+    
+    # ... continue with your existing for loop ...
