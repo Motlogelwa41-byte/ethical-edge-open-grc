@@ -1,6 +1,6 @@
 import hashlib
 from sqlalchemy import text
-from app.services.base import BaseControlObserver
+from app.observers.base_observer import BaseControlObserver
 
 class FileObserver(BaseControlObserver):
 
