@@ -21,3 +21,18 @@ st.metric("Compliance Health Score", f"{score:.1f}%")
 # 2. Status Visualization
 st.subheader("Live Control Monitoring")
 st.dataframe(gates.style.applymap(lambda x: 'background-color: #d4edda' if x == 'PASS' else 'backg
+
+ from flask import Flask, jsonify
+app = Flask(__name__)
+
+@app.route('/api/room/<room_key>')
+def get_room_data(room_key):
+    # Retrieve the tenant ID from your environment
+    tenant_id = os.getenv("TARGET_TENANT_ID")
+    
+    # Use the helper function we defined earlier
+    data = get_dashboard_data(tenant_id)
+    
+    # Return as JSON so the frontend can read it
+    return jsonify({"gates": data})                                 
+                                  
