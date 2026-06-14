@@ -1,5 +1,10 @@
 def ingest_king_v_framework(framework_data: Any, session: Session, tenant_id: str):
+    # --- DEBUGGING START ---
     print(f"🚀 Injecting framework for Tenant: {tenant_id}")
+    print(f"DEBUG: Input type is {type(framework_data)}")
+    if isinstance(framework_data, list) and len(framework_data) > 0:
+        print(f"DEBUG: First element type is {type(framework_data[0])}")
+    # --- DEBUGGING END ---
     
     # 1. Standardize the data structure
     if isinstance(framework_data, list):
