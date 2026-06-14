@@ -2,6 +2,7 @@ from sqlalchemy import text
 from app.observers.base_observer import BaseControlObserver
 
 class AWSObserver(BaseControlObserver):
+    # ... rest of your code ...
     def __init__(self, region="us-east-1"):
         self.region = region
 
