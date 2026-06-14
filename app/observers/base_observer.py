@@ -3,9 +3,11 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# Change this:
 class BaseObserver(ABC):
-    """Base observer with transactional database synchronization."""
-
+# To this:
+class BaseControlObserver(ABC):
+    
     def safe_sync(self):
         from app.database.connection import SessionLocal
 
