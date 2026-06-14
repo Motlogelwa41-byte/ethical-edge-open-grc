@@ -22,58 +22,57 @@
     <!-- Main Workspace -->
     <main class="flex-1 p-8">
         <h2 id="roomTitle" class="text-2xl font-bold mb-6">CORE GRC</h2>
-        <div id="king-v-matrix-container" class="grid gap-6">
-            <!-- Data will inject here -->
-        </div>
+        
+        <table class="w-full bg-white rounded-lg shadow-sm">
+            <thead>
+                <tr class="text-left bg-gray-50 border-b">
+                    <th class="p-4">Requirement</th>
+                    <th class="p-4">Status</th>
+                    <th class="p-4">Action</th>
+                </tr>
+            </thead>
+            <tbody id="king-v-matrix-container">
+                <!-- Data will be injected here via JavaScript -->
+            </tbody>
+        </table>
     </main>
-
-    {% for finding in findings %}
-    <tr>
-        <td>{{ finding.control_name }}</td>
-        <td>{{ finding.status }}</td>
-        <td>
-            {% if finding.status == "FAILED" %}
-                <button onclick="triggerFix('{{ finding.control_reference }}')" class="btn-remediate">
-                    Fix Automatically
-                </button>
-            {% endif %}
-        </td>
-    </tr>
-{% endfor %}
 
     <script>
         document.addEventListener("DOMContentLoaded", () => loadRoom('core'));
 
         async function loadRoom(roomKey) {
             document.getElementById('roomTitle').innerText = roomKey.toUpperCase();
-            // Ensure your backend serves /api/room/{roomKey}
-            const response = await fetch(`/api/room/${roomKey}`);
-            const res = await response.json();
-            
-            if(roomKey === 'core') {
-                renderGoverningFunctions(res.data.governing_functions);
-            } else {
-                document.getElementById('king-v-matrix-container').innerHTML = `<p>Data for ${roomKey} loaded.</p>`;
+            try {
+                const response = await fetch(`/api/room/${roomKey}`);
+                const res = await response.json();
+                
+                const container = document.getElementById('king-v-matrix-container');
+                container.innerHTML = res.gates.map(gate => `
+                    <tr class="border-b">
+                        <td class="p-4">${gate.requirement_text}</td>
+                        <td class="p-4">
+                            <span class="px-2 py-1 rounded text-sm ${gate.status === 'COMPLIANT' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                ${gate.status}
+                            </span>
+                        </td>
+                        <td class="p-4">
+                            ${gate.status !== 'COMPLIANT' ? `<button onclick="triggerFix('${gate.gate_id}')" class="text-blue-600 hover:underline">Fix Automatically</button>` : ''}
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                console.error("Error loading room:", err);
             }
         }
 
-        <script>
         async function triggerFix(ref) {
-            // Optional: Add a loading state to the button here for better UX
             const response = await fetch(`/remediate/${ref}`, { method: 'POST' });
             if(response.ok) {
-                alert("Fix applied! Refreshing...");
-                location.reload(); 
+                alert("Fix applied!");
+                loadRoom('core');
             } else {
-                alert("Remediation failed. Check logs.");
+                alert("Remediation failed.");
             }
-        }
-    </script>
-</body>
-</html>
-
-        function renderGoverningFunctions(data) {
-            // Your existing render logic here
         }
     </script>
 </body>
