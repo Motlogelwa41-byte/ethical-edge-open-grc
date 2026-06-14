@@ -8,10 +8,16 @@ class GitHubObserver(BaseControlObserver):
     def __init__(self, repo_name):
         self.token = os.getenv("GITHUB_TOKEN")
         self.repo_name = repo_name
-        self.headers = {"Authorization": f"token {self.token}"}
+        self.headers = {
+            "Authorization": f"token {self.token}"
+        }
 
     def check_branch_protection(self, branch="main"):
-        url = f"https://api.github.com/repos/{self.repo_name}/branches/{branch}/protection"
+        url = (
+            f"https://api.github.com/repos/"
+            f"{self.repo_name}/branches/{branch}/protection"
+        )
+
         response = requests.get(url, headers=self.headers)
 
         if response.status_code != 200:
@@ -19,12 +25,18 @@ class GitHubObserver(BaseControlObserver):
 
         data = response.json()
 
-        reviews = data.get("required_pull_request_reviews", {})
-        status_checks = data.get("required_status_checks", {})
+        reviews = data.get(
+            "required_pull_request_reviews", {}
+        )
+
+        status_checks = data.get(
+            "required_status_checks", {}
+        )
 
         return bool(reviews and status_checks)
 
     def sync_to_db(self, session):
+
         is_compliant = self.check_branch_protection()
 
         status = "PASS" if is_compliant else "FAIL"
@@ -38,4 +50,7 @@ class GitHubObserver(BaseControlObserver):
             {"status": status}
         )
 
-        print(f"🐙 GitHub Observer [Branch Protection]: {status}")
+        print(
+            f"🐙 GitHub Observer "
+            f"[Branch Protection]: {status}"
+        )
