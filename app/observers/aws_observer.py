@@ -1,4 +1,8 @@
-from sqlalchemy import text
+import sys
+from pathlib import Path
+# Force the project root into sys.path
+sys.path.append(str(Path(__file__).resolve().parents[2]))
+
 from app.observers.base_observer import BaseControlObserver
 
 class AWSObserver(BaseControlObserver):
