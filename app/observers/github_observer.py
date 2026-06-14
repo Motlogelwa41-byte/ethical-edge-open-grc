@@ -1,14 +1,41 @@
+import requests
+import os
+from sqlalchemy import text
 from app.services.base import BaseControlObserver
-from app.database.models import ControlFinding
 
 class GitHubObserver(BaseControlObserver):
 
+    def __init__(self, repo_name):
+        self.token = os.getenv("GITHUB_TOKEN")
+        self.repo_name = repo_name
+        self.headers = {"Authorization": f"token {self.token}"}
+
+    def check_branch_protection(self, branch="main"):
+        url = f"https://api.github.com/repos/{self.repo_name}/branches/{branch}/protection"
+        response = requests.get(url, headers=self.headers)
+
+        if response.status_code != 200:
+            return False
+
+        data = response.json()
+
+        reviews = data.get("required_pull_request_reviews", {})
+        status_checks = data.get("required_status_checks", {})
+
+        return bool(reviews and status_checks)
+
     def sync_to_db(self, session):
-        new_finding = ControlFinding(
-            control_reference="GH-001",
-            control_name="Repository Visibility",
-            status="PASS",
-            evidence_payload="Repo is private"
+        is_compliant = self.check_branch_protection()
+
+        status = "PASS" if is_compliant else "FAIL"
+
+        session.execute(
+            text(
+                "UPDATE room_gates "
+                "SET validation_type = :status "
+                "WHERE gate_id = 'GATE-GITHUB-01'"
+            ),
+            {"status": status}
         )
 
-        session.add(new_finding)
+        print(f"🐙 GitHub Observer [Branch Protection]: {status}")
