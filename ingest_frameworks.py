@@ -1,6 +1,6 @@
 print(f"DEBUG: Before calling function, data type is {type(data)}")
 ingest_king_v_framework(data, db, tenant_id)
-    print(f"🚀 Injecting framework for Tenant: {tenant_id}")
+    print("Error: TARGET_TENANT_ID not set.")
     
     # STANDARDIZE: If it's a list, we wrap it into a dictionary structure
     if isinstance(framework_data, list):
