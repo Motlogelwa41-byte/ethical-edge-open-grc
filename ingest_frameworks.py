@@ -1,7 +1,8 @@
 print(f"DEBUG: Before calling function, data type is {type(data)}")
 ingest_king_v_framework(data, db, tenant_id)
-    print("Error: TARGET_TENANT_ID not set.")
-    
+   # Replace the block that checks for TARGET_TENANT_ID with this:
+tenant_id = "DEMO_TENANT" 
+# tenant_id = os.getenv("TARGET_TENANT_ID")  <-- Comment out or delete this
     # STANDARDIZE: If it's a list, we wrap it into a dictionary structure
     if isinstance(framework_data, list):
         # We assume the list is a sequence of category dictionaries
