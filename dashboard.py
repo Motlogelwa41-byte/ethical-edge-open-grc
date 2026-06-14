@@ -20,8 +20,8 @@ st.metric("Compliance Health Score", f"{score:.1f}%")
 
 # 2. Status Visualization
 st.subheader("Live Control Monitoring")
-st.dataframe(gates.style.applymap(lambda x: 'background-color: #d4edda' if x == 'PASS' else 'backg
-
+# Ensure line 23 looks like this (all on one line)
+st.dataframe(gates.style.applymap(lambda x: 'background-color: #d4edda' if x == 'PASS' else 'background-color: #f8d7da'))
  from flask import Flask, jsonify
 app = Flask(__name__)
 
