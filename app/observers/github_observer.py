@@ -34,7 +34,7 @@ class GitHubObserver(BaseControlObserver):
 
         return bool(reviews and status_checks)
 
-    def sync_to_db(self, session):
+def sync_to_db(self, session):
 
         is_compliant = self.check_branch_protection()
 
