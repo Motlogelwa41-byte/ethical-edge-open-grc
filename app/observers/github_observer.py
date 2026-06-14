@@ -2,6 +2,7 @@ import requests
 import os
 from sqlalchemy import text
 # Make sure this import path is correct for your project structure
+
 from app.observers.base_observer import BaseControlObserver
 
 class AWSObserver(BaseControlObserver):
