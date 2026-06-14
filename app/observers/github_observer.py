@@ -3,7 +3,6 @@ import os
 from sqlalchemy import text
 # Make sure this import path is correct for your project structure
 from app.observers.base_observer import BaseControlObserver
-
 class GitHubObserver(BaseControlObserver):
     def __init__(self, repo_name=None):
         self.token = os.getenv("GITHUB_TOKEN")
