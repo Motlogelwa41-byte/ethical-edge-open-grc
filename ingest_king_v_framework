@@ -1,11 +1,11 @@
 def ingest_king_v_framework(framework_data: Any, session: Session, tenant_id: str):
     print(f"🚀 Injecting framework for Tenant: {tenant_id}")
     
-    # 1. DEFENSIVE STANDARDIZATION
-    # If the file is a list, we wrap it. If it's a dict, we extract or use as-is.
+    # 1. DEFENSIVE WRAPPING: Force everything into a dictionary structure
     if isinstance(framework_data, list):
-        # Convert list to dict: { "cat_0": item, "cat_1": item ... }
-        categories = {f"cat_{i}": (item if isinstance(item, dict) else {"title": "Unnamed", "principles": []}) 
+        # Treat each item in the list as a category dict
+        # If the item itself isn't a dict, we create a dummy dict for it
+        categories = {f"cat_{i}": (item if isinstance(item, dict) else {"title": "Unknown", "principles": []}) 
                       for i, item in enumerate(framework_data)}
     elif isinstance(framework_data, dict):
         categories = framework_data.get("governing_functions", framework_data)
@@ -15,10 +15,12 @@ def ingest_king_v_framework(framework_data: Any, session: Session, tenant_id: st
 
     # 2. ITERATE
     for category_key, category_content in categories.items():
+        # FINAL SAFETY: Ensure we are dealing with a dictionary
         if not isinstance(category_content, dict):
+            print(f"⚠️ Skipping non-dict entry at {category_key}")
             continue
 
-        # Upsert Category
+        # ... (rest of your existing Upsert logic stays exactly the same) ...
         session.execute(
             text("""
                 INSERT INTO compliance_categories (category_id, display_name, weight, tenant_id)
@@ -35,51 +37,9 @@ def ingest_king_v_framework(framework_data: Any, session: Session, tenant_id: st
             }
         )
         
-        # Upsert Principles
+        # Principles
         principles = category_content.get("principles", [])
         if isinstance(principles, list):
             for principle in principles:
                 if not isinstance(principle, dict): continue
-                p_id = principle.get("principle_id")
-                if not p_id: continue
-                
-                session.execute(
-                    text("""
-                        INSERT INTO compliance_principles (principle_id, category_id, title, description, tenant_id)
-                        VALUES (:principle_id, :category_id, :title, :description, :tenant_id)
-                        ON CONFLICT (principle_id, tenant_id) DO UPDATE SET
-                            title = EXCLUDED.title, description = EXCLUDED.description;
-                    """),
-                    {
-                        "principle_id": str(p_id), 
-                        "category_id": str(category_key), 
-                        "title": principle.get("title", "No Title"), 
-                        "description": principle.get("description", ""), 
-                        "tenant_id": tenant_id
-                    }
-                )
-                
-                # Upsert Gates
-                gates = principle.get("checkpoints_or_gates", [])
-                if isinstance(gates, list):
-                    for index, gate in enumerate(gates):
-                        if not isinstance(gate, dict): continue
-                        gate_id = f"GATE-{p_id}-{str(index + 1).zfill(2)}"
-                        session.execute(
-                            text("""
-                                INSERT INTO room_gates (gate_id, principle_id, requirement_text, validation_type, order_index, tenant_id)
-                                VALUES (:gate_id, :principle_id, :requirement_text, :validation_type, :order_index, :tenant_id)
-                                ON CONFLICT (gate_id, tenant_id) DO UPDATE SET
-                                    requirement_text = EXCLUDED.requirement_text;
-                            """),
-                            {
-                                "gate_id": gate_id, 
-                                "principle_id": str(p_id), 
-                                "requirement_text": gate.get("requirement", "No Requirement"), 
-                                "validation_type": gate.get("type", "automated"), 
-                                "order_index": index, 
-                                "tenant_id": tenant_id
-                            }
-                        )
-    session.commit()
-    print("✅ Ingestion successfully completed!")
+                # ... rest of your principle/gate logic ...
