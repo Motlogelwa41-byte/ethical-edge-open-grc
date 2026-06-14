@@ -2,7 +2,8 @@ import hashlib
 from sqlalchemy import text
 from app.observers.base_observer import BaseControlObserver
 
-class FileObserver(BaseControlObserver):
+class AWSObserver(BaseControlObserver):
+    # ... rest of your code ...
 
     def __init__(self, target_file, gate_id):
         self.target_file = target_file
