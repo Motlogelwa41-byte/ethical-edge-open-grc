@@ -23,3 +23,29 @@ print("Environment validated. Starting orchestration...")
 # Now proceed with your imports and logic...
 from app.observers.aws_observer import AWSObserver
 # ... rest of your code
+
+# PROPOSED ADDITION TO orchestrator.py
+
+def run_compliance_gap_analysis(framework_data, audit_logs):
+    """
+    Compares the requirements in framework_data (from JSON) 
+    against the actual evidence in audit_logs (from DB).
+    """
+    results = []
+    
+    for control in framework_data['controls']:
+        # Check if the control ID exists in our audit logs
+        match = next((log for log in audit_logs if log['control_id'] == control['id']), None)
+        
+        status = "COMPLIANT" if match and match['status'] == 'verified' else "NON-COMPLIANT"
+        
+        results.append({
+            "control_id": control['id'],
+            "description": control['description'],
+            "status": status,
+            "evidence_path": match['file_path'] if match else None
+        })
+    
+    return results
+
+# This list would then be passed to your dashboard.py to render the UI
