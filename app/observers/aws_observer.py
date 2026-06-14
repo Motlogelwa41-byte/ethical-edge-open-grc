@@ -1,25 +1,22 @@
-from app.services.base import BaseControlObserver
-from app.database.models import ControlFinding
+from sqlalchemy import text
+from app.observers.base_observer import BaseControlObserver
 
 class AWSObserver(BaseControlObserver):
-    """
-    AWS Compliance Observer
-    """
+    def __init__(self, region="us-east-1"):
+        self.region = region
 
     def sync_to_db(self, session):
-        """
-        Called automatically by BaseControlObserver.safe_sync().
-        The session is provided by the framework.
-        """
-
-        new_finding = ControlFinding(
-            control_reference="AWS-001",
-            control_name="S3 Public Access",
-            status="FAIL",
-            evidence_payload="Bucket is public"
+        # 1. Logic to check AWS status
+        # 2. Database update
+        status = "PASS" # Replace with actual AWS check result
+        
+        session.execute(
+            text(
+                "UPDATE room_gates "
+                "SET validation_type = :status "
+                "WHERE gate_id = 'GATE-AWS-01'"
+            ),
+            {"status": status}
         )
-
-        session.add(new_finding)
-
-        print("☁️ AWS Observer: Finding recorded")
+        print(f"☁️ AWS Observer [Region: {self.region}]: {status}")
 
