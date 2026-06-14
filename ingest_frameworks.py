@@ -1,15 +1,22 @@
 def ingest_king_v_framework(framework_data: Any, session: Session, tenant_id: str):
     print(f"🚀 Injecting framework for Tenant: {tenant_id}")
     
-    # Robust handling: If it's a list, wrap it to match the expected structure
+    # 1. Standardize the data structure
     if isinstance(framework_data, list):
-        print("ℹ️ Detected list format, wrapping into governing_functions...")
+        print("ℹ️ Detected list format, wrapping...")
         categories = {f"cat_{i}": item for i, item in enumerate(framework_data)}
-    else:
+    elif isinstance(framework_data, dict):
         categories = framework_data.get("governing_functions", {})
-    
+        # If governing_functions is empty, check if the dict IS the categories
+        if not categories and "principles" in next(iter(framework_data.values()), {}):
+            categories = framework_data
+    else:
+        print(f"❌ Error: Unexpected data type: {type(framework_data)}")
+        return
+
+    # 2. Iterate using the standardized 'categories' dict
     for category_key, category_content in categories.items():
-        # 1. Upsert Category
+        # Upsert Category
         session.execute(
             text("""
                 INSERT INTO compliance_categories (category_id, display_name, weight, tenant_id)
@@ -22,7 +29,7 @@ def ingest_king_v_framework(framework_data: Any, session: Session, tenant_id: st
              "weight": category_content.get("weight", 1.0), "tenant_id": tenant_id}
         )
         
-        # 2. Upsert Principles
+        # Upsert Principles
         for principle in category_content.get("principles", []):
             p_id = principle.get("principle_id")
             if not p_id: continue
@@ -38,7 +45,7 @@ def ingest_king_v_framework(framework_data: Any, session: Session, tenant_id: st
                  "description": principle.get("description"), "tenant_id": tenant_id}
             )
             
-            # 3. Upsert Gates
+            # Upsert Gates
             for index, gate in enumerate(principle.get("checkpoints_or_gates", [])):
                 gate_id = f"GATE-{p_id}-{str(index + 1).zfill(2)}"
                 session.execute(
@@ -52,41 +59,3 @@ def ingest_king_v_framework(framework_data: Any, session: Session, tenant_id: st
                      "validation_type": gate.get("type", "automated"), "order_index": index, "tenant_id": tenant_id}
                 )
     session.commit()
-
-if __name__ == "__main__":
-    from app.database.connection import SessionLocal
-    
-    data_path = 'data/king_v_checklist.json'
-    if not os.path.exists(data_path):
-        print(f"❌ Error: File not found at {data_path}")
-    else:
-        with open(data_path, 'r') as f:
-            data = json.load(f)
-        
-        # Verify the data load here
-        print(f"DEBUG: Loaded data type: {type(data)}")
-        
-        db = SessionLocal()
-        try:
-            tenant_id = os.getenv("TARGET_TENANT_ID")
-            if not tenant_id:
-                print("❌ Error: TARGET_TENANT_ID not set.")
-            else:
-                ingest_king_v_framework(data, db, tenant_id)
-                print("✅ Ingestion successfully completed!")
-        except Exception as e:
-            print(f"❌ Critical Pipeline Failure: {e}")
-        finally:
-            db.close()
-
-# Ensure categories is ALWAYS a dictionary
-    if isinstance(framework_data, list):
-        print("ℹ️ Detected list format, wrapping...")
-        # Create a dictionary structure if the input is a list
-        categories = {f"cat_{i}": item for i, item in enumerate(framework_data)}
-    elif isinstance(framework_data, dict):
-        # Use the expected key, default to empty dict if missing
-        categories = framework_data.get("governing_functions", {})
-    else:
-        print(f"❌ Error: Unexpected data type: {type(framework_data)}")
-        return # Stop if data is neither list nor dict
