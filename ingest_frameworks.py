@@ -1,22 +1,12 @@
-def ingest_king_v_framework(framework_data, session, tenant_id):
-    # If the root is a list, wrap it in a dummy dict structure to keep your logic working
-    if isinstance(framework_data, list):
-        # Assuming the list contains categories
-        framework_data = {"governing_functions": {f"cat_{i}": item for i, item in enumerate(framework_data)}}
-    
-    categories = framework_data.get("governing_functions", {})
-    # ... rest of your code ...
-
-import os
-import json
-from typing import Dict, Any
-from sqlalchemy.orm import Session
-from sqlalchemy import text
-
-def ingest_king_v_framework(framework_data: Dict[str, Any], session: Session, tenant_id: str):
+def ingest_king_v_framework(framework_data: Any, session: Session, tenant_id: str):
     print(f"🚀 Injecting framework for Tenant: {tenant_id}")
     
-    categories = framework_data.get("governing_functions", {})
+    # Robust handling: If it's a list, wrap it to match the expected structure
+    if isinstance(framework_data, list):
+        print("ℹ️ Detected list format, wrapping into governing_functions...")
+        categories = {f"cat_{i}": item for i, item in enumerate(framework_data)}
+    else:
+        categories = framework_data.get("governing_functions", {})
     
     for category_key, category_content in categories.items():
         # 1. Upsert Category
@@ -28,13 +18,15 @@ def ingest_king_v_framework(framework_data: Dict[str, Any], session: Session, te
                     display_name = EXCLUDED.display_name,
                     weight = EXCLUDED.weight;
             """),
-            {"category_id": category_key, "display_name": category_content.get("title"), 
+            {"category_id": category_key, "display_name": category_content.get("title", "Unknown"), 
              "weight": category_content.get("weight", 1.0), "tenant_id": tenant_id}
         )
         
         # 2. Upsert Principles
         for principle in category_content.get("principles", []):
             p_id = principle.get("principle_id")
+            if not p_id: continue
+            
             session.execute(
                 text("""
                     INSERT INTO compliance_principles (principle_id, category_id, title, description, tenant_id)
@@ -60,27 +52,3 @@ def ingest_king_v_framework(framework_data: Dict[str, Any], session: Session, te
                      "validation_type": gate.get("type", "automated"), "order_index": index, "tenant_id": tenant_id}
                 )
     session.commit()
-
-if __name__ == "__main__":
-    from app.database.connection import SessionLocal
-    
-    # Ensure the data file exists
-    data_path = 'data/king_v_checklist.json'
-    if not os.path.exists(data_path):
-        print(f"❌ Error: File not found at {data_path}")
-    else:
-        with open(data_path, 'r') as f:
-            data = json.load(f)
-        
-        db = SessionLocal()
-        try:
-            tenant_id = os.getenv("TARGET_TENANT_ID")
-            if not tenant_id:
-                print("❌ Error: TARGET_TENANT_ID environment variable not set.")
-            else:
-                ingest_king_v_framework(data, db, tenant_id)
-                print("✅ Ingestion successfully completed!")
-        except Exception as e:
-            print(f"❌ Critical Pipeline Failure: {e}")
-        finally:
-            db.close()
