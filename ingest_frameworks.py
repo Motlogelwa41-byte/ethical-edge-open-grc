@@ -1,22 +1,20 @@
 def ingest_king_v_framework(framework_data: Any, session: Session, tenant_id: str):
     print(f"🚀 Injecting framework for Tenant: {tenant_id}")
     
-    # 1. Standardize the data structure
+    # STANDARDIZE: If it's a list, we wrap it into a dictionary structure
     if isinstance(framework_data, list):
+        # We assume the list is a sequence of category dictionaries
         categories = {f"cat_{i}": item for i, item in enumerate(framework_data)}
     elif isinstance(framework_data, dict):
-        categories = framework_data.get("governing_functions", {})
-        if not categories and "principles" in next(iter(framework_data.values()), {}):
-            categories = framework_data
+        categories = framework_data.get("governing_functions", framework_data)
     else:
         print(f"❌ Error: Unexpected data type: {type(framework_data)}")
         return
 
-    # 2. Iterate safely
+    # ITERATE
     for category_key, category_content in categories.items():
-        # TYPE GUARD: Ensure category_content is a dictionary
+        # SAFETY CHECK: Only process if category_content is a dict
         if not isinstance(category_content, dict):
-            print(f"⚠️ Skipping invalid category content at {category_key}: {type(category_content)}")
             continue
 
         # Upsert Category
@@ -36,7 +34,7 @@ def ingest_king_v_framework(framework_data: Any, session: Session, tenant_id: st
             }
         )
         
-        # Upsert Principles (with type check)
+        # Upsert Principles
         principles = category_content.get("principles", [])
         if isinstance(principles, list):
             for principle in principles:
@@ -54,13 +52,13 @@ def ingest_king_v_framework(framework_data: Any, session: Session, tenant_id: st
                     {
                         "principle_id": p_id, 
                         "category_id": category_key, 
-                        "title": principle.get("title"), 
-                        "description": principle.get("description"), 
+                        "title": principle.get("title", "No Title"), 
+                        "description": principle.get("description", ""), 
                         "tenant_id": tenant_id
                     }
                 )
                 
-                # Upsert Gates (with type check)
+                # Upsert Gates
                 gates = principle.get("checkpoints_or_gates", [])
                 if isinstance(gates, list):
                     for index, gate in enumerate(gates):
@@ -76,7 +74,7 @@ def ingest_king_v_framework(framework_data: Any, session: Session, tenant_id: st
                             {
                                 "gate_id": gate_id, 
                                 "principle_id": p_id, 
-                                "requirement_text": gate.get("requirement"), 
+                                "requirement_text": gate.get("requirement", "No Requirement"), 
                                 "validation_type": gate.get("type", "automated"), 
                                 "order_index": index, 
                                 "tenant_id": tenant_id
