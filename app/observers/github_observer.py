@@ -4,7 +4,6 @@ from sqlalchemy import text
 from app.services.base import BaseControlObserver
 
 class GitHubObserver(BaseControlObserver):
-
     def __init__(self, repo_name):
         self.token = os.getenv("GITHUB_TOKEN")
         self.repo_name = repo_name
