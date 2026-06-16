@@ -1,3 +1,24 @@
+def ingest_king_v_framework(data, db, tenant_id):
+    # 1. VALIDATION STAGE
+    # Use Pydantic to parse/clean the entire tree before touching the DB
+    try:
+        # Assuming you defined a 'FrameworkRoot' model that nests Principles
+        # and Principles nest Gates
+        validated_data = FrameworkRoot(data=data) 
+    except ValidationError as e:
+        print(f"❌ Critical Validation Error: {e.json()}")
+        return # Do not proceed to DB if schema is broken
+
+    # 2. PERSISTENCE STAGE
+    with db.session() as session:
+        # Now iterate through the validated objects
+        for category in validated_data.categories:
+            # Upsert Category ...
+            # Upsert Principles ...
+            # Upsert Gates ...
+            session.commit()
+            print("✅ Ingestion successfully completed!")
+
 print(f"DEBUG: Before calling function, data type is {type(data)}")
 ingest_king_v_framework(data, db, tenant_id)
    # Replace the block that checks for TARGET_TENANT_ID with this:
