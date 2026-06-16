@@ -1,3 +1,6 @@
+from sqlalchemy import Column, Boolean
+from app.database.models import Base
+
 class EnterpriseUser(Base):
     __tablename__ = "core_enterprise_users"
 
@@ -15,5 +18,3 @@ class EnterpriseUser(Base):
     # (Optional) Keep 'can_access_nist_cyber' and 'can_access_safeguard' 
     # if you still need them for specific legacy modules
 
-from sqlalchemy import Column, Boolean
-from app.database.models import Base
