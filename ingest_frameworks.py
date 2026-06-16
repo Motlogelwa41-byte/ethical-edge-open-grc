@@ -84,3 +84,22 @@ tenant_id = "DEMO_TENANT"
                         )
     session.commit()
     print("✅ Ingestion successfully completed!")
+
+from pydantic import ValidationError
+from .schemas import FrameworkRequirement
+
+def ingest_data(raw_data_list):
+    validated_data = []
+    errors = []
+
+    for item in raw_data_list:
+        try:
+            # This attempts to map and validate the data
+            record = FrameworkRequirement(**item)
+            validated_data.append(record.dict())
+        except ValidationError as e:
+            # Log the specific issue without crashing the whole process
+            errors.append({"item": item.get('id'), "error": e.json()})
+            print(f"Validation failed for {item.get('id')}: {e}")
+    
+    return validated_data, errors
