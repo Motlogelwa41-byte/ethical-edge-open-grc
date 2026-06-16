@@ -1,20 +1,20 @@
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field
 from typing import List, Optional
 
-class RecommendedPractice(BaseModel):
-    practice_id: str
-    description: str
-    is_mandatory: bool = False
+class Gate(BaseModel):
+    requirement: str
+    type: str = "automated"
 
-class KingVPrinciple(BaseModel):
-    principle_number: int = Field(..., ge=1, le=17) # King IV has 17 principles
+class Principle(BaseModel):
+    principle_id: str
     title: str
     description: str
-    # Ensures every Principle contains its nested practices
-    practices: List[RecommendedPractice]
+    checkpoints_or_gates: List[Gate]
 
-    @validator('practices')
-    def must_have_practices(cls, v):
-        if not v:
-            raise ValueError('A King IV Principle must have associated recommended practices.')
-        return v
+class Category(BaseModel):
+    title: str
+    weight: float = 1.0
+    principles: List[Principle]
+
+class FrameworkRoot(BaseModel):
+    governing_functions: List[Category]
