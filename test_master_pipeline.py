@@ -1,15 +1,14 @@
-from app.room_core_grc.models import GovernanceAssessment
-from app.auth.models import EnterpriseUser
-# ... other imports
 import os
 import sys
 import json
 import asyncio
-from datetime import datetime, timezone
+from datetime import datetime
 
-# Resolve module paths
-sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+# Add the project root to sys.path to ensure 'app' can be found
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
+from app.room_core_grc.models import GovernanceAssessment
+from app.auth.models import EnterpriseUser
 from app.database.session import init_db, SessionLocal
 from app.database.models import AuditRun, ControlFinding
 from app.services.evidence_collector import GRCEvidenceEngine
@@ -33,7 +32,7 @@ def run_end_to_end_validation():
         )
         
         # 3. Log the Results to the Relational Database Ledger
-        print("🗄️  Step 2: Persisting telemetry snapshot into database ledger...")
+        print("🗄️ Step 2: Persisting telemetry snapshot into database ledger...")
         new_run = AuditRun(
             tenant_id=payload.system_id,
             timestamp=datetime.fromisoformat(payload.timestamp.replace("Z", "+00:00")),
