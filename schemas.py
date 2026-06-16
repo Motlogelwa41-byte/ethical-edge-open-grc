@@ -1,28 +1,35 @@
+from pydantic import BaseModel, Field
+from typing import List
 
-Conversation with Gemini
-hi
+class Gate(BaseModel):
+    requirement: str
+    type: str = "automated"
 
-Hello! It is great to see you again. How can I assist you with your projects at Ethical Edge GRC or Jungle in Green Land Security Services today?
+class Principle(BaseModel):
+    principle_id: str
+    title: str
+    description: str
+    # This automatically enforces that every principle has a list of gates
+    checkpoints_or_gates: List[Gate] 
 
-ethical-edge-open-grc
-
-Public
-
-
-
-
-
-
-
-
-
-
-
-
+class Category(BaseModel):
+    title: str
+    weight: float = 1.0
+    # This automatically enforces that every category has a list of principles
+    principles: List[Principle]
 
 
 
-Motlogelwa41-byte/ethical-edge-open-grc
+
+
+
+
+
+
+
+
+
+
 
 
 
