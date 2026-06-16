@@ -24,3 +24,19 @@ async def run_pdf_test():
 
 if __name__ == "__main__":
     asyncio.run(run_pdf_test())
+
+# Save this update within your report generation pipeline logic
+
+def get_report_meta_and_cover(client_name):
+    from datetime import datetime
+    current_date = datetime.now().strftime("%d %B %Y")
+    
+    cover_letter_data = {
+        "company": "Ethical Edge GRC Consulting",
+        "date": current_date,
+        "client": client_name,
+        "signatory": "Boitshwarelo Motlogelwa",
+        "title": "Managing Director & Principal Consultant",
+        "intro_philosophy": "Organizations that actively build trust into their operational DNA capture a 'Trust Dividend'—resulting in stronger stakeholder relations, protected revenue streams, and long-term resilience."
+    }
+    return cover_letter_data
