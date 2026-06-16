@@ -9,6 +9,26 @@ def ingest_king_v_framework(data, db, tenant_id):
         print(f"❌ Critical Validation Error: {e.json()}")
         return # Do not proceed to DB if schema is broken
 
+    # 2. ITERATE AND VALIDATE
+    for category_key, category_content in categories.items():
+        if not isinstance(category_content, dict):
+            continue
+
+        # VALIDATION STAGE
+        try:
+            validated_cat = Category(**category_content)
+        except ValidationError as e:
+            # --- PASTE THIS HERE ---
+            error_msg = f"Validation failed for {category_key}: {e.json()}"
+            print(f"❌ {error_msg}")
+            
+            # If you have a logging function or a file write, put it here
+            # e.g., self.log_to_audit(error_msg)
+            
+            continue # This ensures the loop continues to the next category
+        
+        # ... rest of your code ...
+
     # 2. PERSISTENCE STAGE
     with db.session() as session:
         # Now iterate through the validated objects
