@@ -1,0 +1,11 @@
+{
+  "client_name": "Gaborone Retailers Ltd",
+  "current_status": {
+    "has_privacy_policy": false,
+    "has_ropa": true,
+    "has_breach_proc": false,
+    "has_dpia": false,
+    "has_dsar_log": true,
+    "has_cross_border_assessment": false
+  }
+}
