@@ -1,3 +1,20 @@
+# Updated logic inside your loop
+for category_key, category_content in categories.items():
+    try:
+        # Pydantic validates the WHOLE tree here
+        validated_cat = Category(**category_content)
+    except ValidationError as e:
+        print(f"❌ Validation failed for {category_key}: {e.json()}")
+        continue
+
+    # Persistence
+    # Use validated_cat.principles directly
+    for principle in validated_cat.principles:
+        # Use principle.principle_id, principle.title, etc.
+        for gate in principle.checkpoints_or_gates:
+            # Use gate.requirement, gate.type
+            pass
+
 from pydantic import ValidationError
 from sqlalchemy import text
 from .schemas import Category  # Ensure this matches your model
