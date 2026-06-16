@@ -1,4 +1,4 @@
-rom app.room_core_grc.models import GovernanceAssessment
+from app.room_core_grc.models import GovernanceAssessment
 from app.auth.models import EnterpriseUser
 # ... other imports
 import os
