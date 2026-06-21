@@ -69,3 +69,7 @@ async def get_dashboard_summary(
 @app.get("/")
 async def root():
     return {"status": "Ethical Edge Engine ONLINE"}
+
+from app.api.endpoints import questionnaire
+
+app.include_router(questionnaire.router)
