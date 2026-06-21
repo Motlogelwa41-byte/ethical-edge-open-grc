@@ -73,3 +73,6 @@ async def root():
 from app.api.endpoints import questionnaire
 
 app.include_router(questionnaire.router)
+
+from app.api.endpoints import certiguard_ai
+app.include_router(certiguard_ai.router)
