@@ -76,3 +76,11 @@ app.include_router(questionnaire.router)
 
 from app.api.endpoints import certiguard_ai
 app.include_router(certiguard_ai.router)
+
+@app.post("/api/v1/climate/intake")
+async def receive_climate_data(raw_data: dict):
+    # 1. Enforce privacy controls at entry point
+    clean_payload = sanitize_environmental_payload(raw_data)
+    
+    # 2. Proceed with GRC evaluation risk scoring
+    # ...
