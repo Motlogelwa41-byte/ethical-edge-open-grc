@@ -1,0 +1,18 @@
+{
+  "school_or_facility_name": "SADC Rural Pilot Clinic Region-4",
+  "exact_latitude": -22.3981,
+  "exact_longitude": 26.1092,
+  "regional_catchment_id": "BW-CE-SEROWE-09",
+  "normalized_district_code": "DIST-CENTRAL-04",
+  "facility_type": "clinic",
+  "ambient_temp": 43.8,
+  "particulate_matter": 0.02,
+  "uv_exposure": 12.0,
+  "drought_index_spi": -2.1,
+  "active_power_outage": true,
+  "student_or_patient_count": 512,
+  "has_active_cooling": false,
+  "has_clean_water_reserve": true,
+  "has_offgrid_power_backup": false,
+  "density_bracket": "critical_overload",
+  "resilience_rating": "unhardened_tier_1"
