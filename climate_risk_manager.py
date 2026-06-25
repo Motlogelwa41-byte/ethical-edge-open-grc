@@ -7,11 +7,11 @@ Objective: Ingest climate metrics, calculate facility vulnerability indices,
 
 import uuid
 from datetime import datetime
-from typing import Optional, Dict, Any
+from typing import Dict, Any
 from pydantic import BaseModel, Field
 
 # ==========================================
-# 1. DATA SANITIZATION PIPELINE (PASTE HERE)
+# 1. DATA SANITIZATION PIPELINE
 # ==========================================
 
 def sanitize_environmental_payload(raw_payload: Dict[str, Any]) -> Dict[str, Any]:
@@ -20,26 +20,29 @@ def sanitize_environmental_payload(raw_payload: Dict[str, Any]) -> Dict[str, Any
     Strips explicit administrative names, removes granular coordinates, 
     and applies regional boundary mapping to ensure non-identifiability.
     """
+    # Create a local copy to preserve the original payload inputs
+    sanitized_source = raw_payload.copy()
+    
     # Enforce strict field isolation: remove specific point coordinates or local names
-    raw_payload.pop("exact_latitude", None)
-    raw_payload.pop("exact_longitude", None)
-    raw_payload.pop("school_or_facility_name", None)
+    sanitized_source.pop("exact_latitude", None)
+    sanitized_source.pop("exact_longitude", None)
+    sanitized_source.pop("school_or_facility_name", None)
     
     # Generate a cryptographically secure, non-invertible token for the region
-    regional_salt = raw_payload.get("regional_catchment_id", "SADC-ZONE-DEFAULT")
+    regional_salt = sanitized_source.get("regional_catchment_id", "SADC-ZONE-DEFAULT")
     secure_token = uuid.uuid5(uuid.NAMESPACE_DNS, f"{regional_salt}-2026-climate")
     
     sanitized_payload = {
         "telemetry_id": str(secure_token),
-        "coarse_bounding_zone": raw_payload.get("normalized_district_code"),
+        "coarse_bounding_zone": sanitized_source.get("normalized_district_code"),
         "environmental_metrics": {
-            "heat_index_celsius": float(raw_payload.get("ambient_temp", 0.0)),
-            "pm25_concentration": float(raw_payload.get("particulate_matter", 0.0)),
-            "uv_index": float(raw_payload.get("uv_exposure", 0.0))
+            "heat_index_celsius": float(sanitized_source.get("ambient_temp", 0.0)),
+            "pm25_concentration": float(sanitized_source.get("particulate_matter", 0.0)),
+            "uv_index": float(sanitized_source.get("uv_exposure", 0.0))
         },
         "vulnerability_context": {
-            "aggregated_demographic_density_score": raw_payload.get("density_bracket"),
-            "infrastructure_resilience_class": raw_payload.get("resilience_rating")
+            "aggregated_demographic_density_score": sanitized_source.get("density_bracket"),
+            "infrastructure_resilience_class": sanitized_source.get("resilience_rating")
         }
     }
     return sanitized_payload
@@ -47,27 +50,6 @@ def sanitize_environmental_payload(raw_payload: Dict[str, Any]) -> Dict[str, Any
 
 # ==========================================
 # 2. DATA CONTRACTS (PYDANTIC SCHEMAS)
-# ==========================================
-
-class ClimateTelemetryInput(BaseModel):
-    """Validates raw incoming weather or climate sensor metrics."""
-    facility_id: str = Field(..., example="FAC-BWP-052")
-    facility_type: str = Field(..., example="school", description="Must be 'school' or 'clinic'")
-    # ... rest of your Pydantic schemas go here ...
-
-"""
-Ethical Edge Open GRC Engine - Cognitive Extension Module
-File: climate_risk_manager.py
-Objective: Ingest climate metrics, calculate facility vulnerability indices, 
-           and compute child impact metrics for schools and health facilities.
-"""
-
-from pydantic import BaseModel, Field
-from datetime import datetime
-from typing import Optional, Dict, Any
-
-# ==========================================
-# 1. DATA CONTRACTS (PYDANTIC SCHEMAS)
 # ==========================================
 
 class ClimateTelemetryInput(BaseModel):
@@ -89,7 +71,7 @@ class ResilienceParameters(BaseModel):
 
 
 # ==========================================
-# 2. THE COGNITIVE RISK COMPENSATOR ENGINE
+# 3. THE COGNITIVE RISK COMPENSATOR ENGINE
 # ==========================================
 
 class ClimateRiskManager:
@@ -157,8 +139,7 @@ class ClimateRiskManager:
         final_risk_coefficient = min(max(base_severity * vulnerability_modifier, 0.0), 1.0)
         
         # Calculate Child / Vulnerable Group Impact Factor
-        # Higher volume populations under severe baseline stress trigger higher escalations
-        child_impact_weight = "low"
+        child_impact_weight = "stable_baseline"
         if final_risk_coefficient >= 0.7 and infrastructure.student_or_patient_count > 200:
             child_impact_weight = "critical_escalation"
         elif final_risk_coefficient >= 0.4:
