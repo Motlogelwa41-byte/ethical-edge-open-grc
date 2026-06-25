@@ -1,0 +1,49 @@
+{
+  "framework_id": "UNICEF-CS-2026",
+  "framework_name": "UNICEF Child Safeguarding & Infrastructure Resilience Standard",
+  "version": "1.0.0",
+  "target_institutions": ["schools", "health_facilities", "child_care_centers"],
+  
+  "compliance_sections": [
+    {
+      "section_reference": "CS-SEC-01",
+      "section_name": "Physical Infrastructure Safety & Emergency Preparedness",
+      "controls": [
+        {
+          "control_reference": "CS-01.1",
+          "control_name": "Thermal Comfort Baseline",
+          "description": "Facility must maintain indoor classrooms or clinical triage areas below 35°C during extreme regional heatwaves.",
+          "required_evidence": ["sensor_ambient_temp", "has_active_cooling"],
+          "criticality": "HIGH"
+        },
+        {
+          "control_reference": "CS-01.2",
+          "control_name": "WASH Infrastructure Flood Resilience",
+          "description": "Water, Sanitation, and Hygiene (WASH) facilities must have raised backflow valves to prevent contamination during a 0.5m flood event.",
+          "required_evidence": ["flood_water_level_meters", "has_clean_water_reserve"],
+          "criticality": "CRITICAL"
+        }
+      ]
+    },
+    {
+      "section_reference": "CS-SEC-02",
+      "section_name": "Operational Continuity & Digital Safeguarding",
+      "controls": [
+        {
+          "control_reference": "CS-02.1",
+          "control_name": "Offline Operational Staging",
+          "description": "In the event of a climate-induced grid collapse, administrative and health logs must be capable of local offline operations for up to 72 hours.",
+          "required_evidence": ["active_power_outage", "has_offgrid_power_backup"],
+          "criticality": "MEDIUM"
+        },
+        {
+          "control_reference": "CS-02.2",
+          "control_name": "Child Privacy & Geospatial Masking",
+          "description": "All telemetry uploaded to shared platforms must completely strip specific point coordinates and facility names to prevent child tracking.",
+          "required_evidence": ["exact_latitude", "exact_longitude", "school_or_facility_name"],
+          "criticality": "CRITICAL"
+        }
+      ]
+    }
+  ]
+}
