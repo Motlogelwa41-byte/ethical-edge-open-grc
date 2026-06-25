@@ -14,6 +14,9 @@ from app.database.models import AuditRun, ControlFinding
 from app.services.evidence_collector import GRCEvidenceEngine
 from app.api.endpoints.reports import export_compliance_audit_report
 
+# Import the new Climate Core dependencies
+from climate_risk_manager import sanitize_environmental_payload, ClimateRiskManager, ClimateTelemetryInput, ResilienceParameters
+
 def run_end_to_end_validation():
     print("🎯 Starting Master Integration Test...")
     
@@ -61,10 +64,66 @@ def run_end_to_end_validation():
         print("📄 Step 4: Testing PDF report route compilation engine...")
         asyncio.run(export_compliance_audit_report(tenant_id=tenant))
         
+        # =======================================================================
+        # ⚠️ NEW STEP: COGNITIVE CLIMATE RESILIENCE CORE VALIDATION
+        # =======================================================================
+        print("🌍 Step 5: Testing Cognitive Climate Engine integration...")
+        
+        # Load your local mock file data
+        dummy_file_path = os.path.join(os.path.dirname(__file__), "dummy_intake.json")
+        with open(dummy_file_path, "r") as f:
+            mock_raw_payload = json.load(f)
+            
+        # Run Data Sanitization Pipeline (Privacy-by-Design verification)
+        clean_climate_data = sanitize_environmental_payload(mock_raw_payload)
+        
+        # Construct parameters matching the climate manager data schema contracts
+        telemetry_contract = ClimateTelemetryInput(
+            facility_id=clean_climate_data["telemetry_id"],
+            facility_type=mock_raw_payload.get("facility_type", "school"),
+            temperature_celsius=clean_climate_data["environmental_metrics"]["heat_index_celsius"],
+            flood_water_level_meters=0.0, # Baseline initializer
+            drought_index_spi=mock_raw_payload.get("drought_index_spi", -1.8),
+            active_power_outage=mock_raw_payload.get("active_power_outage", True)
+        )
+        
+        infra_contract = ResilienceParameters(
+            student_or_patient_count=mock_raw_payload.get("student_or_patient_count", 350),
+            has_active_cooling=mock_raw_payload.get("has_active_cooling", False),
+            has_clean_water_reserve=mock_raw_payload.get("has_clean_water_reserve", False),
+            has_offgrid_power_backup=mock_raw_payload.get("has_offgrid_power_backup", False)
+        )
+        
+        # Calculate governance indices
+        climate_assessment = ClimateRiskManager.evaluate_facility_governance_score(
+            telemetry=telemetry_contract,
+            infrastructure=infra_contract
+        )
+        
+        # Confirm details are anonymized correctly
+        assert "school_or_facility_name" not in climate_assessment, "FAIL: PII leaked to output layer!"
+        assert "exact_latitude" not in climate_assessment, "FAIL: Spatial identifiers leaked!"
+        
+        # Optionally persist the output context directly into your existing ControlFinding ledger
+        climate_run_log = ControlFinding(
+            audit_run_id=new_run.id,
+            control_reference="UNICEF-CCRI-V1",
+            control_name="Climate Impact Index Triage",
+            framework="UNICEF_Child_Safeguarding",
+            status="PASSED" if climate_assessment["target_vulnerability_index"] < 0.9 else "ACTION_REQUIRED",
+            evidence_payload=json.dumps(climate_assessment)
+        )
+        db.add(climate_run_log)
+        db.commit()
+        
+        # =======================================================================
+        
         print("\n🏆 SYSTEM CHECK: SUCCESSFUL END-TO-END INTEGRATION!")
-        print(f"   • Database Runs Tracked: {len(historical_runs)}")
-        print(f"   • Latest Attainment Rate: {payload.calculated_attainment_rate}%")
-        print("   • API Report Endpoint Function: Validated and Importable")
+        print(f"    • Database Runs Tracked: {len(historical_runs)}")
+        print(f"    • Latest Attainment Rate: {payload.calculated_attainment_rate}%")
+        print(f"    • API Report Endpoint Function: Validated and Importable")
+        print(f"    • Climate Risk Core Index: {climate_assessment['target_vulnerability_index']} ({climate_assessment['impact_mitigation_classification']})")
+        print("    • Privacy Scrubbing Enforcement: VERIFIED (PII/Geospatial records stripped)")
         
     except Exception as e:
         db.rollback()
