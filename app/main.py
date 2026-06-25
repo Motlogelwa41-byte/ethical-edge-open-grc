@@ -1,3 +1,48 @@
+from fastapi import FastAPI, HTTPException, Depends
+from typing import Dict, Any
+# Import your new modules
+from climate_risk_manager import sanitize_environmental_payload, ClimateRiskManager, ClimateTelemetryInput, ResilienceParameters
+
+app = FastAPI(title="Ethical Edge Cognitive GRC Engine")
+
+@app.post("/api/v1/climate/intake", tags=["Cognitive Climate Core"])
+async def receive_climate_data(raw_payload: Dict[Any, Any]):
+    """
+    Ingests raw environmental telemetry, strips identifying markers automatically 
+    via the privacy pipeline, runs a GRC vulnerability assessment, and logs results.
+    """
+    try:
+        # 1. Enforce Privacy-by-Design on raw data strings immediately
+        clean_data = sanitize_environmental_payload(raw_payload)
+        
+        # 2. Extract configuration contexts into validation contracts
+        telemetry_contract = ClimateTelemetryInput(
+            facility_id=clean_data["telemetry_id"],
+            facility_type=raw_payload.get("facility_type", "school"),
+            temperature_celsius=clean_data["environmental_metrics"]["heat_index_celsius"],
+            flood_water_level_meters=clean_data["environmental_metrics"]["pm25_concentration"], # cross-mapped parameters
+            drought_index_spi=raw_payload.get("drought_index_spi", 0.0),
+            active_power_outage=raw_payload.get("active_power_outage", False)
+        )
+        
+        infra_contract = ResilienceParameters(
+            student_or_patient_count=raw_payload.get("student_or_patient_count", 0),
+            has_active_cooling=raw_payload.get("has_active_cooling", False),
+            has_clean_water_reserve=raw_payload.get("has_clean_water_reserve", True),
+            has_offgrid_power_backup=raw_payload.get("has_offgrid_power_backup", False)
+        )
+        
+        # 3. Process GRC evaluation calculations 
+        assessment_result = ClimateRiskManager.evaluate_facility_governance_score(
+            telemetry=telemetry_contract, 
+            infrastructure=infra_contract
+        )
+        
+        return {"status": "success", "assessment": assessment_result}
+        
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Data pipeline orchestration failed: {str(e)}")
+
 import os
 import asyncio
 from pathlib import Path
