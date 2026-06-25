@@ -9,3 +9,23 @@
     "has_cross_border_assessment": false
   }
 }
+
+{
+  "school_or_facility_name": "Gaborone Central Primary School",
+  "exact_latitude": -24.6568,
+  "exact_longitude": 25.9088,
+  "regional_catchment_id": "BW-SE-GABS-01",
+  "normalized_district_code": "DIST-GABS-01",
+  "facility_type": "school",
+  "ambient_temp": 42.5,
+  "particulate_matter": 0.15,
+  "uv_exposure": 11.0,
+  "drought_index_spi": -1.8,
+  "active_power_outage": true,
+  "student_or_patient_count": 350,
+  "has_active_cooling": false,
+  "has_clean_water_reserve": false,
+  "has_offgrid_power_backup": false,
+  "density_bracket": "high",
+  "resilience_rating": "vulnerable_tier_3"
+}
