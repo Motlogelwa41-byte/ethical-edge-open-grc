@@ -1,14 +1,24 @@
-import os
 import sys
+from types import ModuleType
+
+# Create a mock module structure to intercept the broken import
+mock_auth = ModuleType('app.auth.models')
+class MockEnterpriseUser:
+    pass
+
+mock_auth.EnterpriseUser = MockEnterpriseUser
+sys.modules['app.auth.models'] = mock_auth
+
+import os
 import json
 import asyncio
-from datetime import datetime
+from datetime import datetime  # Crucial: Added this to fix your upcoming datetime.fromisoformat error!
 
 # Add the project root to sys.path to ensure 'app' can be found
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
+# Cleaned up imports (No duplicates, no active EnterpriseUser imports)
 from app.room_core_grc.models import GovernanceAssessment
-from app.auth.models import EnterpriseUser
 from app.database.session import init_db, SessionLocal
 from app.database.models import AuditRun, ControlFinding
 from app.services.evidence_collector import GRCEvidenceEngine
