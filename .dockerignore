@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.git
+.gitignore
+db_manager.py
+create_db.py
+verify_db.py
+compliance_audit_log
