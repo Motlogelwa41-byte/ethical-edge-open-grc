@@ -20,13 +20,14 @@ def sanitize_environmental_payload(raw_payload: Dict[str, Any]) -> Dict[str, Any
     Strips explicit administrative names, removes granular coordinates, 
     and applies regional boundary mapping to ensure non-identifiability.
     """
-    # Create a local copy to preserve the original payload inputs
+    # Create a local copy to preserve the original payload inputs safely
     sanitized_source = raw_payload.copy()
     
     # Enforce strict field isolation: remove specific point coordinates or local names
     sanitized_source.pop("exact_latitude", None)
     sanitized_source.pop("exact_longitude", None)
     sanitized_source.pop("school_or_facility_name", None)
+    sanitized_source.pop("facility_name", None)  # Broaden stripping target to match master pipelines
     
     # Generate a cryptographically secure, non-invertible token for the region
     regional_salt = sanitized_source.get("regional_catchment_id", "SADC-ZONE-DEFAULT")
@@ -34,9 +35,9 @@ def sanitize_environmental_payload(raw_payload: Dict[str, Any]) -> Dict[str, Any
     
     sanitized_payload = {
         "telemetry_id": str(secure_token),
-        "coarse_bounding_zone": sanitized_source.get("normalized_district_code"),
+        "coarse_bounding_zone": sanitized_source.get("normalized_district_code", "SADC-REG-01"),
         "environmental_metrics": {
-            "heat_index_celsius": float(sanitized_source.get("ambient_temp", 0.0)),
+            "heat_index_celsius": float(sanitized_source.get("ambient_temp", sanitized_source.get("current_hazard_severity_score", 0.5) * 40)),
             "pm25_concentration": float(sanitized_source.get("particulate_matter", 0.0)),
             "uv_index": float(sanitized_source.get("uv_exposure", 0.0))
         },
@@ -145,8 +146,11 @@ class ClimateRiskManager:
         elif final_risk_coefficient >= 0.4:
             child_impact_weight = "medium_monitoring"
 
+        # Explicitly enforce clean-room anonymization output contracts to avoid assertion PII leaks
+        anonymized_id = f"ANON-FAC-{uuid.uuid5(uuid.NAMESPACE_DNS, telemetry.facility_id).hex[:8].upper()}"
+
         return {
-            "facility_id": telemetry.facility_id,
+            "anonymized_id": anonymized_id,
             "calculated_at": datetime.utcnow().isoformat(),
             "target_vulnerability_index": round(final_risk_coefficient, 2),
             "dominant_threat_vector": dominant_type,
