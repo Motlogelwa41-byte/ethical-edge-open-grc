@@ -1,7 +1,7 @@
 import asyncio
 from datetime import datetime
 from sqlalchemy.orm import Session
-from app.database.base import Base # Ensure your models are imported
+from app.database.models import Base # Ensure your models are imported
 
 class BaseRoom:
     def __init__(self, room_name: str, session: Session, tenant_id: str):

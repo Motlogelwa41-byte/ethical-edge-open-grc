@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 from sqlalchemy import Column, Integer, String, Float, DateTime, Text, ForeignKey
 from sqlalchemy.orm import declarative_base, relationship
 
@@ -21,3 +22,7 @@ class ControlFinding(Base):
     status = Column(String, nullable=False)
     evidence_payload = Column(Text, nullable=False)
     audit_run = relationship("AuditRun", back_populates="findings")
+=======
+from sqlalchemy.orm import declarative_base
+Base = declarative_base()
+>>>>>>> Stashed changes
