@@ -1,0 +1,51 @@
+from pydantic import ValidationError
+from sqlalchemy import text
+
+def ingest_king_v_framework(framework_data, session, tenant_id):
+    print(f"🚀 Injecting framework for Tenant: {tenant_id}")
+    
+    # 1. STANDARDIZE (Defensive Wrapping)
+    if isinstance(framework_data, list):
+        categories_raw = {f"cat_{i}": (item if isinstance(item, dict) else {}) for i, item in enumerate(framework_data)}
+    elif isinstance(framework_data, dict):
+        categories_raw = framework_data.get("governing_functions", framework_data)
+    else:
+        return
+
+    # 2. VALIDATE AND PERSIST
+    for cat_id, cat_content in categories_raw.items():
+        try:
+            # VALIDATE: This turns raw dict into a validated Object
+            validated_cat = Category(**cat_content) 
+        except ValidationError as e:
+            print(f"❌ Validation failed for {cat_id}: {e.json()}")
+            continue
+
+        # PERSIST CATEGORY
+        session.execute(text("""
+            INSERT INTO compliance_categories (category_id, display_name, weight, tenant_id)
+            VALUES (:id, :name, :weight, :tenant)
+            ON CONFLICT (category_id, tenant_id) DO UPDATE SET 
+            display_name = EXCLUDED.display_name, weight = EXCLUDED.weight;
+        """), {"id": cat_id, "name": validated_cat.title, "weight": validated_cat.weight, "tenant": tenant_id})
+
+        # PERSIST PRINCIPLES (Using dot notation thanks to Pydantic)
+        for p in validated_cat.principles:
+            session.execute(text("""
+                INSERT INTO compliance_principles (principle_id, category_id, title, description, tenant_id)
+                VALUES (:p_id, :c_id, :title, :desc, :tenant)
+                ON CONFLICT (principle_id, tenant_id) DO UPDATE SET 
+                title = EXCLUDED.title, description = EXCLUDED.description;
+            """), {"p_id": p.principle_id, "c_id": cat_id, "title": p.title, "desc": p.description, "tenant": tenant_id})
+
+            # PERSIST GATES
+            for idx, gate in enumerate(p.checkpoints_or_gates):
+                gate_id = f"GATE-{p.principle_id}-{str(idx + 1).zfill(2)}"
+                session.execute(text("""
+                    INSERT INTO room_gates (gate_id, principle_id, requirement_text, validation_type, order_index, tenant_id)
+                    VALUES (:g_id, :p_id, :req, :v_type, :idx, :tenant)
+                    ON CONFLICT (gate_id, tenant_id) DO UPDATE SET requirement_text = EXCLUDED.requirement_text;
+                """), {"g_id": gate_id, "p_id": p.principle_id, "req": gate.requirement, "v_type": gate.type, "idx": idx, "tenant": tenant_id})
+
+    session.commit()
+    print("✅ Ingestion successfully completed!")

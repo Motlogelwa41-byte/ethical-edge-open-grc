@@ -1,0 +1,31 @@
+[
+  {
+    "principle_number": 1,
+    "title": "Leadership",
+    "description": "The governing body should lead ethically and effectively.",
+    "practices": [
+      {
+        "practice_id": "P1.1",
+        "description": "The governing body should lead ethically and effectively.",
+        "is_mandatory": true
+      },
+      {
+        "practice_id": "P1.2",
+        "description": "The governing body should govern the ethics of the organisation.",
+        "is_mandatory": true
+      }
+    ]
+  },
+  {
+    "principle_number": 2,
+    "title": "Organisational Ethics",
+    "description": "The governing body should govern the ethics of the organisation.",
+    "practices": [
+      {
+        "practice_id": "P2.1",
+        "description": "The governing body should ensure that the organisation’s ethics are managed.",
+        "is_mandatory": true
+      }
+    ]
+  }
+]

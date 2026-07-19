@@ -1,27 +1,24 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
-from sqlalchemy.pool import QueuePool
 import os
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
-# Database URL - Ensure this is set in your environment
-DATABASE_URL = "postgresql://postgres@localhost/grc_db"
+# Define your database URL (adjust for your specific database, e.g., PostgreSQL or SQLite)
+# Example for local SQLite:
+DATABASE_URL = "sqlite:///./app.db"
 
-# Create engine with a connection pool to manage concurrent tenant requests
+# Or if you use environment variables:
+# DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./app.db")
+
+# Create the engine
 engine = create_engine(
-    DATABASE_URL,
-    poolclass=QueuePool,
-    pool_size=20,       # Adjust based on expected concurrent tenants
-    max_overflow=10
+    DATABASE_URL, 
+    connect_args={"check_same_thread": False} # Needed for SQLite only
 )
 
-# SessionLocal factory
+# Create the SessionLocal class
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def get_db():
-    """
-    Dependency generator for FastAPI. 
-    Provides a scoped session and ensures it closes to prevent leaks.
-    """
     db = SessionLocal()
     try:
         yield db

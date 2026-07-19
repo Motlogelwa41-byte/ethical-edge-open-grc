@@ -1,9 +1,27 @@
+# =====================================================================
+# CORE FASTAPI WEB ENGINE & VALIDATION
+# =====================================================================
 fastapi==0.110.0
 uvicorn==0.28.0
 pydantic==2.6.4
-sqlalchemy==2.0.28
-jinja2==3.1.3
-python-multipart==0.0.9
+pydantic-settings==2.2.1
 python-dotenv==1.0.1
+
+# =====================================================================
+# DATABASE & TRANSACTION LEDGER LOGGING
+# =====================================================================
+sqlalchemy==2.0.28
 psycopg2-binary==2.9.9
+# asyncpg==0.29.0  # Uncomment if your SessionLocal uses postgresql+asyncpg://
+
+# =====================================================================
+# REPORT COMPILATION & EXPORT ENGINE
+# =====================================================================
+# Ensure your underlying PDF/Reporting drivers are pinned here:
+reportlab==4.1.0
+
+# =====================================================================
+# SYSTEM TESTING & AUTOMATION SWEEPER
+# =====================================================================
+pytest==8.1.1
 httpx==0.27.0

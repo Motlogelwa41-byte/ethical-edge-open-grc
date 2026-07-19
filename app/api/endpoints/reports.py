@@ -114,3 +114,20 @@ async def export_compliance_audit_report(tenant_id: str = "tenant_sme_001"):
     doc.build(story)
     buffer.seek(0)
     return StreamingResponse(buffer, media_type="application/pdf")
+
+# In your app/api/endpoints/reports.py
+
+def format_gap_report_for_pdf(gaps):
+    """
+    Takes the gap list and turns it into professional paragraphs 
+    that the PDF generator can render.
+    """
+    formatted_sections = []
+    for gap in gaps:
+        section = {
+            "title": gap.split(":")[0], # E.g., [CRITICAL] Missing SEC-52
+            "description": gap,
+            "remediation": "Ethical Edge recommends immediate policy development and staff training."
+        }
+        formatted_sections.append(section)
+    return formatted_sections
