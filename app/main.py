@@ -17,6 +17,7 @@ from sqlalchemy.orm import Session
 from app.database.connection import get_db
 from app.database.session import init_db
 from app.middleware.tier_guard import verify_account_tier, TenantProfile
+from room_manager import get_room_data_async
 
 
 # Standard Routers
