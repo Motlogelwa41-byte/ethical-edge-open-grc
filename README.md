@@ -1,6 +1,6 @@
 # Cognitive GRC Engine – AI-Powered Children Resilience Support Platform
 
-**Empowering Climate Resilience Through Governance, Risk, Compliance and Artificial Intelligence.**
+**Empowering Child-Centred Climate Resilience Through Governance, Risk, Compliance and Artificial Intelligence.**
 
 ---
 
