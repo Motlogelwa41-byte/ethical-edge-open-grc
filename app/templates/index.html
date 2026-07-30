@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ethical Edge GRC Dashboard</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .checklist-item { padding: 1rem; margin-bottom: 0.5rem; border: 1px solid #ddd; border-radius: 4px; display: flex; align-items: center; }
+        .risk-high { border-left: 5px solid #ff4d4d; }
+        .risk-low { border-left: 5px solid #28a745; }
+        #status-message { margin: 10px 0; font-weight: bold; color: #333; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+    <h4 class="text-center">Ethical Edge📊 Dashboard</h4>
+    <div id="status-message"></div>
+    <div class="controls">
+        <button onclick="saveAssessment()">💾 Save Assessment</button>
+    </div>
+    <div id="checklist-container"></div>
+
+    <script>
+        async function loadChecklist() {
+            try {
+                const response = await fetch('/api/checklist/king-v');
+                const data = await response.json();
+                const container = document.getElementById('checklist-container');
+                container.innerHTML = ''; 
+                data.principles.forEach(item => {
+                    const div = document.createElement('div');
+                    // Default to risk-low if riskLevel isn't provided
+                    div.className = `checklist-item ${item.riskLevel === 'high' ? 'risk-high' : 'risk-low'}`;
+                    div.innerHTML = `<label><input type="checkbox" name="${item.id}" ${item.completed ? 'checked' : ''}> ${item.id}: ${item.description}</label>`;
+                    container.appendChild(div);
+                });
+            } catch (error) { console.error('Load error:', error); }
+        }
+
+        async function saveAssessment() {
+            const btn = document.querySelector('button');
+            const msg = document.getElementById('status-message');
+            btn.disabled = true;
+            msg.textContent = "Saving...";
+            
+            const results = Array.from(document.querySelectorAll('#checklist-container input')).map(cb => ({ id: cb.name, completed: cb.checked }));
+
+            try {
+                const response = await fetch('/api/checklist/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ assessment: results })
+                });
+                msg.textContent = response.ok ? "✅ Assessment saved successfully!" : "❌ Failed to save.";
+            } catch (e) { msg.textContent = "❌ Error connecting to server."; }
+            finally { btn.disabled = false; }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadChecklist);
+    </script>
+</body>
+</html>
