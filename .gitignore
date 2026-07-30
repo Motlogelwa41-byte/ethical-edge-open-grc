@@ -1,6 +1,28 @@
-*.db
-echo "sql_app.db" >> .gitignore
+# Environment
+.env
+.venv/
+venv/
 
-# Local Database Engines
+# Python
+__pycache__/
+*.py[cod]
+*.log
+.pytest_cache/
+
+# Database
 *.db
+
+# Data
 data/
+
+# Build
+build/
+dist/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
