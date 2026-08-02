@@ -131,6 +131,26 @@ After starting the application, interactive API documentation is available at:
 
 > **Note:** Available endpoints may vary depending on the enabled modules and the current development branch.
 
+## 📸 Screenshots
+
+The following images showcase the Cognitive GRC Engine in development.
+
+### System Architecture
+
+![System Architecture](system-architecture.png)
+
+### Dashboard Preview
+
+> Dashboard screenshots will be added as the platform matures.
+
+### Climate Risk Assessment
+
+> Climate Risk Assessment screenshots coming soon.
+
+### Child Vulnerability Index (CVI)
+
+> CVI dashboard screenshots coming soon.
+
 ## 🏗️ Development Status: Alpha
 
 This repository contains the active development of the **Cognitive GRC Engine MVP**.
