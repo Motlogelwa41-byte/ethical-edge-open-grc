@@ -14,6 +14,24 @@ By combining climate intelligence, facility assessments, artificial intelligence
 
 Developed under the **Apache License 2.0**, the Cognitive GRC Engine supports UNICEF's vision for **Digital Public Goods** through open-source innovation, interoperability, transparency and responsible AI.
 
+## 🚀 Getting Started
+
+The Cognitive GRC Engine is an open-source platform designed to help governments, humanitarian organizations, schools, and healthcare facilities assess climate-related risks affecting children.
+
+### Prerequisites
+
+- Python 3.11+
+- Git
+- Docker (optional)
+- PostgreSQL (recommended)
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/Motlogelwa41-byte/ethical-edge-open-grc.git
+cd ethical-edge-open-grc
+```
+
 ---
 
 ## 🏗️ Development Status: Alpha
