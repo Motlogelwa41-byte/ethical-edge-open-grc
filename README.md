@@ -45,11 +45,13 @@ The Cognitive GRC Engine is being developed with a strong emphasis on transparen
 
 ## 🚀 Getting Started
 
-The Cognitive GRC Engine is an open-source platform designed to help governments, humanitarian organizations, schools, and healthcare facilities assess climate-related risks affecting children.
+Follow the steps below to set up and run the Cognitive GRC Engine in your local development environment.
 
 ### Prerequisites
 
-- Python 3.11+
+Before you begin, ensure you have the following installed:
+
+- Python 3.11 or later
 - Git
 - Docker (optional)
 - PostgreSQL (recommended)
@@ -60,6 +62,9 @@ The Cognitive GRC Engine is an open-source platform designed to help governments
 git clone https://github.com/Motlogelwa41-byte/ethical-edge-open-grc.git
 cd ethical-edge-open-grc
 ```
+
+You are now ready to install the project dependencies and start the application.
+
 ## ⚙️ Installation
 
 ### 1. Create a Virtual Environment
