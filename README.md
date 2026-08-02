@@ -7,8 +7,8 @@
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)
 ![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-Framework-009688?logo=fastapi&logoColor=white)
-![Status](https://img.shields.io/badge/Status-Alpha-orange)
-![Open%20Source](https://img.shields.io/badge/Open%20Source-Yes-success)
+![Status](https://img.shields.io/badge/Status-Active-success)
+![Open Source](https://img.shields.io/badge/Open%20Source-Yes-success)
 
 ## 📖 Executive Overview
 
