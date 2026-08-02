@@ -289,11 +289,11 @@ The Cognitive GRC Engine is being developed as an **Open Source Digital Public G
 
 ---
 
-## 🤝 Organization
+## 🏢 About Ethical Edge GRC Consulting
 
-**Ethical Edge GRC Consulting (Pty) Ltd**
+Ethical Edge GRC Consulting (Pty) Ltd is a Botswana-based Governance, Risk, and Compliance (GRC) consultancy focused on developing innovative open-source technologies that strengthen governance, climate resilience, and regulatory compliance across Africa.
 
-Botswana
+Through the Cognitive GRC Engine, the organization is committed to building Digital Public Goods that support governments, humanitarian organizations, and development partners in protecting vulnerable communities through responsible artificial intelligence and evidence-based decision-making.
 
 Website: https://www.ethicaledgegrcconsulting.com
 
