@@ -263,6 +263,19 @@ The Cognitive GRC Engine is designed as a secure, scalable and cloud-native plat
 - [ ] UNICEF MVP Release
 
 ---
+## 📬 Support & Contact
+
+For questions, feature requests, or collaboration opportunities, please reach out:
+
+- **Organization:** Ethical Edge GRC Consulting (Pty) Ltd
+- **Project:** Cognitive GRC Engine – AI-Powered Children Resilience Support Platform
+- **Website:** https://www.ethicaledgegrcconsulting.com
+
+If you find this project useful, please consider:
+- ⭐ Starring the repository
+- 🐛 Reporting issues
+- 💡 Suggesting new features
+- 🤝 Contributing through pull requests
 
 ## 🌍 Digital Public Good
 
