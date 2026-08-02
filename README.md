@@ -20,6 +20,29 @@ By combining climate intelligence, facility assessments, artificial intelligence
 
 Developed under the **Apache License 2.0**, the Cognitive GRC Engine supports UNICEF's vision for **Digital Public Goods** through open-source innovation, interoperability, transparency and responsible AI.
 
+## 🏗️ Development Status
+
+The **Cognitive GRC Engine** is an actively evolving open-source Climate Resilience Decision Support Platform developed by **Ethical Edge GRC Consulting (Pty) Ltd**. The platform is designed to help governments, humanitarian organizations, schools, healthcare facilities, and development partners identify, assess, prioritize, and respond to climate-related risks affecting children through intelligent, data-driven decision support.
+
+### 🎯 Current Development Focus
+
+- 🌍 AI-Powered Climate Risk Assessment
+- 🏫 Facility Assessment Engine
+- 👶 Child Vulnerability Index (CVI)
+- 🌦️ Climate Data Integration
+- 📊 Climate Risk Intelligence
+- 🤖 AI Decision Support
+- 📈 Interactive Dashboards
+- 🔗 Secure REST APIs
+- 🔍 Explainable AI
+- 🛡️ Secure Audit Logging
+
+### 🎯 Project Vision
+
+To deliver a secure, scalable, and interoperable open-source Digital Public Good that empowers governments and humanitarian organizations to strengthen child-centred climate resilience through Governance, Risk, Compliance (GRC), and Artificial Intelligence.
+
+The Cognitive GRC Engine is being developed with a strong emphasis on transparency, interoperability, responsible AI, and evidence-based decision-making, enabling institutions to better prepare for, respond to, and recover from climate-related challenges affecting vulnerable communities.
+
 ## 🚀 Getting Started
 
 The Cognitive GRC Engine is an open-source platform designed to help governments, humanitarian organizations, schools, and healthcare facilities assess climate-related risks affecting children.
@@ -169,22 +192,6 @@ Please ensure that:
 - Documentation is updated for significant changes.
 - Pull requests include a clear description of the proposed changes.
 
-## 🏗️ Development Status: Alpha
-
-This repository contains the active development of the **Cognitive GRC Engine MVP**.
-
-### Current Focus
-
-- AI-Powered Climate Risk Assessment
-- Facility Assessment Engine
-- Child Vulnerability Index (CVI)
-- Climate Data Ingestion
-- Climate Risk Intelligence
-- AI Decision Support
-- Interactive Dashboards
-- Secure REST APIs
-- Explainable AI
-- Audit Logging
 
 ### Target Outcome
 
