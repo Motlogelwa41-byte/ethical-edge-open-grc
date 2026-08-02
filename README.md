@@ -151,6 +151,24 @@ The following images showcase the Cognitive GRC Engine in development.
 
 > CVI dashboard screenshots coming soon.
 
+## 🤝 Contributing
+
+We welcome contributions from developers, researchers, climate experts, GRC professionals, and humanitarian organizations.
+
+To contribute:
+
+1. Fork the repository.
+2. Create a feature branch.
+3. Commit your changes.
+4. Push your branch.
+5. Open a Pull Request.
+
+Please ensure that:
+- Code follows project standards.
+- New features include tests where applicable.
+- Documentation is updated for significant changes.
+- Pull requests include a clear description of the proposed changes.
+
 ## 🏗️ Development Status: Alpha
 
 This repository contains the active development of the **Cognitive GRC Engine MVP**.
