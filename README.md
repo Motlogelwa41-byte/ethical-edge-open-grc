@@ -78,6 +78,28 @@ The API will be available at:
 - **ReDoc:** http://127.0.0.1:8000/redoc
 
 ---
+## 📁 Project Structure
+
+```text
+ethical-edge-open-grc/
+├── app/                    # FastAPI application source
+│   ├── api/                # REST API endpoints
+│   ├── core/               # Core application logic
+│   ├── models/             # Data models
+│   ├── services/           # Business services
+│   ├── observers/          # Observation and monitoring modules
+│   └── main.py             # Application entry point
+├── data/                   # Sample datasets and climate data
+├── database/               # Database utilities and migrations
+├── docs/                   # Project documentation
+├── templates/              # Project templates
+├── uploads/                # Uploaded files
+├── Project_Documents/      # Proposal and supporting documents
+├── requirements.txt        # Python dependencies
+├── Dockerfile              # Docker configuration
+├── docker-compose.yml      # Docker Compose configuration
+└── README.md               # Project documentation
+```
 
 ## 🏗️ Development Status: Alpha
 
