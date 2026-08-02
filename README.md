@@ -192,11 +192,6 @@ Please ensure that:
 - Documentation is updated for significant changes.
 - Pull requests include a clear description of the proposed changes.
 
-
-### Target Outcome
-
-Develop a production-ready, open-source platform that enables governments and humanitarian organizations to make faster, evidence-based decisions that improve climate resilience and protect children.
-
 ---
 
 ## ⚙️ Core Technical Architecture
