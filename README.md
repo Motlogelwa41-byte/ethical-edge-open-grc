@@ -100,6 +100,30 @@ ethical-edge-open-grc/
 ├── docker-compose.yml      # Docker Compose configuration
 └── README.md               # Project documentation
 ```
+## 📡 API Documentation
+
+The Cognitive GRC Engine exposes RESTful APIs built with FastAPI.
+
+After starting the application, interactive API documentation is available at:
+
+| Service | URL |
+|---------|-----|
+| Swagger UI | http://127.0.0.1:8000/docs |
+| ReDoc | http://127.0.0.1:8000/redoc |
+
+### Example Endpoints
+
+| Method | Endpoint | Description |
+|---------|----------|-------------|
+| GET | `/` | API status |
+| GET | `/health` | Health check |
+| GET | `/api/v1/dashboard/summary` | Dashboard summary |
+| GET | `/api/v1/risks` | List risks |
+| POST | `/api/v1/risks` | Create a new risk |
+| GET | `/api/v1/organizations` | List organizations |
+| POST | `/api/v1/organizations` | Create an organization |
+
+> **Note:** Available endpoints may vary depending on the enabled modules and the current development branch.
 
 ## 🏗️ Development Status: Alpha
 
