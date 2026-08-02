@@ -31,6 +31,51 @@ The Cognitive GRC Engine is an open-source platform designed to help governments
 git clone https://github.com/Motlogelwa41-byte/ethical-edge-open-grc.git
 cd ethical-edge-open-grc
 ```
+## ⚙️ Installation
+
+### 1. Create a Virtual Environment
+
+```bash
+python -m venv .venv
+```
+
+### 2. Activate the Virtual Environment
+
+**Windows**
+```bash
+.venv\Scripts\activate
+```
+
+**Linux/macOS**
+```bash
+source .venv/bin/activate
+```
+
+### 3. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Configure Environment Variables
+
+Copy the example environment file and update it with your settings.
+
+```bash
+cp .env.example .env
+```
+
+### 5. Start the Application
+
+```bash
+uvicorn app.main:app --reload
+```
+
+The API will be available at:
+
+- **Application:** http://127.0.0.1:8000
+- **Swagger UI:** http://127.0.0.1:8000/docs
+- **ReDoc:** http://127.0.0.1:8000/redoc
 
 ---
 
