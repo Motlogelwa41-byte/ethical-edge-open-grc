@@ -261,14 +261,13 @@ The Cognitive GRC Engine is designed as a secure, scalable and cloud-native plat
 - [x] Platform Architecture
 - [x] FastAPI Backend
 - [x] Database Design
-- [ ] Climate Intelligence Engine
-- [ ] Child Vulnerability Index
-- [ ] Facility Assessment Module
+- [x] Climate Intelligence Engine
+- [x] Child Vulnerability Index (CVI)
+- [x] Facility Assessment Module
 - [ ] AI Recommendation Engine
-- [ ] Interactive Dashboard
+- [ ] Interactive Dashboard Enhancements
 - [ ] Pilot Deployment
-- [ ] UNICEF MVP Release
-
+- [ ] Public Release
 ---
 ## 📬 Support & Contact
 
