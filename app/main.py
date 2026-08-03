@@ -4,6 +4,8 @@ File: main.py
 Objective: Unified master multi-tenant orchestration backend incorporating 
            child safeguarding, climate triage, and core compliance modules.
 """
+from app.api.endpoints import climate_demo
+app.include_router(climate_demo.router)
 
 import os
 import asyncio
