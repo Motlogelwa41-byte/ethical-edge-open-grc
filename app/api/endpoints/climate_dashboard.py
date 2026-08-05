@@ -148,6 +148,14 @@ return {
     "confidence_score": 94
 },
 
+"governance": {
+    "privacy_by_design": true,
+    "explainable_ai": true,
+    "audit_logging": "Enabled",
+    "open_source_license": "Apache 2.0",
+    "digital_public_good": true
+},
+
 "impact_metrics": {
     "children_protected": 450,
     "pilot_facilities_monitored": 10,
