@@ -23,7 +23,7 @@ from room_manager import get_room_data_async
 # Standard Routers
 from app.auth.routes import router as auth_router
 from app.room_core_grc.regtech_rules import router as core_grc_router
-from app.api.endpoints import questionnaire, certiguard_ai, climate_dashboard
+from app.api.endpoints import certiguard_ai, climate_dashboard
 
 # Cognitive Climate Core Infrastructure Components
 from climate_risk_manager import sanitize_environmental_payload, ClimateRiskManager, ClimateTelemetryInput, ResilienceParameters
@@ -63,7 +63,6 @@ app.add_middleware(
 # =====================================================================
 app.include_router(auth_router)
 app.include_router(core_grc_router)
-app.include_router(questionnaire.router)
 app.include_router(certiguard_ai.router)
 app.include_router(climate_dashboard.router, prefix="/api/v1/climate-dashboard", tags=["Climate Dashboard"])
 
