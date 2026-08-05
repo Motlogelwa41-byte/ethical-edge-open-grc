@@ -119,6 +119,32 @@ return {
         }
     ],
 
+    "alerts": [
+    {
+        "severity": "HIGH",
+        "facility": "Motswedi Primary School",
+        "alert": "Flood vulnerability increased",
+        "recommended_actions": [
+            "Inspect drainage systems",
+            "Prepare temporary learning arrangements",
+            "Deploy emergency support resources"
+        ]
+    }
+],
+
+"decision_support": {
+    "recommended_priority": "Immediate Intervention",
+    "estimated_children_at_risk": 450,
+    "estimated_response_window_hours": 24,
+    "confidence_score": 94
+},
+
+"impact_metrics": {
+    "children_protected": 450,
+    "pilot_facilities_monitored": 10,
+    "response_goal": "Reduce climate emergency response time by 40%"
+}
+
 
     "impact_metrics": {
 
