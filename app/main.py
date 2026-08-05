@@ -4,8 +4,6 @@ File: main.py
 Objective: Unified master multi-tenant orchestration backend incorporating 
            child safeguarding, climate triage, and core compliance modules.
 """
-from app.api.endpoints import climate_demo
-app.include_router(climate_demo.router)
 
 import os
 import asyncio
@@ -39,6 +37,8 @@ app = FastAPI(
     description="Unified multi-tenant orchestration engine with integrated Child Safeguarding and Climate Risk Core.",
     version="3.0.0"
 )
+from app.api.endpoints import climate_demo
+app.include_router(climate_demo.router)
 
 # Instantiate the custom rules auditor factory
 compliance_auditor = GRCComplianceEngine()
