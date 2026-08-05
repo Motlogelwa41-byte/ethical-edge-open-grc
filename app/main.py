@@ -19,11 +19,10 @@ from app.database.session import init_db
 from app.middleware.tier_guard import verify_account_tier, TenantProfile
 from room_manager import get_room_data_async
 
-
 # Standard Routers
 from app.auth.routes import router as auth_router
 from app.room_core_grc.regtech_rules import router as core_grc_router
-from app.api.endpoints import climate_dashboard
+from app.api.endpoints import climate_dashboard, climate_demo
 
 # Cognitive Climate Core Infrastructure Components
 from climate_risk_manager import sanitize_environmental_payload, ClimateRiskManager, ClimateTelemetryInput, ResilienceParameters
@@ -37,8 +36,6 @@ app = FastAPI(
     description="Unified multi-tenant orchestration engine with integrated Child Safeguarding and Climate Risk Core.",
     version="3.0.0"
 )
-from app.api.endpoints import climate_demo
-app.include_router(climate_demo.router)
 
 # Instantiate the custom rules auditor factory
 compliance_auditor = GRCComplianceEngine()
@@ -64,6 +61,7 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(core_grc_router)
 app.include_router(climate_dashboard.router, prefix="/api/v1/climate-dashboard", tags=["Climate Dashboard"])
+app.include_router(climate_demo.router)
 
 # =====================================================================
 # 4. COGNITIVE CLIMATE INTAKE PIPELINE (UNICEF SPEC)
@@ -123,7 +121,6 @@ async def get_dashboard_summary(
     """
     Aggregates dashboard data for the authenticated tenant context.
     """
-
     return {
         "tenant": tenant.name,
         "dashboard": {
@@ -138,6 +135,7 @@ async def get_dashboard_summary(
             ]
         }
     }
+
 # =====================================================================
 # 6. ROOT MONITORING HEALTH CHECK
 # =====================================================================
