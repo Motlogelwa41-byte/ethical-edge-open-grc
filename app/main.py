@@ -63,7 +63,6 @@ app.add_middleware(
 # =====================================================================
 app.include_router(auth_router)
 app.include_router(core_grc_router)
-app.include_router(certiguard_ai.router)
 app.include_router(climate_dashboard.router, prefix="/api/v1/climate-dashboard", tags=["Climate Dashboard"])
 
 # =====================================================================
