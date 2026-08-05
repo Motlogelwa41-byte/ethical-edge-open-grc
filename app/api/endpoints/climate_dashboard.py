@@ -96,6 +96,15 @@ return {
         "flood_exposure": "HIGH"
     },
 
+    "forecast": {
+    "forecast_period": "Next 72 Hours",
+    "expected_rainfall": "180 mm",
+    "flood_probability": "87%",
+    "heat_index": "38°C",
+    "risk_trend": "Increasing",
+    "confidence_score": 92
+},
+
 
     "alerts": [
 
