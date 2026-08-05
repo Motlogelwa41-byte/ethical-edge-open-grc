@@ -202,8 +202,8 @@ async def get_king_v_dashboard_metrics(db: Session = Depends(get_db_session)):
             detail=f"Engine Math Evaluation Failed: {str(e)}"
         )
 
-rom room_manager import get_room_data
+from room_manager import get_room_data
 
-@app.route('/api/room/<room_key>')
-def api_room(room_key):
-    return get_room_data(room_key)
+@router.get('/api/room/{room_key}')
+async def api_room(room_key: str):
+    return await get_room_data(room_key)
