@@ -163,13 +163,4 @@ return {
 }
 
 
-    "impact_metrics": {
-
-        "children_protected": 450,
-
-        "pilot_facilities_monitored": 10,
-
-        "response_goal":
-        "Reduce climate emergency response time by 40%"
-    }
-}
+    
