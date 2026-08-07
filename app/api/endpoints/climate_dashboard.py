@@ -105,29 +105,6 @@ return {
     "confidence_score": 92
 },
 
-
-    "alerts": [
-
-        {
-            "severity": "HIGH",
-
-            "facility": "Motswedi Primary School",
-
-            "alert":
-            "Flood vulnerability increased",
-
-            "recommended_actions": [
-
-                "Inspect drainage systems",
-
-                "Prepare temporary learning arrangements",
-
-                "Deploy emergency support resources"
-
-            ]
-        }
-    ],
-
     "alerts": [
     {
         "severity": "HIGH",
