@@ -1,4 +1,3 @@
-cat > app/api/endpoints/climate_dashboard.py <<'EOF'
 from fastapi import APIRouter
 from typing import Dict, Any
 
@@ -13,4 +12,3 @@ async def get_climate_dashboard_summary():
         "platform": "Cognitive GRC Engine - Climate Edition",
         "status": "operational"
     }
-EOF
