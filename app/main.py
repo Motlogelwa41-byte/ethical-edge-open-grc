@@ -83,7 +83,6 @@ app.include_router(core_grc_router)
 
 app.include_router(
     climate_dashboard.router,
-    prefix="/api/v1/climate-dashboard",
     tags=["Climate Dashboard"]
 )
 
