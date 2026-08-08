@@ -25,7 +25,7 @@ from app.auth.routes import router as auth_router
 from app.room_core_grc.regtech_rules import router as core_grc_router
 
 # UNICEF Climate Demo Routers
-from app.api.endpoints import climate_dashboard, climate_demo
+from app.api.endpoints import climate_dashboard, climate_demo, cvi
 
 # Climate Intelligence Engine
 from climate_risk_manager import (
@@ -88,6 +88,10 @@ app.include_router(
 
 app.include_router(
     climate_demo.router
+)
+
+app.include_router(
+    cvi.router
 )
 
 
