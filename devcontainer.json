@@ -1,0 +1,12 @@
+{
+  "name": "UNICEF Project Demo",
+  "image": "mcr.microsoft.com/devcontainers/python:3.10",
+  "appPort": [8000],
+  "portsAttributes": {
+    "8000": {
+      "label": "UNICEF Demo",
+      "onAutoForward": "openBrowser",
+      "visibility": "public"
+    }
+  }
+}
